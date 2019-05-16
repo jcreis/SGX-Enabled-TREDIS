@@ -5,20 +5,18 @@
 %%
 %% Abstract in English
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-The dissertation must contain two versions of the abstract, one in the same language as the main text, another in a different language.  The package assumes that the two languages under consideration are always Portuguese and English.
 
-The package will sort the abstracts in the appropriate order. This means that the first abstract will be in the same language as the main text, followed by the abstract in the other language, and then followed by the main text. For example, if the dissertation is written in Portuguese, first will come the summary in Portuguese and then in English, followed by the main text in Portuguese. If the dissertation is written in English, first will come the summary in English and then in Portuguese, followed by the main text in English.
+Intel SGX hardware is a trust-computing base for applications to protect themselves from potentially-malicious OSes or hypervisors. In cloud and other outsourced computing environments, many users and applications could benefit from SGX. 
+However, legacy applications are not prepared to work out-of-the-box on SGX. 
 
-The abstract shoul not exceed one page and should answer the following questions:
+Previous research work have already addressed library emulated OSes targeted to execute unmodified applications on SGX, but a belief has emerged that such approaches will not be interesting in terms of performance and TCB size, making in practice that application code modifications or reengineering is always an implicit and better prerequisite for adopting SGX-enabled computing environments. 
 
-\begin{itemize}
-	\item What's the problem?
-	\item Why is it interesting?
-	\item What's the solution?
-	\item What follows from the solution?
-\end{itemize}
+(HELP) this next paragraph enters the abstract? or just conclusions after it's done?
 
+In this thesis we intend to study existent library OSes approaches and conduct an experimental evaluation by adopting a recent solution of a OS library emulation to be ported on top of SGX, as a fully-featured library OS that can eventually be adopted to rapidly deploy unmodified applications, with overheads comparable to applications modified to use “shim” layers. Our targeted evaluation will be conducted in virtualizing the Redis Key-Value Store, redesigning and implementing it as a SGX-enabled Trusted Key-Value Store (TREDIS).
 % Palavras-chave do resumo em Inglês
 \begin{keywords}
-Keywords (in English) \ldots
+Intel SGX, REDIS, Trusted Execution Environment, Data Protection, Privacy, Dependability \ldots
 \end{keywords} 
+
+

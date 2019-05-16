@@ -5,30 +5,17 @@
 %%
 %% Abstract in Portuguese
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Independentemente da língua em que está escrita a dissertação, é necessário um resumo na língua do texto principal e um resumo noutra língua.  Assume-se que as duas línguas em questão serão sempre o Português e o Inglês.
 
-O \emph{template} colocará automaticamente em primeiro lugar o resumo na língua do texto principal e depois o resumo na outra língua.  Por exemplo, se a dissertação está escrita em Português, primeiro aparecerá o resumo em Português, depois em Inglês, seguido do texto principal em Português. Se a dissertação está escrita em Inglês, primeiro aparecerá o resumo em Inglês, depois em Português, seguido do texto principal em Inglês.
-
-O resumo não deve exceder uma página e deve responder às seguintes questões:
-\begin{itemize}
-% What's the problem?
-	\item Qual é o problema?
-% Why is it interesting?
-	\item Porque é que ele é interessante?
-% What's the solution?
-	\item Qual é a solução?
-% What follows from the solution?
-	\item O que resulta (implicações) da solução?
-\end{itemize}
-
-E agora vamos fazer um teste com uma quebra de linha no hífen a ver se a \LaTeX\ duplica o hífen na linha seguinte…
-
-zzzz zzz zzzz zzz zzzz zzz zzzz zzz zzzz zzz zzzz zzz zzzz zzz zzzz zzz zzzz comentar"-lhe zzz zzzz zzz zzzz 
-
-Sim!  Funciona! :)
-
+	O Intel SGX é uma base de computação confiável para que aplicações se protejam de SOs ou Hipervisores potencialmente maliciosos. Em \textit{cloud} ou noutros ambientes de computação garantidos por terceiros, muitos utilizadores e aplicações podem beneficiar do SGX. Trabalhos já realizados que abordaram a emulação de bibliotecas de SOs visaram a execução de aplicações não modificadas sobre SGX, mas surgiu uma convicção de que esse tipo de abordagem não será interessante no que toca à performance ou ao tamanho da base de computação confiável fazendo com que, na prática, tanto modificações como a reengenharia do código de aplicações estejam sempre implícitos e sejam um melhor pré-requisito para adotar ambientes de computação com SGX.
+	
+	(HELP) this next paragraph enters the abstract? or just conclusions after it's done?
+	
+	Nesta tese pretendemos estudar as abordagens já existentes de bibliotecas de SOs e conduzir uma avaliação experimental adotando a solução recente de uma emulação de uma biblioteca de SOs para ser usada sobre o SGX, como sendo uma biblioteca completamente caracterizada que possa eventualmente ser adotada para implantar aplicações não modificadas de forma rápida, com \textit{overheads} comparáveis a aplicações modificadas para usar camadas \textit{"shim"}. O foco da nossa avaliação consistirá na virtualização da base de dados do tipo Chave-Valor  \textit{Redis}, redesenhando e implementando-a como uma base de dados Chave-Valor confiável com permissões SGX (TREDIS).
+	
 % Palavras-chave do resumo em Português
 \begin{keywords}
-Palavras-chave (em Português) \ldots
+Intel SGX, REDIS, Ambiente de Execução Confiável, Proteção de Dados, Privacidade, Confiabilidade \ldots
 \end{keywords}
-% to add an extra black line
+
+
+	
