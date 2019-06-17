@@ -5,14 +5,58 @@
 %%
 %% Chapter with the template manual
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{ThesisDIFCTNL User's Manual}
+\chapter{Related Work}
 \label{cha:users_manual}
 
 % ================
 % = Introduction =
 % ================
-\section{Introduction} % (fold)
+
+We’ll look into more detail about existing technologies that approach this objective of granting security of data processing as well as storage (something like this), and how they work or can work together in a way to grant the idea of confidentiality and integrity of data.
+
+(…)
+
+In the summary, it’s expected to have a good notion of what has been developed in those areas to tackle this security concerns, as well as which of this thesis main points have already been addressed by previous work.
+
+\section{Trusted  Computing Environments} % (fold)
 \label{sec:introduction}
+
+\subsection{TPM – Trusted Platform Modules }
+
+A Trusted Platform Module (TPM), proposed by the Trusted Computing Group (TCG), is a set of hardware and software technologies that aim to create trust in a local platform \cite{sgxCloudThesis}. It is identified by an Endorsment Key-pair (EK) which is unique for every TPM, and also a Storage Root Key (SRK) that is used to protect other keys and data in the TPM. 
+
+As for the hardware, a TPM consists mainly on a chip, found usually in the motherboard of most machines nowadays, that provides and stores cryptographic keys that can be used to grant integrity and data confidentiality to the system, as well as persistent and volatile memory to store these keys. 
+
+As said before, the main objective of a TPM is to create the idea of a trusted platform. This will be  provided by three main services: Encryption, Authenticated Boot and Attestation. The first one is used for pretty much every aspect related with security and privacy. The Authenticated boot consists in booting the OS in stages, as a way of keeping track of which code is trustable through the usage of Platform Configuration Registers (PCR), that store the trusted software hashes. As for the Attestation, we'll see in the next subsection.
+
+
+\subsection{TPM – Enabled Software Attestation}
+
+
+TPMs enable the use of Remote attestation, which is the capability of one system to determine if other system can be trusted to run a particular piece of software as expected or not.
+
+This is made possible by having a trusted configuration of state as reference, provided by the PCRs defined in the boot sequence, followed by a remote system that proceeds to challenge the trusted platform (containing the TPM) with a nonce. Then the platform creates a message with the nonce received previously and the existing configuration and calculates an hash value for that message. With an Attestation Identity Key (AIK), the message is then signed and sent back to the remote system, which then proceeds to decrypt the message with the EK public part, that then compares the result with the hash of the nonce plus the configuration it had at the begining of the challenge. 
+
+If the hashes match, the remote system can then identify the TPM platform as a trusted platform.
+
+\subsection{HSM – Hardware Security Modules}
+
+Hardware Security Modules (HSM) are physical components whose main function is to provide and store cryptographic keys used to encrypt/decrypt data inside a system. HSMs can also perform cryptographic operations (e.g. encryption, hashing, etc.) as well as authenticate through verification of digital signatures and accelerate SSL connections \cite{hsmThesis}.
+
+This modules are used mainly in large environment systems (e.g. large distributed systems) where there are a lot of machines communicating with each other, therefore creating a more needed sense of security. The inclusion of this modules in these big systems is actually a good idea since HSMs can also help servers relieve the workload coming from cryptographic operations. However HSMs don't quite guarantee the idea of absolute security, but increment the cost of attacking the system.
+
+Although HSMs grant some extra level of security to a system, there's some drawbacks. One of them is the cost, where to buy one HSM the price varies depending on the sophistication of the security, plus the cost of maintenance makes it even more expensive. Another disadvantage is the difficulty on updating the module. Let's say a weakness was found in a cryptographic algorithm, it's hard to update the software in an already functional HSM to eliminate that weakness \cite{hsmPaper}.
+
+\subsection{Trusted Execution Environemnts}
+
+
+
+\subsection{Intel SGX}
+\subsection{RISK enabled Sanctum}
+\subsection{ARM Trust Zone}
+\subsection{AMD SEV}
+\subsection{Discussion}
+
 
 {\LARGE \textbf{~\\These instructions are outdated! Please see also the “template.tex” file!\\}}
 
@@ -34,8 +78,18 @@ Now, let's go to a major issue for Windows users.  Characters have to be encoded
 % ====================
 % = Folder Structure =
 % ====================
-\section{Folder Structure} % (fold)
+\section{TEE/SGX Enabled Protection Against Untrusted OSes} % (fold)
 \label{sec:folder_structure}
+
+\subsection{Virtual Ghost}
+\subsection{Flicker}
+\subsection{MUSHI}
+\subsection{SeCage}
+\subsection{InkTag}
+\subsection{Sego}
+\subsection{Other approaches}
+\subsection{Discussion}
+
 
 The \novathesis\ template is organized into files and folders. At the main level it includes the following files and folders:
 
@@ -119,8 +173,17 @@ The folder for the \href{http:www.novaims.unl.pt}{\emph{Information and Manageme
 % ===================
 % = Package options =
 % ===================
-\section{\novathesisclass\ Class Options} % (fold)
+\section{SGX-Frameworks and Application Support} % (fold)
 \label{sec:package_options}
+\subsection{VC3 protection for MapReduce Jobs}
+\subsection{Protected Zookeeper}
+\subsection{Ryoan Sandboxing}
+\subsection{Opaque}
+\subsection{Graphene-SGX}
+\subsection{Network services protection approaches}
+\subsection{Application-level protection approaches}
+\subsection{Discussion}
+
 
 The \novathesis\ class can be customized with the options listed below.
 
@@ -183,117 +246,10 @@ The \novathesis\ class can be customized with the options listed below.
     \bottomrule
 \end{ctabular}
 
-\section{Additional considerations about the class options} % (fold)
+\section{Related work analysis and rational} % (fold)
 \label{sec:additional_considerations}
 
 In this section we will provide some additional considerations about some of the customizations available as class options.
 
-\subsection{The main language} % (fold)
-\label{sub:the_main_language}
-
-The choice of the main language with the option “\texttt{lang=OPT}” affects:
-
-\begin{itemize}
-	\item \textbf{The order of the summaries.} First is printed the abstract in the main language and then in the foreign language. This means that if your main language for the document in English, you will see first the “abstract” (in English) and then the “resumo” (in Portuguese). If you switch the main language for the document for Portuguese, it will also automatically switch the order of the summaries to “resumo” and then “abstract”.
-	\item \textbf{The names for document sectioning.} E.g., ``Chapter'' vs.\ ``Capítulo'', ``Table of Contents'' vs.\ ``Índice'', ``Figure'' vs.\ ``Figura'', etc.
-	\item \textbf{The type of documents in the bibliogrpahy.} E.g., ``Technical Report'' vs.\ ``Relatório Técnico'', ``PhD Thesis'' vs.\ ``Tese de Doutoramento'', etc.
-\end{itemize} 
-
-No mater which language you chose, you will always have the appropriate hyphenation rules according to the language at that point. You always get Portuguese hyphenation rules in the ``Resumo'', english hyphenation rules in the ``Abstract'', and then the main language hyphenation rules for the rest of the document.
-
-% subsection the_main_language (end).
-
-% section additional_consideration (end)
 
 
-\subsection{Class of Text} % (fold)
-\label{sub:class_of_text}
-
-You must choose the class of text for the document. The available options are:
-
-\begin{enumerate}
-	\item \textbf{bsc} --- BSc graduation report.
-	\item \textbf{*mscplan} --- Preparation of MSc dissertation. This is a preliminary report graduate students at DI-FCT-NOVA must prepare to conclude the first semester of the two-semesters MSc work. The files specified by \verb!\dedicatoryfile! and \verb!\acknowledgmentsfile! are ignored, even if present, for this class of document.
-	\item \textbf{msc} --- MSc dissertation.
-	\item \textbf{phdprop} ---  Proposal for a PhD work. The files specified by \verb!\dedicatoryfile! and \verb!\acknowledgmentsfile! are ignored, even if present, for this class of document.
-	\item \textbf{prepphd} ---  Preparation of a PhD thesis. This is a preliminary report PhD students at DI-FCT-NOVA must prepare before the end of the third semester of PhD work. The files specified by \verb!\dedicatoryfile! and \verb!\acknowledgmentsfile! are ignored, even if present, for this class of document.
-	\item \textbf{phd} --- PhD dissertation.
-\end{enumerate}
-% subsection class_of_text (end)
-
-% ============
-% = Printing =
-% ============
-\subsection{Printing} % (fold)
-\label{sub:printing}
-
-You must choose how your document will be printed. The available options are:
-\begin{enumerate}
-	\item \textbf{oneside} --- Single side page printing.
-	\item \textbf{*twoside} --- Double sided page printing.
-\end{enumerate}
-% subsection printing (end)
-
-% =============
-% = Font Size =
-% =============
-\subsection{Font Size} % (fold)
-\label{ssec:font_size}
-
-You must select the encoding for your text. The available options are:
-\begin{enumerate}
-	\item \textbf{11pt} --- Eleven (11) points font size.
-	\item \textbf{*12pt} --- Twelve (12) points font size. You should really stick to 12pt\ldots
-\end{enumerate}
-% subsection font_size (end)
-
-% =================
-% = Text encoding =
-% =================
-\subsection{Text Encoding} % (fold)
-\label{ssec:text_encoding}
-
-You must choose the font size for your document. The available options are:
-\begin{enumerate}
-	\item \textbf{latin1} --- Use Latin-1 (\href{http://en.wikipedia.org/wiki/ISO/IEC_8859-1}{ISO 8859-1}) encoding.  Most probably you should use this option if you use Windows;
-	\item \textbf{utf8} --- Use \href{http://en.wikipedia.org/wiki/UTF-8}{UTF8} encoding.    Most probably you should use this option if you are not using Windows.
-\end{enumerate}
-% subsection font_size (end)
-
-% ============
-% = Examples =
-% ============
-\subsection{Examples} % (fold)
-\label{ssec:examples}
-
-Let's have a look at a couple of examples:
-
-\begin{itemize}
-	\item Preparation of PhD thesis, in portuguese, with 11pt size and to be printed single sided (I wonder why one would do this!)\\
-	\verb!\documentclass[prepphd,pt,11pt,oneside,latin1]{thesisdifct-nova}!
-	\item MSc dissertation, in english, with 12pt size and to be printed double sided\\
-	\verb!\documentclass[msc,en,12pt,twoside,utf8]{thesisdifct-nova}!
-\end{itemize}
-% subsection examples (end)
-
-\section{How to Write Using \LaTeX} % (fold)
-\label{sec:how_to_write_using_latex}
-
-Please have a look at Chapter~\ref{cha:a_short_latex_tutorial_with_examples}, where you may find many examples of \LaTeX constructs, such as Sectioning, inserting Figures and Tables, writing Equations, Theorems and algorithms, exhibit code listings, etc.
-
-% section how_to_write_using_latex (end)
-
-
-
-\section{Example glossary, acronyms, and symbols}
-%
-% \todo[inline]{A a note in a line by itself.}
-%
-This is the first occurrence of an abbreviation: \gls{abbrev}. And now the second occurrence of the same abbreviation: \gls{abbrev}. And a new acronym with capital letter: \Gls{xpt} and reused \gls{xpt}.  Let's also use a few other acronyms such as \gls{aaa}, \gls{aab}, \gls{aba}, \gls{bbb} and \gls{xpt}.
-In geometry, the area enclosed by a circle of radius \gls{r} is $\pi r^2$. Here the Greek letter \gls{pi} is equal to the ratio of the circumference of any circle to its diameter.
-Lets add ``\gls{computer}'' to the glossary!
-%
-% Please note that
-% \begin{center}
-%   \textbf{\large this package and template are not official for FCT/NOVA}.
-% \end{center}
