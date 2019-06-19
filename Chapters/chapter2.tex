@@ -47,9 +47,15 @@ This modules are used mainly in large environment systems (e.g. large distribute
 
 Although HSMs grant some extra level of security to a system, there's some drawbacks. One of them is the cost, where to buy one HSM the price varies depending on the sophistication of the security, plus the cost of maintenance makes it even more expensive. Another disadvantage is the difficulty on updating the module. Let's say a weakness was found in a cryptographic algorithm, it's hard to update the software in an already functional HSM to eliminate that weakness \cite{hsmPaper}.
 
-\subsection{Trusted Execution Environemnts}
+\subsection{Trusted Execution Environments}
 
+A Trusted Execution Environment (TEE) is an abstraction provided by both software and hardware that guarantees isolated execution of specific programs from other programs running on the same machine \cite{guiBorgesThesis}, but also from the host OS, hypervisor or even system administrators, preventing them from leveraging their priviledges and thus take advantage of the system. A TEE also grants secured storage of sensitive data, as well as remote attestation to make sure a given program runs as expected on a remote TEE. 
 
+For a user to communicate with his program running inside an isolated environment, a key-exchange between the TEE and the user takes place. This way it is ensured both integrity and confidentiality of data during further communications.
+
+This TEE abstraction can be achieved either by using a virtual machine monitor or by running security critical software (from whole applications to little segments of code) under protection mechanisms provided by hardware \cite{pcopThesis}. 
+
+In the next chapters we will be looking into more dept about this hardware protection providers, that are responsable to create this trusted environments in the systems nowadays.
 
 \subsection{Intel SGX}
 \subsection{RISK enabled Sanctum}
