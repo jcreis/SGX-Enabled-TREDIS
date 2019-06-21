@@ -65,6 +65,14 @@ In the next chapters we will be looking into more dept about this hardware prote
 
 \subsection{Intel SGX}
 
+Intel Security Guard Extensions (SGX) is a set of instructions built in Intel CPUs, that allow programmers to create TEEs, called enclaves, that create an isolated environment where sensitive code can be stored and executed inside, ensuring integrity and confidentiality to it.
+
+Enclaves are mapped into private regions of memory, where only the CPU as access to, reducing the TCB to only the enclave and the CPU itself. Due to this restrictions, not even the most common system libraries can be accessed inside the enclave, since the OS is not trusted. 
+
+A system that encorporates the SGX under it's architecture is divided in two components, a trusted being the enclave, and an untrusted being the rest of the system. The untrusted component requests the launch of the enclave, where the CPU then manages to allocate the enclave in a private region of memory, made available only to that particular enclave. This portion of memory is kept encrypted in volatile memory, being only decrypted by the CPU if the responsible enclave requests for it \cite{guiBorgesThesis}.
+
+Altough isolation is the main objective of Intel SGX, it still allows a way for both  untrusted and trusted parties to communicate. This is made possible by the functions ECALL and OCALL. ECALLs are used for an untrusted component to call for trusted code in a secured way - the enclave copies the pointers to that specific code into a buffer, who is then made visible for the untrusted component, ensuring that the untrusted party can't know the real memory address inside the enclave. To communicate the other way arround the enclave calls for an OCALL, where the enclave is temporarily exited, executing then the unstrusted function needed. After that, the enclave is re-entered. This is mainly used by the enclave to access the network or to deal with I/O disk access.
+
 
 \subsection{RISK enabled Sanctum}
 \subsection{ARM Trust Zone}
