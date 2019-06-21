@@ -21,6 +21,12 @@ In the summary, it’s expected to have a good notion of what has been developed
 \section{Trusted  Computing Environments} % (fold)
 \label{sec:introduction}
 
+Trusted Computing Environment is a concept that came to grant integrity and confidentiality to systems by forcing a certain machine to behave an expected way, and deny any unwanted access to the data while decrypted. This way, even if the system does not run in a trusted machine, it can be expected that it will execute as it should. 
+
+TCEs also protect the system against components that should always be trusted, like the host OS or even system admins, due to the priviledges they've got. This prevention avoids this components to abuse these priviledges, and thus always guarantee the normal execution of the system. 
+
+In the following sub-chapters we'll see how to achieve this properties, what components can be used to do it and also how each of them works.
+
 \subsection{TPM – Trusted Platform Modules }
 
 A Trusted Platform Module (TPM), proposed by the Trusted Computing Group (TCG), is a set of hardware and software technologies that aim to create trust in a local platform \cite{sgxCloudThesis}. It is identified by an Endorsment Key-pair (EK) which is unique for every TPM, and also a Storage Root Key (SRK) that is used to protect other keys and data in the TPM. 
@@ -58,6 +64,8 @@ This TEE abstraction can be achieved either by using a virtual machine monitor o
 In the next chapters we will be looking into more dept about this hardware protection providers, that are responsable to create this trusted environments in the systems nowadays.
 
 \subsection{Intel SGX}
+
+
 \subsection{RISK enabled Sanctum}
 \subsection{ARM Trust Zone}
 \subsection{AMD SEV}
