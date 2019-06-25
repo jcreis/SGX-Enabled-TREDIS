@@ -104,8 +104,6 @@ Most ARM processors also offer memory curtaining. This consists on the Secure Mo
 By default, the system boots always in SW so it can provision the runtime environment before any untrusted code start to run. It eventually transitions to NW where untrusted code can start to be executed. \cite{armTZPaper}
 
 
-
-
 \subsection{AMD SEV}
 
 AMD Secure Encrypted Virtualization (SEV) is the AMD approach to provide a TEE integrated with virtualization. It's a technology focused primarily on cloud computing environments, specifically in public infrastructure as a Service (IaaS), as its main goal is to reduce trust from higher priviledged parties (VMMs or OS), so that they can not influence the execution on the other "smaller" parties (VMs). 
@@ -129,6 +127,12 @@ Write some comparison conclusions of why SGX and not the others.
 % ====================
 \section{TEE/SGX Enabled Protection Against Untrusted OSes} % (fold)
 \label{sec:folder_structure}
+
+A lot of applications these days depend on sensitive data to operate and so protecting these data is very much taken into account while designing the application. 
+
+One of the things we have to think about is the size of the TCB, and how to reduce it as much as possible without losing much of the operability of the system. Typically, the host OS is considered safe, trustworthy, although that is not always the case. A compromised OS can give complete access to this sensitive data in an application, regardless of how well designed it is, and that's why this is a major security problem to tackle in today's systems. 
+
+In the following section will be discussed how to achieve security for this particular problem, how to remove the OS from our TCB without losing functionability of the system, preferably without any major drawbacks in the system's performance.
 
 \subsection{Virtual Ghost}
 
