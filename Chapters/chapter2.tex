@@ -11,8 +11,13 @@
 % ================
 % = Introduction =
 % ================
+Encryption of data stored in a computer is now more important than ever. Today we live in a world where almost every program we want to run or any application we want to use goes through a large number of different machines, therefore splitting our data through all. 
 
-We’ll look into more detail about existing technologies that approach this objective of granting security of data processing as well as storage (something like this), and how they work or can work together in a way to grant the idea of confidentiality and integrity of data.
+That is why it's needed to make sure all this information is unaccessible to potencial threats through encryption, regardless of which machine has the data. 
+
+Although encrypting the stored data is a step forward towards the security of data, this is not enough. When one machine runs a program, the data needs to be decrypted and stored into RAM to be currectly executed, thus creating a potencial vulnerability. There is where Trusted Computing Environments come in.
+
+We’ll look into more detail about existing technologies that approach this objective, and how they work or can work together as a way to grant confidentiality and integrity of data to the user.
 
 (…)
 
@@ -20,8 +25,8 @@ In the summary, it’s expected to have a good notion of what has been developed
 
 \section{Trusted  Computing Environments} % (fold)
 \label{sec:introduction}
-
-Trusted Computing Environment is a concept that came to grant integrity and confidentiality to systems by forcing a certain machine to behave an expected way, and deny any unwanted access to the data while decrypted. This way, even if the system does not run in a trusted machine, it can be expected that it will execute as it should. 
+We're currently in a period where we start to depend more and more on allowing other services to do our work for us. Technologies like cloud computing require users to trust these systems. Therefore it's needed something to grant some respectable level of security, as well as being able to grant trust to the user. That's were Trusted Computing Environments (TCE) come in handy.
+A TCE is a concept that came to grant integrity and confidentiality to systems by forcing a certain machine to behave an expected way, and deny any unwanted access to the data while decrypted. This way, even if the system does not run in a trusted machine, it can be expected that it will execute as it should. 
 
 TCEs also protect the system against components that should always be trusted, like the host OS or even system admins, due to the priviledges they've got. This prevention avoids this components to abuse these priviledges, and thus always guarantee the normal execution of the system. 
 
@@ -65,7 +70,7 @@ In the next chapters we will be looking into more dept about this hardware prote
 
 \subsection{Intel SGX}
 
-Intel Security Guard Extensions (SGX) is a set of instructions built in Intel CPUs, that allow programmers to create TEEs, called enclaves, that create an isolated environment where sensitive code can be stored and executed inside, ensuring integrity and confidentiality to it.
+Intel Security Guard Extensions (SGX) are a set of instructions built in Intel CPUs, that allow programmers to create TEEs, called enclaves. Enclaves are isolation containers that create an isolated environment where sensitive code can be stored and executed inside, ensuring integrity and confidentiality to it. By doing so, it reduces the Trust Computing Base, in a way that most of the system software, apart from the enclaves itself, is considered not trusted.
 
 Enclaves are mapped into private regions of memory, where only the CPU as access to, reducing the TCB to only the enclave and the CPU itself. Due to this restrictions, not even the most common system libraries can be accessed inside the enclave, since the OS is not trusted. 
 
@@ -74,26 +79,48 @@ A system that encorporates the SGX under it's architecture is divided in two com
 Altough isolation is the main objective of Intel SGX, it still allows a way for both  untrusted and trusted parties to communicate. This is made possible by the functions ECALL and OCALL. ECALLs are used for an untrusted component to call for trusted code in a secured way - the enclave copies the pointers to that specific code into a buffer, who is then made visible for the untrusted component, ensuring that the untrusted party can't know the real memory address inside the enclave. To communicate the other way arround the enclave calls for an OCALL, where the enclave is temporarily exited, executing then the unstrusted function needed. After that, the enclave is re-entered. This is mainly used by the enclave to access the network or to deal with I/O disk access.
 
 
-\subsection{RISK enabled Sanctum}
+\subsection{RISC-V enabled Sanctum}
+
+Just like Intel SGX, the main objective of Sanctum is to offer strong isolation of software modules, altough following a different approach focused in avoiding unnecessary complexity, thus granting a simple security analysis.
+To make this possible, Sanctum, which tipically runs in a RISC-V processor, combines minimal and minimally invasive hardware modifications with a trusted software security monitor that is receptive to analysis and does not perform cryptographic operations using keys. 
+
+This minimality idea consists on reusing and slightly modifying existing well-understood mechanisms, while not modifiying CPU building blocks, only adding hardware to the interfaces between blocks, causing Sanctum to be adaptable to other processors in addition to RISC-V \cite{sanctumPaper}. 
+
+Sanctum is a pratical approach that shows that a strong software isolation is achievable with a small set of minimally invasive hardware changes, causing reasonably low overhead. 
+This approach provides strong security guarantees dealing with side-channel attacks, such as cache timing and passive address translation attacks.
+
 \subsection{ARM Trust Zone}
+
+ARM TrustZone are hardware security extentions offered by ARM application processors with the same finality as Intel SGX, create insolated environments where software execute in a trustable way. 
+
+To accomplish this, ARM processors implement two virtual processors backed by hardware access control, where the software stack can switch between two states called secure world (SW) and normal world (NW). 
+The first one has with higher priviledges than the second one, therefore it can access NWs copies of registers, but not the other way around. SW is also responsible of protecting running processes in the CPU, while providing secured access to peripherals. 
+Each world acts like a runtime environment and has it's own set of resources. This resources can be partioned between the two worlds or just assigned to one of them, depending on the ARM chip.
+
+For the context switch between worlds, ARM processors implement a secured mode called Secure Monitor, where there's a special register responsable of determine if the processor runs code in SW or NW. 
+
+Most ARM processors also offer memory curtaining. This consists on the Secure Monitor allocating physical addresses of memory specifically to the SW, making this region of memory unaccessible to the rest of the system.
+
+By default, the system boots always in SW so it can provision the runtime environment before any untrusted code start to run. It eventually transitions to NW where untrusted code can start to be executed. \cite{armTZPaper}
+
+
+
+
 \subsection{AMD SEV}
+
+AMD Secure Encrypted Virtualization (SEV) is the AMD approach to provide a TEE integrated with virtualization. It's a technology focused primarily on cloud computing environments, specifically in public infrastructure as a Service (IaaS), as its main goal is to reduce trust from higher priviledged parties (VMMs or OS), so that they can not influence the execution on the other "smaller" parties (VMs). 
+
+To achieve this, AMD grants encryption of memory through a technology called Secure Memory Encryption (SEM), or through TransparentSEM (TSEM) if the system runs a legacy OS or hypervisor with no need for any software modifications.
+After the data is encrypted, SEV integrates it with AMD virtualization architecture to support encrypted VMs. By doing this, every VM is now protected from his own hypervisor (VMM), unabling its access to the decrypted data. Although uncapable of accessing the VM, the VMM is still responsible of controlling each VM resources. \cite{amdPaper}
+
+Thus, AMD provides confidentiality of data by removing trust from the VMM, and creates an isolated environment for the VM to run, where only the VM and the processor can be trusted. However it does not provide integrity of data, allowing replaying attacks to take place, and has a considerably large TCB, since the OS of each VM is trusted. \cite{amdSEVPaper}
+
+
 \subsection{Discussion}
 
+Write some comparison conclusions of why SGX and not the others.
 
-{\LARGE \textbf{~\\These instructions are outdated! Please see also the “template.tex” file!\\}}
 
-This chapter describes how to use the \LaTeX\ \novathesis\ template (and the “\novathesisclass” class file).
-
-Let's start with some simple suggestions:
-
-\begin{enumerate}
-  \item No! You don't have to use this template to write your thesis.  You don't even have to use \LaTeX.  However, writing a thesis is serious stuff, and which tool you shall use to write it is not a decision to make lighthearted.
-  \item \LaTeX\ is hard enough by itself.  This template aims at making your life easier, but not easy. If you choose to use this template to write your thesis, you are very welcome.  However, don't expect me to provide you help with \LaTeX.  Look for help with your friends (you have some friends, don't you?), or search the web, or try even to read some book(s) on \LaTeX. In the end you will certainly find the experience rewarding.
-  \item So, don't forget, when you come to the point of “\emph{How do I do this with \LaTeX?}” look for help!  Google is your best friend. 
-  \item If you believe the difficulty is related with the \novathesis\ template itself (and not with \LaTeX), please \textbf{do not} send me an email asking for help.  Please look for help in the \novathesis\ Google Group (URL) and the \novathesis\ Facebook group (URL).  If you can't find help there from previous posts/messages, then post your own question. Hopefully someone will answer you.
-\end{enumerate}
-
-Now, let's go to a major issue for Windows users.  Characters have to be encoded in files as numbers, and that is how character encodings were born. ASCII and EBCDIC standards are long lost in the past.  The world now uses UTF-8.  Well, not all the world… Windows is still stick in its \emph{codepages}, and “latin1” is what windows uses as the codepage for Western Europe. This messes up with the template. Please be sure you use an editor with UTF-8 support.  \emph{Go to the preferences/options/… of your text editor and set up its default file encoding as UTF-8.}
 
 % section introduction (end)
 
@@ -104,6 +131,9 @@ Now, let's go to a major issue for Windows users.  Characters have to be encoded
 \label{sec:folder_structure}
 
 \subsection{Virtual Ghost}
+
+
+
 \subsection{Flicker}
 \subsection{MUSHI}
 \subsection{SeCage}
