@@ -136,11 +136,56 @@ In the following section will be discussed how to achieve security for this part
 
 \subsection{Virtual Ghost}
 
+Virtual Ghost was presented in 2014 \cite{virtGhostPaper} as an approach to provide application security against untrusted OSes without requiring higher privileges. 
+
+To do so, it introduces the idea of ghost memory which is unaccessible to the OS to read or write, and provides the system with trusted services such as ghost memory management, key management, as well as encryption and signing services. 
+
+Virtual Ghost therefore suggests a different design approach.
+It uses compiler intrumentation to protect the system from external exploits of the OS, by sandboxing and using control-flow integrity and interposes a thin abstraction layer between the kernel and the hardware. Although this layer is similar to a hypervisor, it appears as a library of functions that the kernel code can call directly to interact with the hardware, thus avoiding the need of giving higher privileges than the OS itself. 
+
+By using ghost memory and, as said before, preventing the OS from reading and writing ghost memory pages rather than allowing to access this regions of memory, Virtual Ghost makes the system safe from a direct threat from the OS.
+
+Overhead for non-secure data is also prevented since, with that type of data, system calls made by the application don't need encryption or hashing.
+
+Virtual Ghost gives the application flexibility on choosing the encryption and hashing algorithm, so that the system can obtain the desired tradeoff between performance and security.
+
+It is an approach that offers protection from kernel malware, while ensuring comparable performance to TEEs, while adding a layer of protection against external attacks on the kernel itself.
+
 
 
 \subsection{Flicker}
+
+Flicker \cite{flickerPaper} is an infrastructure that provides secured isolated execution of sensitive code while trusting a small TCB, which significantly improves the security and reliability of the code Flicker executes. Although Flicker does not achieve the same level of protection from physical tampering as secure coprocessors do, it provides the same strong guarantees by using modern commodity hardware.
+
+This isolation idea is guaranteed by trusting as few as 250 additional lines of code and, as a result, Flicker circumvents legacy software and eliminates reliance on their correctness, therefore reducing the TCB. Once the TCB has been precisely defined, it's possible for the system to achieve reliability and security.  
+
+When Flicker starts, none of the software already executing can monitor or interfere with it's execution. Also, all traces of it's execution can be eliminated before non-Flicker execution resumes.
+
+It also provides fine-grained attestation of the code executed to an external party, where the party using Flicker does not leak any information about the state of the system software. 
+
+To achieve these properties, Flicker needs hardware that support late launch and attestation, such as AMD and Intel commodity processors, and it's still capable of guarantee them even if the BIOS and OS have become malicious to the system.
+
 \subsection{MUSHI}
+
+MUSHI, or MUltiple level Security cloud with strong Hardware level Isolation, is a framework that provides hardware level isolation and protection to individual guest VMs executing in a cloud infrastructure. It guarantees confidentiality and integrity of a VM even during malicious attacks from both inside and outside the cloud environment.
+
+MUSHI is mainly designed to deal with multi-level security (MLS) \cite{mlsMIT} systems, therefore MUSHI's main goal is to provide a trusted isolated environment for VM execution. To achieve this, VMs should be instantiated securely and should remain that way throughout their life cycle. With that in mind, MUSHI guarantees the following properties
+
+\begin{itemize}
+	\item Trusted Execution - upon starting a VM, the integrity of both kernel and user image, as well as MUSHI itself, should be attested to the user, thus defining a trusted initial state
+
+	\item Isolation - VMs running on the same machine should be isolated. As a result, both confidentiality and integrity will be provided to the user VM during execution. However it does not prevent side channel attacks
+	
+	\item User Image Confidentiality - MUSHI provides user image encryption with a key provided by the user itself
+\end{itemize}
+
+MUSHI depends on a very small TCB, including only the hardware, hardware virtualization, BIOS and System Management Mode. It can be implemented using modern commodity hardware containing SMM memory (SMRAM), necessary for the isolation between the host and VM. For remote attestation of VM images, it's done used a TPM. \cite{mushiPaper}
+
+
 \subsection{SeCage}
+
+
+
 \subsection{InkTag}
 \subsection{Sego}
 \subsection{Other approaches}
