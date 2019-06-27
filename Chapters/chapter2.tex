@@ -177,6 +177,7 @@ MUSHI is mainly designed to deal with multi-level security (MLS) \cite{mlsMIT} s
 	\item Isolation - VMs running on the same machine should be isolated. As a result, both confidentiality and integrity will be provided to the user VM during execution. However it does not prevent side channel attacks
 	
 	\item User Image Confidentiality - MUSHI provides user image encryption with a key provided by the user itself
+	
 \end{itemize}
 
 MUSHI depends on a very small TCB, including only the hardware, hardware virtualization, BIOS and System Management Mode. It can be implemented using modern commodity hardware containing SMM memory (SMRAM), necessary for the isolation between the host and VM. For remote attestation of VM images, it's done used a TPM. \cite{mushiPaper}
@@ -184,9 +185,26 @@ MUSHI depends on a very small TCB, including only the hardware, hardware virtual
 
 \subsection{SeCage}
 
+SeCage \cite{SeCagePaper} is an approach that aims to protect user-defined secrets from application potential threats and malicious OS through hardware virtualization, thus isolating sensitive code and critical secrets while denying hypervisor intervention during runtime.
+It's designed to deal with a strong adversary model, assuming that both application and OS can be compromised, while suporting large-scale software, which usually means a big attack surface.
+
+SeCage devides the system in compartments, where secret compartments have all the functions with permissions to access and manipulate those secrets, and a main compartment is resposible to handle the rest of the code.
+
+The main goals of SeCage are to assure confidentiality of user secrets (e.g., cryptographic keys) and to be a pratical approach with small overheads for large software systems. To achieve this, it ensures
+
+\begin{itemize}
+	\item Hybrid analysis of secrets - provides a mechanism that prevents secrets from being disclosed during runtime, while not affecting their normal usage. For it, SeCage combines static and dynamic analysis. The first one is used to discover potencial functions related to the secrets, while the second one complements the first one, being more precise than the first one. With this, SeCage defines secret compartments, containing a set of secrets and their most common functions. This ensures that only the functions inside a compartment can access that set of secrets.  
+	\item Hypervisor protection - isolate each compartment in a completely isolated address space through hardware virtualization, making them unaccessible to the Hypervisor. Only if a function outside a compartment tries to access a secret without permission, it's the Hypervisor job to handle that violation.
+	\item Separating control and data plane - since each compartment needs to communicate with each other, there will eventually be contact with the hypervisor. Therefore, instead of frequent VM exits which cause high overheads, SeCage minimazes hypervisor intervention by only require it to define policies on whether two compartments can communicate (control plane) for as long as they conform to those policies (data plane)
+	
+\end{itemize}
+
+SeCage was shown useful protecting large-scale system software from HeartBleed attacks, kernel memory disclosure and rootkit memory scanning, without adding any significant performance overhead to the application.
 
 
 \subsection{InkTag}
+
+
 \subsection{Sego}
 \subsection{Other approaches}
 \subsection{Discussion}
