@@ -19,9 +19,9 @@ Although encrypting the stored data is a step forward towards the security of da
 
 We’ll look into more detail about existing technologies that approach this objective, and how they work or can work together as a way to grant confidentiality and integrity of data to the user.
 
-(…)
+(…) //TODO
 
-In the summary, it’s expected to have a good notion of what has been developed in those areas to tackle this security concerns, as well as which of this thesis main points have already been addressed by previous work.
+In the summary, it’s expected to have a good notion of what has been developed in those areas to tackle this security concerns, as well as which of this thesis main points have already been addressed by previous work. (????)
 
 \section{Trusted  Computing Environments} % (fold)
 \label{sec:introduction}
@@ -118,6 +118,7 @@ Thus, AMD provides confidentiality of data by removing trust from the VMM, and c
 
 Write some comparison conclusions of why SGX and not the others.
 
+//TODO
 
 
 % section introduction (end)
@@ -245,95 +246,29 @@ Sego does not guarantee OS availability. A compromised OS can simply shut down o
 
 
 \subsection{Other approaches}
+
+There are also other approaches that tackle the same problem of trusting the OS, making it impossible for the execution of an  application to be compromised by a malicious OS, such as 
+
+\begin{itemize}
+	\item Hardware-assisted Data-Flow Isolation (HDFI) \cite{hdmiPaper} - data isolation mechanism running on top of RISC-V that uses machine instructions and hardware to enforce isolation, by virtually extending each memory unit with an additional tag that is defined by data-flow. It grants stack protection, standard library enhancement, kernel data protection, virtual function table protection, code pointer protection and information leak prevention. It's easy to use and imposes low performance overhead, while improving security.
+	
+	\item Secure Channel between Rich Execution Environment and Trusted Execution Environment (SeCReT) \cite{secretPaper} - it is a framework that is focused in securing the communications between the Rich Execution Environments (REE) and the TEE built in ARM TrustZone, to add to the idea of isolation from the OS. It enables legitimate processes to use a session key in the REE, which is regarded as unsafe. To protect the key, SeCReT verifies the code's integrity and control-flow of the process every time a switch between user mode and kernel mode takes place. SeCReT's key-protection mechanism is only activated during the runtime of the process that has permission to access TrustZone, so it minimizes the performance overhead.
+	
+
+
+
+
 \subsection{Discussion}
 
+Another conclusion about the differences of the approaches. 
+ 
+//TODO
 
 
 
 
 
 
-
-
-
-
-
-The \novathesis\ template is organized into files and folders. At the main level it includes the following files and folders:
-
-\noindent
-\begin{tabularx}{\linewidth}{>{\ttfamily}l>{\itshape}l>{\upshape}X}
-novathesis.cls     & file    & 
-The main class file. It will include additional files from \texttt{novathesis-files} folder. 
-\\ 
-template.tex      & file    & 
-The main user file. Use this file as the main file for your thesis. 
-\\
-bibliography.bib  & file    & 
-An example of a bibliography file. You may have has many as you want. \\
-template.pdf      & file    & 
-A possible result of applying pdf\LaTeX\ to the \texttt{template.tex} file. The template supports multiple types of documents (e.g., MSc dissertation, PhD thesis, …) and multiple Schools (e.g., FCT-NOVA, FCSH-NOVA, IST-UL, FC-UL, …) and each will produce different results.
-\\
-Chapters          & folder  & Examples of thesis chapters. Replace them with your own chapters. 
-\\
-Examples          & folder  & Some more examples of the use of the template for different document types and Schools. 
-\\
-Scripts           & folder  & Some (possibly useful) scripts for Unix-based systems (Linux, Mac OSx). If you are a windows user, ignore this folder (you may safely delete it if you want). 
-\\
-novathesis-files   & folder  & 
-Additional files for the \novathesisclass\ file.  Unless you know what you are doing, avoid messing up with the files and folders inside this folder (except for deleting the unused Schools, see below). 
-\\
-\end{tabularx}
-
-The \texttt{novathesis-files} folder contains additional files and folders that complement the main \novathesisclass\ file.  These are:
-
-\noindent
-\begin{tabularx}{\linewidth}{>{\ttfamily}l>{\itshape}l>{\upshape}X}
-README.txt      & file    &
-A file that should be read!  :) 
-\\
-fix-babel.clo   & file    &
-Simple fixes to the \texttt{babel} package.
-\\
-lang-text.clo   & file    &
-Translations of important strings used in the template.  Currently fully supported are Portuguese and English, but French is on the way.  If you add translations for your own language, please be so kind and send them to me. Thank you!
-\\
-options.clo     & file    &
-Processing of \novathesisclass\ options.  \emph{Don't mess with this!}
-\\
-packages.clo    & file    &
-Additional packages to be loaded into the \novathesis\ template. \emph{You should not mess with this!}
-\\
-spine.clo       & file    &
-This file is loaded only if the option \texttt{spine=true}, and includes the typesetting of the book spine.
-\\
-ChapStyles      & folder  &
-Contains a lot of files, one for each chapter style.  If you really know what you are doing, you may add your own chapter style here.
-\\
-FontStyles      & folder  &
-Contains a few files, one for each set of fonts (main text font, chapter font, section font, subsection font, etc).  If you really know what you are doing, you may add your own set here.
-\\
-Schools         & folder  &
-Configuration files for each school.  This folder is organized into subfolders, one for each university.  \emph{You may safely delete all the subfolders except the one for your University.}  Then open the subfolder of your University and \emph{you may safely delete all the subfolders except the one for your School/Faculty}.
-\\
-\end{tabularx}
-
-As stated above, the \texttt{Schools} folder contains per-university folders and per-school (faculty) subfolders.  Currently these are the available folders:
-
-\noindent
-\begin{tabularx}{\linewidth}{>{\ttfamily}r@{~/~}>{\ttfamily}l>{\itshape}l>{\upshape}X}
-ul     & ist    & folder  & 
-The folder for the \href{http://www.tecnico.ulisboa.pt}{\emph{Instituto Superior Técnico}} of the \emph{University of Lisbon}.
-\\
-nova    & fcsh   & folder  & 
-The folder for the \href{http:www.fcsh.unl.pt}{\emph{Faculty of Human and Social Sciences}}  of the \emph{NOVA University of Lisbon}.
-\\
-nova    & fct    & folder  & 
-The folder for the \href{http:www.fct.unl.pt}{\emph{Faculty of Sciences and Technology}} of the \emph{NOVA University of Lisbon}.
-\\
-nova    & novaims    & folder  & 
-The folder for the \href{http:www.novaims.unl.pt}{\emph{Information and Management School}} of the \emph{NOVA University of Lisbon}.
-\\
-\end{tabularx}
 
 % section folder_structure (end)
 
