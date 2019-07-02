@@ -224,13 +224,24 @@ Sego \cite{segoPaper} is a hypervisor-based system that gives strong privacy and
 To protect the application from the untrusted OS, Sego relies on a trusted hypervisor and assumes that hardware always executes hypervisor code correctly.
 It uses paraverification, where the guest OS communicates its actions and intent to the hypervisor, therefore making this verification of the untrusted OS behavior more efficient and easy.
 
+\begin{figure}[htbp]
+	\centering
+	{\includegraphics[width=0.5\linewidth]{sego_architecture}}%
+	\caption{Sego Architecture Overview}
+\end{figure}
+
+
 Sego executes trusted code in a HAP. After booting the OS, the hypervisor starts the HAP in a way that the HAP itself can verify its own initial code and data, similar to a TPM. Once running, the hypervisor ensures that HAP's registers and trusted address space are isolated from the OS. 
 Everytime the HAP wants to perform a system call, it must inform the hypervisor of its intent, so that the hypervisor can verify OS activity. HAPs use a small library called libsego as a way to handle system calls and get Sego services without having to change their code. 
 Each HAP also contains an untrusted trampoline code, that uses to interact with the OS. This is used as a way to protect HAP control-flow, since it uses this trampoline as the issuer for the system calls, therefore never compromising the HAP itself.
 
+
+
 Context switches are handled by the hypervisor, hiding any information about the HAP from the OS.
 
-Sego does not guarantee OS availability. A compromised OS can simply shut down or refuse to schedule processes. However this is easily detected.	
+Sego does not guarantee OS availability. A compromised OS can simply shut down or refuse to schedule processes. However this is easily detected.
+
+
 
 
 \subsection{Other approaches}
