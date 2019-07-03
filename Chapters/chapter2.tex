@@ -277,7 +277,66 @@ Another conclusion about the differences of the approaches.
 % ===================
 \section{SGX-Frameworks and Application Support} % (fold)
 \label{sec:package_options}
+
+// TODO 
+
+Cloud providers provision thousands of computers into data
+centers and make them available on demand. Users rent this
+computing capacity to run large-scale distributed computations
+based on frameworks
+
+This is a
+cost-effective and flexible arrangement, but it requires users to
+trust the cloud provider with their code and data: while data
+at rest can easily be protected using bulk encryption [35],
+at some point, cloud computers typically need access to
+the users’ code and data in plaintext in order to process
+them effectively.
+
+effectively. Of special concern is the fact that a single
+malicious insider with administrator privileges in the cloud
+provider’s organization may leak or manipulate sensitive user
+data.
+
+In theory, multiparty computation techniques may address
+these demands. For instance, data confidentiality can be
+achieved using fully homomorphic encryption (FHE), which
+enables cloud processing to be carried out on encrypted data.
+
+However, FHE is not efficient for most com-
+putations
+
+The computation can also be shared
+
+between independent parties while guaranteeing confidential-
+ity for individual inputs and providing protection against corrupted parties
+
+In some cases, one of the parties may have
+access to the data in the clear, while the others only have
+to verify the result, using zero-knowledge proofs
+
+Still, our goals
+cannot currently be achieved for distributed general-purpose
+computations using these techniques without losing performance
+------------------------------------------------------------------
 \subsection{VC3 protection for MapReduce Jobs}
+
+Verifiable Confidential Cloud Computing (VC3) \cite{vc3Paper} is a framework that achieves confidentiality and integrity of data, as well as verifiability of execution of code with good performance through MapReduce \cite{mapReduce} techniques. It uses Intel SGX processors as a building block and runs on unmodified Hadoop \cite{hadoop}.
+In VC3 users implement MapReduce jobs, compile and encrypt them, thus obtaining a private enclave code E-. They then join it with a small portion of public code E+, that implements the protocols for key exchange and job execution.
+Users then upload the resulting binary code to the cloud, where enclaves containing both E- and E+ are initialized by an untrusted framework F. 
+
+\begin{figure}[htbp]
+	\centering
+	{\includegraphics[width=0.6\linewidth]{vc3_design}}%
+	\caption{VC3 memory design model on the left, component dependencies on the right}
+\end{figure}
+
+A MapReduce begins with a key exchange between the user and the E+ code running in the enclave. After this, E+ can proceed to decrypt E- and process the encrypted data. VC3 isolates this processing from the OS by keeping an interface between the E+ layer and the outside of the enclave. This interface consists of basically two functions: readKV() and writeKV(), for reading a key-value pair on Hadoop or write it, respectively. Also, the data inside of the enclave is passed to the outside, more specifically from E+ to the untrusted F, by using a virtual address space shared by both.
+With VC3, both E- and the user data are always encrypted while in the cloud, except when processed by the trusted processor, while allowing Hadoop to manage the execution of VC3 jobs. Map and reduce nodes are seen as regular worker node to Hadoop, therefore Hadoop can provide its normal scheduling and fault-tolerance mechanisms, as well as load balancing. VC3 accomplishes this keeping Hadoop, the OS and the hypervisor out of the TCB.
+
+
+
+
 \subsection{Protected Zookeeper}
 \subsection{Ryoan Sandboxing}
 \subsection{Opaque}
