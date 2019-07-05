@@ -254,7 +254,7 @@ There are also other approaches that tackle the same problem of trusting the OS,
 	
 	\item Secure Channel between Rich Execution Environment and Trusted Execution Environment (SeCReT) \cite{secretPaper} - it is a framework that is focused in securing the communications between the Rich Execution Environments (REE) and the TEE built in ARM TrustZone, to add to the idea of isolation from the OS. It enables legitimate processes to use a session key in the REE, which is regarded as unsafe. To protect the key, SeCReT verifies the code's integrity and control-flow of the process every time a switch between user mode and kernel mode takes place. SeCReT's key-protection mechanism is only activated during the runtime of the process that has permission to access TrustZone, so it minimizes the performance overhead.
 	
-
+\end{itemize}
 
 
 
@@ -370,120 +370,21 @@ This approach allows applications in the cloud to use ZooKeeper without privacy 
 
 \subsection{Ryoan Sandboxing}
 
-Ryoan consists on a distributed sandbox that allows users to protect the execution of their data. This is achieved with the help of Intel SGX enclaves, creating sandbox instances that protect data from untrusted software, preventing leaks of data. 
+Ryoan \cite{ryoanPaper} consists on a distributed sandbox that allows users to protect the execution of their data. This is achieved with the help of Intel SGX \cite{intelSGX} \cite{sgxPaper} enclaves, creating sandbox instances that protect data from untrusted software while also preventing leaks of data, which is a weakness of enclaves caused by side channel attacks.
+Ryoan does not include any priviledged software (e.g. OS and hypervisor) in it's TCB, while trusting only the hardware (SGX enclave) to assure secrecy and integrity of the data.
+
+It's main goal is to prevent leakage of secret data. This is done by preventing modules from sending sensitive data over their communications if outside the system boundaries, as well as eliminating stores to unprotected memory and system calls, made possible by the use of a trusted sandbox Native Client (NaCl). 
+
+\begin{figure}[htbp]
+	\centering
+	{\includegraphics[width=0.6\linewidth]{ryoan_design}}%
+	\caption{Instance of Ryoan running on a single machine}
+\end{figure}
+
+Ryoan's approach consists on confining the untrusted application in a NaCl, responsable of controlling system calls, I/O channels and data sizes. This NaCl sandbox is implemented inside the enclave, and can communicate with other instances of the NaCl, forming a distributed sandbox between users and different service providers. Inside the sandbox, the untrusted application can execute safely on secret data. The NaCl sandbox uses a load time code to ensure that the module can not do anything it shouldn't, thus violating the sandbox. To handle faults, exceptions or errors inside the NaCl sandbox, Ryoan uses an unprotected trampoline code, that can enter the enclave and read the information about the fault so it can handle it.
 
 
 
-A key enabling technology for Ryoan is hardware
-enclave-protected execution (e.g., Intel’s software guard
-extensions (SGX) [15]), a new hardware primitive that
-uses trusted hardware to protect a user-level computation
-from potentially malicious privileged software. The pro-
-cessor hardware keeps unencrypted data on chip, but en-
-crypts data when it moves into RAM. The hypervisor and
-operating system retain their ability to manage memory
-(e.g., move memory pages onto secondary storage), but
-privileged software sees only an encrypted version of the
-data that is protected from tampering by a cryptographic
-hash.
-
-Enclaves
-are intended to protect an application that is trusted by
-the user, which does not collude with the infrastructure,
-though it may unintentionally leak data via side chan-
-nels. In Ryoan’s model, neither the application nor the
-infrastructure is under the control of the user, and they
-may try to steal the user’s secrets by colluding via covert
-channels—even if the application itself is isolated from
-the provider’s infrastructure using enclave protection.
-Ryoan’s goal is to prevent such covert channels and stop
-an untrusted application from intentionally and covertly
-using users’ data to modulate events like system call ar-
-guments or I/O traffic statistics, which are visible to the
-infrastructure.
-
-An untrusted application in Ryoan is confined by a
-trusted sandbox. For the Ryoan prototype we chose Na-
-tive Client (NaCl), a sandbox, as our basis. 
-NaCl uses compiler-
-based techniques to confine untrusted code rather then
-relying on address space separation, a property necessary
-to be compatible with SGX enclaves. The Ryoan sandbox
-safeguards secrets by controlling explicit I/O channels,
-as well as covert channels such as system call traces and
-data sizes.
-
-The Ryoan prototype uses SGX to provide hardware
-enclaves. 
-Each SGX enclave contains a NaCl sandbox
-instance that loads and executes untrusted modules.
-modules. The
-NaCl instances communicate with each other to form a
-distributed sandbox that enforces strong privacy guaran-
-tees for all participating parties—the users and different
-service providers.
-
-Ryoan’s security goal is simple: prevent leakage of
-secret data. However, confining services over which the
-user has no control is challenging without a centralized
-trusted platform. We make the following contributions:
-1- A new execution model that allows mutually dis-
-trustful parties to process sensitive data in a distributed
-fashion on untrusted infrastructure.
-2- The design and implementation of a prototype dis-
-tributed sandbox that confines untrusted code modules
-(possibly on different machines) and enforces I/O policies
-that prevent leakage of secrets.
-3- Several case studies of real-world application sce-
-narios to demonstrate how they benefit from the secrecy
-guarantees of Ryoan, including an image processing sys-
-tem, an email spam/virus filter, a personal health analysis
-tool, and a machine translator.
-
-DESIGN OVERVIEW: 
-Ryoan is a distributed sandbox that executes a directed
-acyclic graph (DAG) of communicating untrusted mod-
-ules which operate on sensitive data. Ryoan’s primary
-job is to prevent the modules from communicating any
-of the sensitive data outside the confines of the system
-(including external hosts and the platform’s privileged
-software).
-
-Ryoan prevents modules from leaking sensitive data
-by decoupling externally visible behaviors from the con-
-tent of secret data. SGX hardware limits externally visible
-behaviors to explicit stores to unprotected memory and use of system services (syscalls).
-
-Unprotected stores are
-eliminated by the NaCl tool chain and run time. Ryoan
-mostly eliminates system calls by providing their func-
-tionality from within NaCl.
-
-Figure 1 shows a single instance of the Ryoan dis-
-tributed sandbox. A principal (e.g., a company providing
-software as a service) can contribute a module which
-Ryoan loads and confines, enabling the module to safely
-operate on secret data. A module consists of code, initial-
-ized data, and the maximum size of dynamically allocated
-memory. The NaCl sandbox uses a load time code valida-
-tor to ensure that the module cannot violate the sandbox
-by reaching outside of its address range or making syscalls
-without Ryoan intervention.
-Ryoan does not trust other software on the computa-
-tional platform, including privileged software, i.e., operat-
-ing system and hypervisor. Instead, Ryoan assures its own
-secrecy and integrity by executing in a hardware-protected
-enclave. Hardware attests to Ryoan’s initial state becom-
-ing the anchor for Ryoan’s chain of trust (Figure 2). SGX
-generates an unforgeable remote attestation for the user
-that an Ryoan instance is executing in an enclave on the
-platform.
-
-CONCLUSION
-Ryoan allows users to safely process their secret data
-with software they do not trust, executing on a platform
-they do not control, thereby benefiting users, data process-
-ing services, and computational platforms.
 \subsection{Opaque}
 \subsection{Graphene-SGX}
 \subsection{Network services protection approaches}
