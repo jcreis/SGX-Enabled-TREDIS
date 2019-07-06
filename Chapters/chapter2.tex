@@ -318,7 +318,9 @@ to verify the result, using zero-knowledge proofs
 Still, our goals
 cannot currently be achieved for distributed general-purpose
 computations using these techniques without losing performance
+
 ------------------------------------------------------------------
+
 Cloud computing is a recent trend in computer science.
 However, privacy concerns and a lack of trust in cloud
 providers are an obstacle for many deployments.
@@ -335,6 +337,39 @@ Trusted Codebase. As a consequence, there is a trend for
 partitioning application’s logic in trusted and untrusted
 parts. Only the trusted parts are executed inside the TEE
 handling the privacy-sensitive processing steps.
+
+------------------------------------------------------------------
+
+Many systems run rich analytics on sensitive data in the
+cloud, but are prone to data breaches. Hardware enclaves
+
+promise data confidentiality and secure execution of ar-
+bitrary computation, yet still suffer from access pattern
+
+leakage.
+
+------------------------------------------------------------------
+
+Intel SGX introduces a number of essential hardware fea-
+tures that allow an application to protect itself from the
+
+host OS, hypervisor, BIOS, and other software. With
+
+SGX, part or all of an application can run in an en-
+clave.
+
+attestation. SGX is particularly appeal-
+ing in cloud computing, as users might not fully trust the
+
+cloud provider.
+
+Thus, a significant number of users would benefit from
+running applications on SGX as soon as possible.
+Unfortunately, applications do not “just work” on
+SGX. SGX imposes a number of restrictions on enclave
+
+code that require application changes or a layer of in-
+direction.
 
 \subsection{VC3 protection for MapReduce Jobs}
 
@@ -386,11 +421,133 @@ Ryoan's approach consists on confining the untrusted application in a NaCl, resp
 
 
 \subsection{Opaque}
+
+Opaque \cite{opaquePaper} is a distributed data analytics platform that guarantee encryption, secure computation and integrity to a wide range of queries. Therefore, instead of being implemented in the application layer or the execution layer as this kind of security approaches usually are, Opaque is implemented in the query optimization layer. 
+
+It is implemented with minimal modifications on Spark SQL, and uses Intel SGX technology as a way to grant confidentiality and integrity of the data. 
+However, the use of enclaves can still be threatened by access pattern leakage that can occur at memory-level, when a malicious OS infers information about encrypted data just by monitoring memory page accesses, and at network-level, when network traffic reveals information about encrypted data.
+
+Opaque hides access patterns in the system by using distributed oblivious relational operators and optimizes these by implementing new query planning techniques. It can be executed in three modes
+
+\begin{itemize}
+	\item encryption mode: provides data encryption and authentication, while granting correct execution.
+	\item oblivious mode: provides oblivious execution, protecting against access pattern leakage.
+	\item oblivious pad mode: extends the oblivious mode by adding prevention of size leakage.
+\end{itemize}
+
+Opaque is an approach that is able to grant oblivious execution 3 times faster than other specialized oblivious protocols.
+
+
+
 \subsection{Graphene-SGX}
+
+The usage of Intel SGX, and similar technologies, have proven to add a great sense of privacy to the storage and execution of data in applications. However this tecnologies impose restrictions (e.g., disallowing system calls inside the enclave) that require the applications to be changed so they can benefit from this extra layer of security. 
+
+Graphene-SGX \cite{graphenePaper} came to help circunvent those restrictions, while still assure security to the data. It is a library OS that aims to reproduce system calls, respecting security concerns, so that unmodified applications can use them to keep executing normally without interacting directly with the OS or hypervisor. 
+
+By using a library OS, the system is expected to lose performance and, since a new layer of software was added, to increase the size of the TCB. 
+Although these assumptions are true, they are quite often exagerated. Graphene-SGX's performance goes from matching a Linux process to less than 2x in most executions of single-processes.
+Graphene-SGX has also shown some great results comparing it to other similar approaches that use shim layers, such as SCONE \cite{sconePaper} and Panoply \cite{panoplyPaper}, where it shows to be performancewise similar to SCONE and faster 5-10 percent than Panoply, while adding 54k lines of code to the TCB compairing to SCONE's 97k and Panoply 20k.
+
+Graphene's main goal is to run unmodified applications on SGX quickly. Thus, whilst the size of the TCB is not the smallest compairing to the other approaches, developers can reduce the TCB as needed as a way to reach a more optimal solution. 
+
+Graphene-SGX also supports application partitioning, enabling it to run small pieces of one application in multiple enclaves. This can be useful, for instance, to applications with different privilege levels while still increasing the security of the application.
+
 \subsection{Network services protection approaches}
+
+SGX has
+also been applied to securing network functionality [47],
+as well as inter-domain routing in Tor [29].
+
 \subsection{Application-level protection approaches}
+
 \subsection{Discussion}
 
+Haven [15] showed
+that a library OS could run unmodified applications on
+SGX,
+
+thin “shim” layers, like SCONE [14] and Panoply [49] wrap 
+an API layer such as the system call table.
+
+
+Protection against untrusted OSes.
+
+Virtual Ghost [20] uses both compile-time and run-time
+monitoring to protect an application from a potentially-
+compromised OS, but requires recompilation of the
+guest OS and application.
+
+Flicker [40], MUSHI [56],
+SeCage [37], InkTag [21], and Sego [32] protect appli-
+cations from untrusted OS using SMM mode or virtual-
+ization to enforce memory isolation between the OS and
+a trusted application.
+
+Trustlite, isolate software
+on low-cost embedded devices using a Memory Protec-
+tion Unit.
+
+Minibox built a 2-way sandbox for x86
+by separating the Native Client (NaCl) [55] sandbox into
+modules for sandboxing and service runtime to support
+application execution and use Trustvisor [39] to protect
+the piece of application logic from the untrusted OS.
+
+Secret builds a secure channel to authenticate the appli-
+cation in the Untrusted area isolated by the ARM Trust-
+Zone technology.
+
+HDFI extend each memory
+unit with an additional tag to enforce fine-grained isola-
+tion at machine word granularity in the HDFI system.
+
+
+Trusted execution hardware.
+
+TrustZone [51] on ARM creates an isolated
+environment for trusted kernel components. Different
+from SGX, TrustZone separates the hardware between
+the trusted and untrusted worlds, and builds a trusted path
+from the trusted kernel to other on-chip peripherals.
+
+AMD is introducing a feature in future chips called
+
+SEV (Secure Encrypted Virtualization) [27], which ex-
+tends nested paging with encryption. SEV is designed
+
+to run the whole virtual machines, whereas SGX is de-
+signed for a piece of application code. SEV does not
+
+provide comparable integrity protection or the protection
+against replay attacks on SGX. Graphene-SGX provides
+the best of both worlds: unmodified applications with
+confidentiality and integrity protections in hardware.
+
+Sanctum [19] is a RISC-V processor prototype that
+features a minimal and open design for enclaves. Sanc-
+tum also defends against some side channels, such as
+page fault address and cache timing, by virtualizing the
+page table and page fault handler inside each enclave.
+
+
+SGX frameworks and applications.
+
+VC3 [45]
+runs MapReduce jobs in SGX enclaves.
+
+Bren-
+ner et al. [17] run cluster services in ZooKeeper in an
+enclave, and transparently encrypt data in transit be-
+tween enclaves.
+
+Ryoan [22] sandboxes a piece of un-
+trusted code in the enclave to process secret data while
+preventing the loaded code from leaking secret data.
+
+Opaque [57] uses an SGX-protected layer on the Spark
+framework to generate oblivious relational operators that
+hide the access patterns of distributed queries.
 
 The \novathesis\ class can be customized with the options listed below.
 
