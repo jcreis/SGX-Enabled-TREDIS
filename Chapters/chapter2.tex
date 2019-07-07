@@ -11,26 +11,21 @@
 % ================
 % = Introduction =
 % ================
-Encryption of data stored in a computer is now more important than ever. Today we live in a world where almost every program we want to run or any application we want to use goes through a large number of different machines, therefore splitting our data through all. 
+In this chapter we address existing solutions that are able to protect applications from the OS or hypervisor, regardless the machine where they're running on (whether running locally or in cloud), thus increasing the level of trust an user can deposit in an execution of an application.
 
-That is why it's needed to make sure all this information is unaccessible to potencial threats through encryption, regardless of which machine has the data. 
+These existing solutions are organized in different sections in the following way: Section 2.1 covers Trusted Computing Environments; Section 2.2 covers software approaches that enable protection against untrusted OSes by making use of Trusted Execution Environments; Section 2.3 covers Intel-SGX frameworks; 
 
-Although encrypting the stored data is a step forward towards the security of data, this is not enough. When one machine runs a program, the data needs to be decrypted and stored into RAM to be currectly executed, thus creating a potencial vulnerability. There is where Trusted Computing Environments come in.
+Finally, in Section 2.4 we make a critical analysis on the previously discussed techniques, while covering it's main advantages and disadvantages.
 
-We’ll look into more detail about existing technologies that approach this objective, and how they work or can work together as a way to grant confidentiality and integrity of data to the user.
 
-(…) //TODO
-
-In the summary, it’s expected to have a good notion of what has been developed in those areas to tackle this security concerns, as well as which of this thesis main points have already been addressed by previous work. (????)
-
-\section{Trusted  Computing Environments} % (fold)
+\section{Trusted Computing Environments} % (fold)
 \label{sec:introduction}
 We're currently in a period where we start to depend more and more on allowing other services to do our work for us. Technologies like cloud computing require users to trust these systems. Therefore it's needed something to grant some respectable level of security, as well as being able to grant trust to the user. That's were Trusted Computing Environments (TCE) come in handy.
 A TCE is a concept that came to grant integrity and confidentiality to systems by forcing a certain machine to behave an expected way, and deny any unwanted access to the data while decrypted. This way, even if the system does not run in a trusted machine, it can be expected that it will execute as it should. 
 
-TCEs also protect the system against components that should always be trusted, like the host OS or even system admins, due to the priviledges they've got. This prevention avoids this components to abuse these priviledges, and thus always guarantee the normal execution of the system. 
+TCEs protect the system against components that should always be trusted, like the host OS or even system admins, due to the priviledges they've got. Thus preventing this components from abusing these privileges, and always guarantee the normal execution of the system. 
 
-In the following sub-chapters we'll see how to achieve this properties, what components can be used to do it and also how each of them works.
+In the following sections, as said before, we'll see how to achieve this properties, what components can be used to do it and also how each one of them works.
 
 \subsection{TPM – Trusted Platform Modules }
 
@@ -129,11 +124,11 @@ Write some comparison conclusions of why SGX and not the others.
 \section{TEE/SGX Enabled Protection Against Untrusted OSes} % (fold)
 \label{sec:folder_structure}
 
-A lot of applications these days depend on sensitive data to operate and so protecting these data is very much taken into account while designing the application. 
+A lot of applications these days depend on sensitive data to operate and so protecting these data must be taken into account while designing the application. 
 
-One of the things we have to think about is the size of the TCB, and how to reduce it as much as possible without losing much of the operability of the system. Typically, the host OS is considered safe, trustworthy, although that is not always the case. A compromised OS can give complete access to this sensitive data in an application, regardless of how well designed it is, and that's why this is a major security problem to tackle in today's systems. 
+One of the things we have to think about is the size of the TCB, and how to reduce it as much as possible without losing much of the operability of the system. Typically, the host OS is considered safe, trustworthy, although that is not always the case. A compromised OS can give complete access to this sensitive data, regardless of how well designed the application is. That's why this is a major security problem and must be tackled in today's systems. 
 
-In the following section will be discussed how to achieve security for this particular problem, how to remove the OS from our TCB without losing functionability of the system, preferably without any major drawbacks in the system's performance.
+In the following sections will be discussed how to achieve security for this particular problem, how to remove the OS from our TCB without losing functionability of the system, preferably without any major drawbacks in the system's performance. Thus we'll introduce some software techniques that can increase the security of an application against that threat.
 
 \subsection{Virtual Ghost}
 
@@ -234,9 +229,7 @@ It uses paraverification, where the guest OS communicates its actions and intent
 
 Sego executes trusted code in a HAP. After booting the OS, the hypervisor starts the HAP in a way that the HAP itself can verify its own initial code and data, similar to a TPM. Once running, the hypervisor ensures that HAP's registers and trusted address space are isolated from the OS. 
 Everytime the HAP wants to perform a system call, it must inform the hypervisor of its intent, so that the hypervisor can verify OS activity. HAPs use a small library called libsego as a way to handle system calls and get Sego services without having to change their code. 
-Each HAP also contains an untrusted trampoline code, that uses to interact with the OS. This is used as a way to protect HAP control-flow, since it uses this trampoline as the issuer for the system calls, therefore never compromising the HAP itself.
-
-
+Each HAP also contains an untrusted trampoline code, that uses to interact with the OS. This is used as a way to protect HAP control-flow, since it uses this trampoline as the issuer for the system calls, therefore never compromising the HAP itself. Figure 2.1 shows well enough Sego's overall design without going into to much dept, refering which components are included in the TCB and which are not. 
 
 Context switches are handled by the hypervisor, hiding any information about the HAP from the OS.
 
@@ -280,96 +273,12 @@ Another conclusion about the differences of the approaches.
 
 // TODO 
 
-Cloud providers provision thousands of computers into data
-centers and make them available on demand. Users rent this
-computing capacity to run large-scale distributed computations
-based on frameworks
+The need for cloud computing is constantly growing in modern applications. It is a cost-effective and pratical solution to run large distributed applications, however the fact that it requires users to trust the cloud provider with their code and data creates some trust concerns for developers.
+Although the usage of TEEs aim to tackle this problem by running and storing sensitive data on a isolated environment, protecting that data from unauthorized access. To accomplish this, the main approach is to devide the application into trusted and untrusted parts, reducing the TCB as much as possible as a way to reduce security breaches. 
+In the next sections we'll discuss frameworks that can accomplish solutions to the problem described above, by working with Intel-SGX as the TEE provider, as a way to complement its regular execution.
 
-This is a
-cost-effective and flexible arrangement, but it requires users to
-trust the cloud provider with their code and data: while data
-at rest can easily be protected using bulk encryption [35],
-at some point, cloud computers typically need access to
-the users’ code and data in plaintext in order to process
-them effectively.
 
-effectively. Of special concern is the fact that a single
-malicious insider with administrator privileges in the cloud
-provider’s organization may leak or manipulate sensitive user
-data.
 
-In theory, multiparty computation techniques may address
-these demands. For instance, data confidentiality can be
-achieved using fully homomorphic encryption (FHE), which
-enables cloud processing to be carried out on encrypted data.
-
-However, FHE is not efficient for most com-
-putations
-
-The computation can also be shared
-
-between independent parties while guaranteeing confidential-
-ity for individual inputs and providing protection against corrupted parties
-
-In some cases, one of the parties may have
-access to the data in the clear, while the others only have
-to verify the result, using zero-knowledge proofs
-
-Still, our goals
-cannot currently be achieved for distributed general-purpose
-computations using these techniques without losing performance
-
-------------------------------------------------------------------
-
-Cloud computing is a recent trend in computer science.
-However, privacy concerns and a lack of trust in cloud
-providers are an obstacle for many deployments.
-
-Maturing hardware support for implementing Trusted Execu-
-tion Environments (TEEs) aims at mitigating these prob-
-lems. Such technologies allow to run applications in a
-
-trusted environment, thereby protecting data from unau-
-thorized access. To reduce the risk of security vulnerabil-
-ities, code executed inside a TEE should have a minimal
-
-Trusted Codebase. As a consequence, there is a trend for
-partitioning application’s logic in trusted and untrusted
-parts. Only the trusted parts are executed inside the TEE
-handling the privacy-sensitive processing steps.
-
-------------------------------------------------------------------
-
-Many systems run rich analytics on sensitive data in the
-cloud, but are prone to data breaches. Hardware enclaves
-
-promise data confidentiality and secure execution of ar-
-bitrary computation, yet still suffer from access pattern
-
-leakage.
-
-------------------------------------------------------------------
-
-Intel SGX introduces a number of essential hardware fea-
-tures that allow an application to protect itself from the
-
-host OS, hypervisor, BIOS, and other software. With
-
-SGX, part or all of an application can run in an en-
-clave.
-
-attestation. SGX is particularly appeal-
-ing in cloud computing, as users might not fully trust the
-
-cloud provider.
-
-Thus, a significant number of users would benefit from
-running applications on SGX as soon as possible.
-Unfortunately, applications do not “just work” on
-SGX. SGX imposes a number of restrictions on enclave
-
-code that require application changes or a layer of in-
-direction.
 
 \subsection{VC3 protection for MapReduce Jobs}
 
@@ -458,6 +367,17 @@ Graphene-SGX also supports application partitioning, enabling it to run small pi
 SGX has
 also been applied to securing network functionality [47],
 as well as inter-domain routing in Tor [29].
+
+
+Network Function Virtualization (NFV) applications are stateful.
+For example, a Content Distribution Network (CDN) caches web
+contents from remote servers and serves them to clients. Similarly,
+an Intrusion Detection System (IDS) and an Intrusion Prevention
+System (IPS) have both per-flow and multi-flow (shared) states to
+properly react to intrusions. On today’s NFV infrastructures, security vulnerabilities many allow attackers to steal and manipulate the
+internal states of NFV applications that share a physical resource.
+In this paper, we propose a new protection scheme, S-NFV that incorporates Intel Software Guard Extensions (Intel SGX) to securely
+isolate the states of NFV applications.
 
 \subsection{Application-level protection approaches}
 
@@ -551,64 +471,7 @@ hide the access patterns of distributed queries.
 
 The \novathesis\ class can be customized with the options listed below.
 
-\newcommand{\classoption}[3]{\textbf{#1=OPT}\qquad #2\\\qquad\emph{#3}\\}
 
-\noindent
-\begin{ctabular}{@{}p{\linewidth}@{}}
-  \toprule
-  \classoption{docdegree}%
-    {phd(*), phdplan, phdprop, msc, mscplan, bsc}%
-    {The type of the document: PhD Thesis (default), PhD Plan, PhD Proposal, MSc Disseration, MSc Plan, BSc Report}
-    \midrule
-  \classoption{school}%
-		{nova/fct(*), nova/fcsh, nova/ims, ul/ist, ul/fc}%
-    {The name of the school. This option changes the typesetting of the cover and some School specific formating, like margins, fonts, paragraph spacing and indentation, etc…}
-    \midrule
-  \classoption{lang}%
-    {en(*), pt}%
-    {The main language for the document.  Currently only Portuguese and English are supported.  Other languages are expected to be support in forthcoming versions.}
-    \midrule
-  \classoption{fontstyle}%
-    {bookman, charter, fourier, kpfonts(*), mathpazo1, mathpazo2, newcent}%
-    {The font set to be used in the document.  Please note that a font set include definitions for the main text, headings, maths, etc.}
-    \midrule
-  \classoption{chapstyle}%
-    {bianchi, bluebox, brotherton, dash, default, elegant(*), ell, ger, hansen, ist, jenor, lyhne, madsen, pedersen, veelo, vz14, vz34, vz43}%
-    {The chapter style, i.e., the look of the chapter beginning.}
-    \midrule
-  \classoption{converlang}%
-    {en, pt(*)}%
-    {The language to be used when typesetting the cover page.}
-    \midrule
-  \classoption{otherlistsat}%
-    {front(*), back}%
-    {Where to put the other lists besides the table of contents. The default is (\texttt{front}) before the main text.  But some scientific areas prefer them at the end of the document (\texttt{back}), just before the Appendixes.}
-    \midrule
-  \classoption{aftercover}%
-    {true, false(*)}%
-    {Include or don't include the contents of the “\texttt{aftercover}” file. The default is for this file to be ignored (if if it exists).}
-    \midrule
-  \classoption{linkscolor}%
-    {darkblue(*), black}%
-    {The color for all the hyperlinks in the PDF file.  The “\texttt{media=paper}” option (see below) will override this option to “\texttt{black}”}
-    \midrule
-  \classoption{spine}%
-    {true, false(*)}%
-    {Generate the book spine and the last page in the PDF.}
-    \midrule
-  \classoption{biblatex}%
-    {OPT=\{list of options for \texttt{biblatex}\}}%
-    {Customize \texttt{biblatex}, the bibliography management system used in this class. Probably you will want to change the value of the \texttt{biblatex} “\texttt{style}” option. For other customizations of \texttt{biblatex} check its manual.}
-    \midrule
-  \classoption{memoir}%
-    {OPT=\{list of options for \texttt{memoir}\}}%
-    {Customize the base class \texttt{memoir}. The \texttt{memoir} manual should be the first document to be consulted when looking for “\textbf{how can I do this?}” You may wnat to change the base font size from 11pt to a smaller (10pt) or larger (12pt) size.  Also, remember to change the “\texttt{draft}” to final when your document is finished.}
-    \midrule
-  \classoption{media}%
-    {screen(*), paper}%
-    {Behavior to be customized in the school options/configuration. Expected definitions for screen are: left and right margins are equal and use colored links. Expected definitions for paper are: left and right margins are different and use black links.}
-    \bottomrule
-\end{ctabular}
 
 \section{Related work analysis and rational} % (fold)
 \label{sec:additional_considerations}
