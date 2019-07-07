@@ -114,6 +114,31 @@ Thus, AMD provides confidentiality of data by removing trust from the VMM, and c
 Write some comparison conclusions of why SGX and not the others.
 
 //TODO
+Trusted execution hardware.
+
+TrustZone [51] on ARM creates an isolated
+environment for trusted kernel components. Different
+from SGX, TrustZone separates the hardware between
+the trusted and untrusted worlds, and builds a trusted path
+from the trusted kernel to other on-chip peripherals.
+
+AMD is introducing a feature in future chips called
+SEV (Secure Encrypted Virtualization) [27], which ex-
+tends nested paging with encryption. SEV is designed
+to run the whole virtual machines, whereas SGX is de-
+signed for a piece of application code. SEV does not
+provide comparable integrity protection or the protection
+against replay attacks on SGX. Graphene-SGX provides
+the best of both worlds: unmodified applications with
+confidentiality and integrity protections in hardware.
+
+Sanctum [19] is a RISC-V processor prototype that
+features a minimal and open design for enclaves. Sanc-
+tum also defends against some side channels, such as
+page fault address and cache timing, by virtualizing the
+page table and page fault handler inside each enclave.
+
+
 
 
 % section introduction (end)
@@ -247,6 +272,7 @@ There are also other approaches that tackle the same problem of trusting the OS,
 	
 	\item Secure Channel between Rich Execution Environment and Trusted Execution Environment (SeCReT) \cite{secretPaper} - it is a framework that is focused in securing the communications between the Rich Execution Environments (REE) and the TEE built in ARM TrustZone, to add to the idea of isolation from the OS. It enables legitimate processes to use a session key in the REE, which is regarded as unsafe. To protect the key, SeCReT verifies the code's integrity and control-flow of the process every time a switch between user mode and kernel mode takes place. SeCReT's key-protection mechanism is only activated during the runtime of the process that has permission to access TrustZone, so it minimizes the performance overhead.
 	
+	
 \end{itemize}
 
 
@@ -256,6 +282,37 @@ There are also other approaches that tackle the same problem of trusting the OS,
 Another conclusion about the differences of the approaches. 
  
 //TODO
+
+Protection against untrusted OSes.
+
+Virtual Ghost [20] uses both compile-time and run-time
+monitoring to protect an application from a potentially-
+compromised OS, but requires recompilation of the
+guest OS and application.
+
+Flicker [40], MUSHI [56],
+SeCage [37], InkTag [21], and Sego [32] protect appli-
+cations from untrusted OS using SMM mode or virtual-
+ization to enforce memory isolation between the OS and
+a trusted application.
+
+Trustlite, isolate software
+on low-cost embedded devices using a Memory Protec-
+tion Unit.
+
+Minibox built a 2-way sandbox for x86
+by separating the Native Client (NaCl) [55] sandbox into
+modules for sandboxing and service runtime to support
+application execution and use Trustvisor [39] to protect
+the piece of application logic from the untrusted OS.
+
+Secret builds a secure channel to authenticate the appli-
+cation in the Untrusted area isolated by the ARM Trust-
+Zone technology.
+
+HDFI extend each memory
+unit with an additional tag to enforce fine-grained isola-
+tion at machine word granularity in the HDFI system.
 
 
 
@@ -271,7 +328,6 @@ Another conclusion about the differences of the approaches.
 \section{SGX-Frameworks and Application Support} % (fold)
 \label{sec:package_options}
 
-// TODO 
 
 The need for cloud computing is constantly growing in modern applications. It is a cost-effective and pratical solution to run large distributed applications, however the fact that it requires users to trust the cloud provider with their code and data creates some trust concerns for developers.
 Although the usage of TEEs aim to tackle this problem by running and storing sensitive data on a isolated environment, protecting that data from unauthorized access. To accomplish this, the main approach is to devide the application into trusted and untrusted parts, reducing the TCB as much as possible as a way to reduce security breaches. 
@@ -364,10 +420,14 @@ Graphene-SGX also supports application partitioning, enabling it to run small pi
 
 \subsection{Network services protection approaches}
 
-SGX has
-also been applied to securing network functionality [47],
-as well as inter-domain routing in Tor [29].
+Security and privacy have become one of the main concerns for both users and developers, therefore software technologies, like TLS and even anonymous networks like Tor, have become quite popular. At the same time, hardware approaches capable of providing TEEs (e.g. Intel-SGX) have also made contributions to help with this concerns. 
+As these technologies are being adapted by applications, it's also believed that they can have a significant impact on networking, since it can be used, for instance, to solve policy privacy issues in inter-domain routing, thus protecting ISPs policies. 
 
+In \cite{torSGXPaper}, it's shown that leveraging hardware protection of TEEs can grant benefits, such as simplify the overall design of the application, as well as securely introduce in-network functionality into TLS sessions. 
+The same paper also presents a possible approach to reach security and privacy on a network level, by building a prototype on top of OpenSGX, that shows that SGX-enabled applications have modest performance losses compared to one with no SGX support, while significantly improving it's security and privacy.
+
+
+-------
 
 Network Function Virtualization (NFV) applications are stateful.
 For example, a Content Distribution Network (CDN) caches web
@@ -378,6 +438,31 @@ properly react to intrusions. On today’s NFV infrastructures, security vulnera
 internal states of NFV applications that share a physical resource.
 In this paper, we propose a new protection scheme, S-NFV that incorporates Intel Software Guard Extensions (Intel SGX) to securely
 isolate the states of NFV applications.
+
+
+
+
+-> S-NFV, provides a secure framework for NFV ap-
+plications. S-NFV provides an interface to move the VNF states and
+state processing code inside the enclave.
+the framework needs to provide
+a model to only allow relevant states (which need protection) to be
+moved to the enclave. Also, for the framework to provide the right
+abstraction for the different types of states (per-flow, shared, and
+global), the challenge lies in understanding the state usage model
+in various NFV applications. Along with securing VNF states, we
+also propose secured administrator access to configure rules used by
+these states and to view logs generated by these state processing.
+
+RESULTS: In this paper, we took a first step toward protecting the internal
+states of NFV applications against malicious hosts and buggy ap-
+plications. By leveraging Intel SGX’s isolation, we demonstrated
+the state protection of Snort’s internal state (TagNode) and its state
+processing, by moving them into an enclave. We also perform the
+preliminary evaluation on state processing operations using real
+SGX hardware.
+
+
 
 \subsection{Application-level protection approaches}
 
@@ -391,64 +476,7 @@ thin “shim” layers, like SCONE [14] and Panoply [49] wrap
 an API layer such as the system call table.
 
 
-Protection against untrusted OSes.
-
-Virtual Ghost [20] uses both compile-time and run-time
-monitoring to protect an application from a potentially-
-compromised OS, but requires recompilation of the
-guest OS and application.
-
-Flicker [40], MUSHI [56],
-SeCage [37], InkTag [21], and Sego [32] protect appli-
-cations from untrusted OS using SMM mode or virtual-
-ization to enforce memory isolation between the OS and
-a trusted application.
-
-Trustlite, isolate software
-on low-cost embedded devices using a Memory Protec-
-tion Unit.
-
-Minibox built a 2-way sandbox for x86
-by separating the Native Client (NaCl) [55] sandbox into
-modules for sandboxing and service runtime to support
-application execution and use Trustvisor [39] to protect
-the piece of application logic from the untrusted OS.
-
-Secret builds a secure channel to authenticate the appli-
-cation in the Untrusted area isolated by the ARM Trust-
-Zone technology.
-
-HDFI extend each memory
-unit with an additional tag to enforce fine-grained isola-
-tion at machine word granularity in the HDFI system.
-
-
-Trusted execution hardware.
-
-TrustZone [51] on ARM creates an isolated
-environment for trusted kernel components. Different
-from SGX, TrustZone separates the hardware between
-the trusted and untrusted worlds, and builds a trusted path
-from the trusted kernel to other on-chip peripherals.
-
-AMD is introducing a feature in future chips called
-
-SEV (Secure Encrypted Virtualization) [27], which ex-
-tends nested paging with encryption. SEV is designed
-
-to run the whole virtual machines, whereas SGX is de-
-signed for a piece of application code. SEV does not
-
-provide comparable integrity protection or the protection
-against replay attacks on SGX. Graphene-SGX provides
-the best of both worlds: unmodified applications with
-confidentiality and integrity protections in hardware.
-
-Sanctum [19] is a RISC-V processor prototype that
-features a minimal and open design for enclaves. Sanc-
-tum also defends against some side channels, such as
-page fault address and cache timing, by virtualizing the
-page table and page fault handler inside each enclave.
+--------
 
 
 SGX frameworks and applications.
