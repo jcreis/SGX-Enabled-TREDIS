@@ -27,6 +27,40 @@
 	Year = "2018"
 }
 
+@inproceedings{sgxShieldPaper,
+	author = "Seo, Jaebaek and Lee, Byoungyoung and Kim, Seongmin and Shih, Ming-Wei and Shin, Insik and Han, Dongsu and Kim, Taesoo",
+	year = "2017",
+	month = "01",
+	pages = "",
+	title = "SGX-Shield: Enabling Address Space Layout Randomization for SGX Programs",
+	doi = "10.14722/ndss.2017.23037"
+}
+
+@inproceedings {glamdringPaper,
+	author = "Joshua Lind and Christian Priebe and Divya Muthukumaran and Dan O Keeffe and Pierre-Louis Aublin and Florian Kelbert and Tobias Reiher and David Goltzsche and David Eyers and Rudiger Kapitza and Christof Fetzer and Peter Pietzuch",
+	title = "Glamdring: Automatic Application Partitioning for Intel SGX",
+	booktitle = "2017 USENIX Annual Technical Conference (SENIX ATC 17)",
+	year = "2017",
+	isbn = "978-1-931971-38-6",
+	address = "Santa Clara, CA",
+	pages = "285--298",
+	url = "https://www.usenix.org/conference/atc17/technical-sessions/presentation/lind",
+	publisher = "USENIX Association"
+}
+@InProceedings{havenPaper,
+	author = "Baumann, Andrew and Peinado, Marcus and Hunt, Galen",
+	title = "Shielding applications from an untrusted cloud with Haven",
+	booktitle = "11th USENIX Symposium on Operating Systems Design and Implementation (OSDI '14)",
+	year = "2014",
+	month = "October",
+	abstract = "Today's cloud computing infrastructure requires substantial trust. Cloud users rely on both the provider's staff and its globally-distributed software/hardware platform not to expose any of their private data.
+	
+	We introduce the notion of shielded execution, which protects the confidentiality and integrity of a program and its data from the platform on which it runs (i.e., the cloud operator's OS, VM and firmware). Our prototype, Haven, is the first system to achieve shielded execution of unmodified legacy applications, including SQL Server and Apache, on a commodity OS (Windows) and commodity hardware. Haven leverages the hardware protection of Intel SGX to defend against privileged code and physical attacks such as memory probes, but also addresses the dual challenges of executing unmodified legacy binaries and protecting them from a malicious host. This work motivated recent changes in the SGX specification.",
+	publisher = "USENIX - Advanced Computing Systems Association",
+	url = "https://www.microsoft.com/en-us/research/publication/shielding-applications-from-an-untrusted-cloud-with-haven/",
+	note = "Best Paper Award"
+}
+
 @inproceedings{snortPaper,
 	author = "Martin Roesch and Stanford Telecommunications",
 	title = "Snort - Lightweight Intrusion Detection for Networks",
@@ -156,11 +190,6 @@
 	year = ""
 }
 
-@Misc{protectedZooKeeper,
-	title = "Running ZooKeeper Coordination Services in Untrusted Clouds",	
-	author = "Stefan Brenner, Colin Wulf, Rudiger Kapitza",
-	note = "Accessed: 04-07-2019"
-}
 @inproceedings {protectedZooKeeper,
 	author = "Stefan Brenner and Colin Wulf and Rudiger Kapitza",
 	title = "Running ZooKeeper Coordination Services in Untrusted Clouds",
@@ -243,31 +272,48 @@
 	note = "Accessed: 26-06-2019"
 }
 
-@Misc{mushiPaper,
-	title = "MUSHI: Toward Multiple Level Security Cloud with Strong Hardware Level Isolation",
-	author = "Ning Zhang, Ming Li, Wenjing Lou, Y. Thomas Hou",
-	year = "2013"
+
+@inproceedings{mushiPaper,
+	doi = "10.1109/milcom.2012.6415698",
+	url = "https://doi.org/10.1109/milcom.2012.6415698",
+	year = "2012",
+	month = "oct",
+	publisher = "IEEE",
+	author = "Ning Zhang and Ming Li and Wenjing Lou and Y. Thomas Hou",
+	title = "MUSHI: Toward Multiple Level Security cloud with strong Hardware level Isolation",
+	booktitle = "MILCOM 2012 - 2012 IEEE Military Communications Conference"
 }
 
-@Misc{flickerPaper,
-	title = "Flicker: An Execution Infrastructure for TCB Minimization",
-	author = "Jonathan M. McCune, Bryan Parno, Adrian Perrig, Michael K. Reiter, Hiroshi Isozaki",
+@inproceedings{flickerPaper,
+	author = "M. McCune, Jonathan and Parno, Bryan and Perrig, Adrian and Reiter, Michael and Isozaki, Hiroshi",
 	year = "2008",
-	url = "https://www.cs.unc.edu/~reiter/papers/2008/EuroSys.pdf"
+	month = "01",
+	pages = "315-328",
+	title = "Flicker: an execution infrastructure for TCB minimization",
+	volume = "42",
+	journal = "EuroSys'08 - Proceedings of the EuroSys 2008 Conference",
+	doi = "10.1145/1352592.1352625"
 }
 
-@Misc{virtGhostPaper,
-	title = "Virtual Ghost: Protecting Applications from Hostile Operating Systems",
-	author = "John Criswell, Nathan Dautenhahn, Vikram Adve",
+
+@inproceedings{virtGhostPaper,
+	doi = "10.1145/2541940.2541986",
+	url = "https://doi.org/10.1145/2541940.2541986",
 	year = "2014",
-	url = "http://sva.cs.illinois.edu/pubs/VirtualGhost-ASPLOS-2014.pdf"
+	publisher = "ACM Press",
+	author = "John Criswell and Nathan Dautenhahn and Vikram Adve",
+	title = "Virtual Ghost: Protecting Applications from Hostile Operating Systems",
+	booktitle = "Proceedings of the 19th international conference on Architectural support for programming languages and operating systems - ASPLOS 14"
 }
 
-@Misc{amdSEVPaper,
-	title = "A Comparison Study of Intel SGX and AMD Memory Encryption Technology",
-	author = "Saeid Mofrad, Fengwei Zhang, Shiyong Lu, Weidong Shi",
+@inproceedings{amdSEVPaper,
+	doi = "10.1145/3214292.3214301",
+	url = "https://doi.org/10.1145/3214292.3214301",
 	year = "2018",
-	url = "http://www.cs.wayne.edu/fengwei/paper/sgxsev-hasp18.pdf"
+	publisher = "ACM Press",
+	author = "Saeid Mofrad and Fengwei Zhang and Shiyong Lu and Weidong Shi",
+	title = "A comparison study of intel SGX and AMD memory encryption technology",
+	booktitle = "Proceedings of the 7th International Workshop on Hardware and Architectural Support for Security and Privacy  - HASP 18"
 }
 
 @Misc{amdPaper,
@@ -277,18 +323,30 @@
 	url = "http://amd-dev.wpengine.netdna-cdn.com/wordpress/media/2013/12/AMD_Memory_Encryption_Whitepaper_v7-Public.pdf"
 }
 
-@Misc{sanctumPaper,
+
+@inproceedings {sanctumPaper,
+	author = "Victor Costan and Ilia Lebedev and Srinivas Devadas",
 	title = "Sanctum: Minimal Hardware Extensions for Strong Software Isolation",
-	author = "Victor Costan, Ilia Lebedev, and Srinivas Devadas",
+	booktitle = "25th USENIX Security Symposium (USENIX Security 16),
 	year = "2016",
-	url = "https://eprint.iacr.org/2015/564.pdf"
+	isbn = "978-1-931971-32-4",
+	address = "Austin, TX",
+	pages = "857--874",
+	url = "https://www.usenix.org/conference/usenixsecurity16/technical-sessions/presentation/costan",
+	publisher = "USENIX Association"
 }
 
-@Misc{armTZPaper,
+
+@inproceedings {armTZPaper,
+	author = "Himanshu Raj and Stefan Saroiu and Alec Wolman and Ronald Aigner and Jeremiah Cox and Paul England and Chris Fenner and Kinshuman Kinshumann and Jork Loeser and Dennis Mattoon and Magnus Nystrom and David Robinson and Rob Spiger and Stefan Thom and David Wooten",
 	title = "fTPM: A Software-Only Implementation of a TPM Chip",
-	author = "Himanshu Raj, ContainerX; Stefan Saroiu, Alec Wolman, Ronald Aigner, Jeremiah Cox, Paul England, Chris Fenner, Kinshuman Kinshumann, Jork Loeser, Dennis Mattoon, Magnus Nystrom, David Robinson, Rob Spiger, Stefan Thom, and David Wooten",
+	booktitle = "25th USENIX Security Symposium (USENIX Security 16)",
 	year = "2016",
-	url = "https://www.usenix.org/system/files/conference/usenixsecurity16/sec16_paper_raj.pdf"
+	isbn = "978-1-931971-32-4",
+	address = "Austin TX",
+	pages = "841--856",
+	url = "https://www.usenix.org/conference/usenixsecurity16/technical-sessions/presentation/raj",
+	publisher = "USENIX Association"
 }
 
 @Misc{hsmPaper,
@@ -297,107 +355,4 @@
 	text = "SANS Institute Information Security Reading Room",
 	year = "2002",
 	url = "https://www.sans.org/reading-room/whitepapers/vpns/overview-hardware-security-modules-757"
-}
-
-@Misc{ Artho03,
-	author = "C. Artho and K. Havelund and A. Biere",
-	title = "High-Level Data Races",
-	text = "C. Artho, K. Havelund, and A. Biere. High-Level Data Races. In VVEIS'03, The First International Workshop on Verification and Validation of Enterprise Information Systems, April 2003. Angers, France.",
-	year = "2003",
-	url = "citeseer.ist.psu.edu/artho03highlevel.html"
-}
-
-
-
-@InProceedings{ Artho04,
-	author = "Cyrille Artho and Klaus Havelund and Armin Biere",
-	title = "Using Block-Local Atomicity to Detect Stale-Value Concurrency Errors",
-	booktitle = "ATVA",
-	year = "2004",
-	pages = "150--164",
-	crossref = "DBLP:conf/atva/2004",
-	bibsource = "DBLP, http://dblp.uni-trier.de",
-	ee = "http://springerlink.metapress.com/openurl.asp?genre=article{\&}issn=0302-9743{\&}volume=3299{\&}spage=150"
-}
-
-@Article{ Beckman08,
-	title = "Verifying Correct Usage of Atomic Blocks and Typestate",
-	author = "Nels E. Beckman and Kevin Bierhoff and Jonathan Aldrich",
-	publisher = "ACM",
-	address = "New York, NY, USA",
-	journal = "SIGPLAN Not.",
-	pages = "227--244",
-	volume = "43",
-	number = "10",
-	year = "2008",
-	issn = "0362-1340",
-	doi = "http://doi.acm.org/10.1145/1449955.1449783"
-}
-
-@InProceedings{ Flanagan04,
-	author = "Cormac Flanagan and Stephen N Freund",
-	title = "Atomizer: a dynamic atomicity checker for multithreaded programs",
-	booktitle = "POPL '04: Proceedings of the 31st ACM SIGPLAN-SIGACT symposium on Principles of programming languages",
-	year = "2004",
-	isbn = "1-58113-729-X",
-	pages = "256--267",
-	location = "Venice, Italy",
-	doi = "http://doi.acm.org/10.1145/964001.964023",
-	publisher = "ACM",
-	address = "New York, NY, USA"
-}
-
-@Misc{ IBM-Rep,
-	title = "{IBM's Concurrency Testing Repository}"
-}
-
-@InProceedings{ Praun03,
-	author = "Christoph {von Praun} and Thomas R. Gross",
-	title = "Static Detection of Atomicity Violations in Object-Oriented Programs",
-	booktitle = "Journal of Object Technology",
-	year = "2003",
-	pages = "2004"
-}
-
-@InProceedings{ Shavit95,
-	author = "Nir Shavit and Dan Touitou",
-	title = "Software transactional memory",
-	booktitle = "PODC '95: Proceedings of the fourteenth annual ACM symposium on Principles of distributed computing",
-	year = "1995",
-	isbn = "0-89791-710-3",
-	pages = "204--213",
-	location = "Ottowa, Ontario, Canada",
-	doi = "http://doi.acm.org/10.1145/224964.224987",
-	publisher = "ACM",
-	address = "New York, NY, USA"
-}
-
-@Book{ Silberschatz06,
-	author = "Abraham Silberschatz and Henry F. Korth and S. Sudarshan",
-	title = "Database System Concepts",
-	publisher = "McGraw-Hill",
-	year = "2006",
-	edition = "Fifth",
-	isbn = "007-124476-X"
-}
-
-@Book{ Moss85,
-	author = "J. Eliot B. Moss",
-	title = "Nested transactions: an approach to reliable distributed computing",
-	year = "1985",
-	isbn = "0-262-13200-1",
-	publisher = "Massachusetts Institute of Technology",
-	address = "Cambridge, MA, USA"
-}
-
-@Proceedings{ DBLP:conf/atva/2004,
-	editor = "Farn Wang",
-	title = "Automated Technology for Verification and Analysis: Second International Conference, ATVA 2004, Taipei, Taiwan, ROC, October 31-November 3, 2004. Proceedings",
-	booktitle = "ATVA",
-	publisher = "Springer",
-	series = "Lecture Notes in Computer Science",
-	volume = "3299",
-	year = "2004",
-	isbn = "3-540-23610-4",
-	bibsource = "DBLP, http://dblp.uni-trier.de"
 }

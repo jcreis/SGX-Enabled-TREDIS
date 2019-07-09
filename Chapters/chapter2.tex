@@ -6,7 +6,7 @@
 %% Chapter with the template manual
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Related Work}
-\label{cha:users_manual}
+\label{cha:related_work}
 
 % ================
 % = Introduction =
@@ -19,7 +19,7 @@ Finally, in Section 2.4 we make a critical analysis on the previously discussed 
 
 
 \section{Trusted Computing Environments} % (fold)
-\label{sec:introduction}
+\label{sec:tce}
 We're currently in a period where we start to depend more and more on allowing other services to do our work for us. Technologies like cloud computing require users to trust these systems. Therefore it's needed something to grant some respectable level of security, as well as being able to grant trust to the user. That's were Trusted Computing Environments (TCE) come in handy.
 A TCE is a concept that came to grant integrity and confidentiality to systems by forcing a certain machine to behave an expected way, and deny any unwanted access to the data while decrypted. This way, even if the system does not run in a trusted machine, it can be expected that it will execute as it should. 
 
@@ -28,6 +28,7 @@ TCEs protect the system against components that should always be trusted, like t
 In the following sections, as said before, we'll see how to achieve this properties, what components can be used to do it and also how each one of them works.
 
 \subsection{TPM – Trusted Platform Modules }
+\label{ssec:tpm_intro}
 
 A Trusted Platform Module (TPM), proposed by the Trusted Computing Group (TCG), is a set of hardware and software technologies that aim to create trust in a local platform \cite{sgxCloudThesis}. It is identified by an Endorsment Key-pair (EK) which is unique for every TPM, and also a Storage Root Key (SRK) that is used to protect other keys and data in the TPM. 
 
@@ -37,7 +38,7 @@ As said before, the main objective of a TPM is to create the idea of a trusted p
 
 
 \subsection{TPM – Enabled Software Attestation}
-
+\label{ssec:tpm_attest}
 
 TPMs enable the use of Remote attestation, which is the capability of one system to determine if other system can be trusted to run a particular piece of software as expected or not.
 
@@ -46,6 +47,7 @@ This is made possible by having a trusted configuration of state as reference, p
 If the hashes match, the remote system can then identify the TPM platform as a trusted platform.
 
 \subsection{HSM – Hardware Security Modules}
+\label{ssec:hsm}
 
 Hardware Security Modules (HSM) are physical components whose main function is to provide and store cryptographic keys used to encrypt/decrypt data inside a system. HSMs can also perform cryptographic operations (e.g. encryption, hashing, etc.) as well as authenticate through verification of digital signatures and accelerate SSL connections \cite{hsmThesis}.
 
@@ -54,6 +56,7 @@ This modules are used mainly in large environment systems (e.g. large distribute
 Although HSMs grant some extra level of security to a system, there's some drawbacks. One of them is the cost, where to buy one HSM the price varies depending on the sophistication of the security, plus the cost of maintenance makes it even more expensive. Another disadvantage is the difficulty on updating the module. Let's say a weakness was found in a cryptographic algorithm, it's hard to update the software in an already functional HSM to eliminate that weakness \cite{hsmPaper}.
 
 \subsection{Trusted Execution Environments}
+\label{ssec:tee}
 
 A Trusted Execution Environment (TEE) is an abstraction provided by both software and hardware that guarantees isolated execution of specific programs from other programs running on the same machine \cite{guiBorgesThesis}, but also from the host OS, hypervisor or even system administrators, preventing them from leveraging their priviledges and thus take advantage of the system. A TEE also grants secured storage of sensitive data, as well as remote attestation to make sure a given program runs as expected on a remote TEE. 
 
@@ -64,6 +67,7 @@ This TEE abstraction can be achieved either by using a virtual machine monitor o
 In the next chapters we will be looking into more dept about this hardware protection providers, that are responsable to create this trusted environments in the systems nowadays.
 
 \subsection{Intel SGX}
+\label{ssec:intelsgx}
 
 Intel Security Guard Extensions (SGX) are a set of instructions built in Intel CPUs, that allow programmers to create TEEs, called enclaves. Enclaves are isolation containers that create an isolated environment where sensitive code can be stored and executed inside, ensuring integrity and confidentiality to it. By doing so, it reduces the Trust Computing Base, in a way that most of the system software, apart from the enclaves itself, is considered not trusted.
 
@@ -75,6 +79,7 @@ Altough isolation is the main objective of Intel SGX, it still allows a way for 
 
 
 \subsection{RISC-V enabled Sanctum}
+\label{ssec:sanctum}
 
 Just like Intel SGX, the main objective of Sanctum is to offer strong isolation of software modules, altough following a different approach focused in avoiding unnecessary complexity, thus granting a simple security analysis.
 To make this possible, Sanctum, which tipically runs in a RISC-V processor, combines minimal and minimally invasive hardware modifications with a trusted software security monitor that is receptive to analysis and does not perform cryptographic operations using keys. 
@@ -85,6 +90,7 @@ Sanctum is a pratical approach that shows that a strong software isolation is ac
 This approach provides strong security guarantees dealing with side-channel attacks, such as cache timing and passive address translation attacks.
 
 \subsection{ARM Trust Zone}
+\label{ssec:armtz}
 
 ARM TrustZone are hardware security extentions offered by ARM application processors with the same finality as Intel SGX, create insolated environments where software execute in a trustable way. 
 
@@ -100,6 +106,7 @@ By default, the system boots always in SW so it can provision the runtime enviro
 
 
 \subsection{AMD SEV}
+\label{ssec:amdsev}
 
 AMD Secure Encrypted Virtualization (SEV) is the AMD approach to provide a TEE integrated with virtualization. It's a technology focused primarily on cloud computing environments, specifically in public infrastructure as a Service (IaaS), as its main goal is to reduce trust from higher priviledged parties (VMMs or OS), so that they can not influence the execution on the other "smaller" parties (VMs). 
 
@@ -110,6 +117,7 @@ Thus, AMD provides confidentiality of data by removing trust from the VMM, and c
 
 
 \subsection{Discussion}
+\label{ssec:tee_discussion}
 
 Write some comparison conclusions of why SGX and not the others.
 
@@ -147,7 +155,7 @@ page table and page fault handler inside each enclave.
 % = Folder Structure =
 % ====================
 \section{TEE/SGX Enabled Protection Against Untrusted OSes} % (fold)
-\label{sec:folder_structure}
+\label{sec:tee_enabled_frameworks}
 
 A lot of applications these days depend on sensitive data to operate and so protecting these data must be taken into account while designing the application. 
 
@@ -156,6 +164,7 @@ One of the things we have to think about is the size of the TCB, and how to redu
 In the following sections will be discussed how to achieve security for this particular problem, how to remove the OS from our TCB without losing functionability of the system, preferably without any major drawbacks in the system's performance. Thus we'll introduce some software techniques that can increase the security of an application against that threat.
 
 \subsection{Virtual Ghost}
+\label{ssec:virtghost}
 
 Virtual Ghost was presented in 2014 \cite{virtGhostPaper} as an approach to provide application security against untrusted OSes without requiring higher privileges. 
 
@@ -175,6 +184,7 @@ It is an approach that offers protection from kernel malware, while ensuring com
 
 
 \subsection{Flicker}
+\label{ssec:flicker}
 
 Flicker \cite{flickerPaper} is an infrastructure that provides secured isolated execution of sensitive code while trusting a small TCB, which significantly improves the security and reliability of the code Flicker executes. Although Flicker does not achieve the same level of protection from physical tampering as secure coprocessors do, it provides the same strong guarantees by using modern commodity hardware.
 
@@ -187,6 +197,7 @@ It also provides fine-grained attestation of the code executed to an external pa
 To achieve these properties, Flicker needs hardware that support late launch and attestation, such as AMD and Intel commodity processors, and it's still capable of guarantee them even if the BIOS and OS have become malicious to the system.
 
 \subsection{MUSHI}
+\label{ssec:mushi}
 
 MUSHI, or MUltiple level Security cloud with strong Hardware level Isolation, is a framework that provides hardware level isolation and protection to individual guest VMs executing in a cloud infrastructure. It guarantees confidentiality and integrity of a VM even during malicious attacks from both inside and outside the cloud environment.
 
@@ -205,6 +216,7 @@ MUSHI depends on a very small TCB, including only the hardware, hardware virtual
 
 
 \subsection{SeCage}
+\label{ssec:secage}
 
 SeCage \cite{SeCagePaper} is an approach that aims to protect user-defined secrets from application potential threats and malicious OS through hardware virtualization, thus isolating sensitive code and critical secrets while denying hypervisor intervention during runtime.
 It's designed to deal with a strong adversary model, assuming that both application and OS can be compromised, while suporting large-scale software, which usually means a big attack surface.
@@ -224,6 +236,7 @@ SeCage was shown useful protecting large-scale system software from HeartBleed a
 
 
 \subsection{InkTag}
+\label{ssec:inktag}
 
 InkTag \cite{inkTagPaper} is a virtualization-based architecture that protects trusted applications from an untrusted OS, allowing trusted applications to securely use untrusted OS services. InkTag admits trust in the hypervisor, which is responsible to protect the application code, data, and control flow from the OS, allowing applications to execute in isolation, in a high-assurance process (HAP). 
 Trusted applications can securely and privately share data without interference from the OS or other applications. Each secure application communicates directly with the InkTag hypervisor via hypercalls to detect OS misbehavior.
@@ -239,6 +252,7 @@ Other important aspect of InkTag is recoverability. InkTag is capable of ensurin
 
 
 \subsection{Sego}
+\label{ssec:sego}
 
 Sego \cite{segoPaper} is a hypervisor-based system that gives strong privacy and integrity guarantees to trusted applications, even when the guest OS is compromised or hostile, by removing the trust from the OS. Sego verifies OS services, like the file system, instead of replacing them.
 
@@ -249,12 +263,13 @@ It uses paraverification, where the guest OS communicates its actions and intent
 	\centering
 	{\includegraphics[width=0.5\linewidth]{sego_architecture}}%
 	\caption{Sego Architecture Overview}
+	\label{fig:sego}
 \end{figure}
 
 
 Sego executes trusted code in a HAP. After booting the OS, the hypervisor starts the HAP in a way that the HAP itself can verify its own initial code and data, similar to a TPM. Once running, the hypervisor ensures that HAP's registers and trusted address space are isolated from the OS. 
 Everytime the HAP wants to perform a system call, it must inform the hypervisor of its intent, so that the hypervisor can verify OS activity. HAPs use a small library called libsego as a way to handle system calls and get Sego services without having to change their code. 
-Each HAP also contains an untrusted trampoline code, that uses to interact with the OS. This is used as a way to protect HAP control-flow, since it uses this trampoline as the issuer for the system calls, therefore never compromising the HAP itself. Figure 2.1 shows well enough Sego's overall design without going into to much dept, refering which components are included in the TCB and which are not. 
+Each HAP also contains an untrusted trampoline code, that uses to interact with the OS. This is used as a way to protect HAP control-flow, since it uses this trampoline as the issuer for the system calls, therefore never compromising the HAP itself. Figure \ref{fig:sego} shows well enough Sego's overall design without going into to much dept, refering which components are included in the TCB and which are not. 
 
 Context switches are handled by the hypervisor, hiding any information about the HAP from the OS.
 
@@ -264,6 +279,7 @@ Sego does not guarantee OS availability. A compromised OS can simply shut down o
 
 
 \subsection{Other approaches}
+\label{ssec:tee_other_frameworks}
 
 There are also other approaches that tackle the same problem of trusting the OS, making it impossible for the execution of an  application to be compromised by a malicious OS, such as 
 
@@ -278,6 +294,7 @@ There are also other approaches that tackle the same problem of trusting the OS,
 
 
 \subsection{Discussion}
+\label{ssec:tee_frameworks_discussion}
 
 Another conclusion about the differences of the approaches. 
  
@@ -326,7 +343,7 @@ tion at machine word granularity in the HDFI system.
 % = Package options =
 % ===================
 \section{SGX-Frameworks and Application Support} % (fold)
-\label{sec:package_options}
+\label{sec:sgx_frameworks}
 
 
 The need for cloud computing is constantly growing in modern applications. It is a cost-effective and pratical solution to run large distributed applications, however the fact that it requires users to trust the cloud provider with their code and data creates some trust concerns for developers.
@@ -337,6 +354,7 @@ In the next sections we'll discuss frameworks that can accomplish solutions to t
 
 
 \subsection{VC3 protection for MapReduce Jobs}
+\label{ssec:vc3_mapreduce}
 
 Verifiable Confidential Cloud Computing (VC3) \cite{vc3Paper} is a framework that achieves confidentiality and integrity of data, as well as verifiability of execution of code with good performance through MapReduce \cite{mapReduce} techniques. It uses Intel SGX processors as a building block and runs on unmodified Hadoop \cite{hadoop}.
 In VC3 users implement MapReduce jobs, compile and encrypt them, thus obtaining a private enclave code E-. They then join it with a small portion of public code E+, that implements the protocols for key exchange and job execution.
@@ -355,6 +373,7 @@ With VC3, both E- and the user data are always encrypted while in the cloud, exc
 
 
 \subsection{Protected ZooKeeper}
+\label{ssec:protected_zookeeper}
 
 ZooKeeper \cite{zookeeper} is a replicated synchronization service for distributed systems with eventual consistency. However, ZooKeeper does not guarantee privacy of data stored inside of it by default.
  
@@ -369,6 +388,7 @@ ZPP also retains all original ZooKeeper functionality, and does not affect ZooKe
 This approach allows applications in the cloud to use ZooKeeper without privacy concerns at the cost of a small decrease of throughput.
 
 \subsection{Ryoan Sandboxing}
+\label{ssec:ryoan_sandboxing}
 
 Ryoan \cite{ryoanPaper} consists on a distributed sandbox that allows users to protect the execution of their data. This is achieved with the help of Intel SGX \cite{intelSGX} \cite{sgxPaper} enclaves, creating sandbox instances that protect data from untrusted software while also preventing leaks of data, which is a weakness of enclaves caused by side channel attacks.
 Ryoan does not include any priviledged software (e.g. OS and hypervisor) in it's TCB, while trusting only the hardware (SGX enclave) to assure secrecy and integrity of the data.
@@ -386,6 +406,7 @@ Ryoan's approach consists on confining the untrusted application in a NaCl, resp
 
 
 \subsection{Opaque}
+\label{ssec:opaque}
 
 Opaque \cite{opaquePaper} is a distributed data analytics platform that guarantee encryption, secure computation and integrity to a wide range of queries. Therefore, instead of being implemented in the application layer or the execution layer as this kind of security approaches usually are, Opaque is implemented in the query optimization layer. 
 
@@ -405,6 +426,7 @@ Opaque is an approach that is able to grant oblivious execution 3 times faster t
 
 
 \subsection{Graphene-SGX}
+\label{ssec:grapheneSGX}
 
 The usage of Intel SGX, and similar technologies, have proven to add a great sense of privacy to the storage and execution of data in applications. However this tecnologies impose restrictions (e.g., disallowing system calls inside the enclave) that require the applications to be changed so they can benefit from this extra layer of security. 
 
@@ -419,6 +441,7 @@ Graphene's main goal is to run unmodified applications on SGX quickly. Thus, whi
 Graphene-SGX also supports application partitioning, enabling it to run small pieces of one application in multiple enclaves. This can be useful, for instance, to applications with different privilege levels while still increasing the security of the application.
 
 \subsection{Network services protection approaches}
+\label{ssec:sgx_network_frameworks}
 
 Security and privacy have become one of the main concerns for both users and developers, therefore software technologies, like TLS and even anonymous networks like Tor, have become quite popular. At the same time, hardware approaches capable of providing TEEs (e.g. Intel-SGX) have also made contributions to help with this concerns. 
 As these technologies are being adapted by applications, it's also believed that they can have a significant impact on networking security, since they can be used, for instance, to solve policy privacy issues in inter-domain routing, thus protecting ISPs policies. 
@@ -436,8 +459,23 @@ In \cite{sNFVPaper} by implementing the S-NFV approach with Snort \cite{snortPap
 
 
 \subsection{Application-level protection approaches}
+\label{ssec:sgx_applvl_frameworks}
+
+There are software approaches that allow unmodified applications to execute while offering security from potentially malicious OSes, achieved by isolating sensitive data from the rest. 
+
+In addition to Graphene-SGX \ref{ssec:grapheneSGX}, approaches like Haven \cite{havenPaper}, Scone \cite{sconePaper} and Panoply \cite{panoplyPaper} offer system support, by ensure a secured way for the application to make system calls, such as implementing a library OS or a standard library, inside the enclave. 
+Haven runs an entire library OS (LibOS) inside the enclave, resulting on a very large TCB. 
+Scone uses sandboxing as a way to reduce TCB size due to the LibOS approach.
+Panoply provides the abstraction of micro-container (micron), having only to import specific micron-libraries instead of the whole LibOS, resulting in a shorter increase of the TCB size. 
+
+Although capable of ensuring unmodified applications a way of running on top of SGX, the increase of the TCB size has been seen as a possible vulnerability. 
+Thus new approaches more focused on this TCB size problem, like Glamdring \cite{glamdringPaper} and SGX-Shield \cite{sgxShieldPaper}, have been developed lately by the community as possible alternatives to the above ones.
+
+
+
 
 \subsection{Discussion}
+\label{ssec:sgx_frameworks_discussion}
 
 Haven [15] showed
 that a library OS could run unmodified applications on
@@ -473,7 +511,7 @@ The \novathesis\ class can be customized with the options listed below.
 
 
 \section{Related work analysis and rational} % (fold)
-\label{sec:additional_considerations}
+\label{sec:relatedwork_analysis}
 
 In this section we will provide some additional considerations about some of the customizations available as class options.
 
