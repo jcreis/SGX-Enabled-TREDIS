@@ -268,7 +268,7 @@ Sego does not guarantee OS availability. A compromised OS can simply shut down o
 There are also other approaches that tackle the same problem of trusting the OS, making it impossible for the execution of an  application to be compromised by a malicious OS, such as 
 
 \begin{itemize}
-	\item Hardware-assisted Data-Flow Isolation (HDFI) \cite{hdmiPaper} - data isolation mechanism running on top of RISC-V that uses machine instructions and hardware to enforce isolation, by virtually extending each memory unit with an additional tag that is defined by data-flow. It grants stack protection, standard library enhancement, kernel data protection, virtual function table protection, code pointer protection and information leak prevention. It's easy to use and imposes low performance overhead, while improving security.
+	\item Hardware-assisted Data-Flow Isolation (HDFI) \cite{hdfiPaper} - data isolation mechanism running on top of RISC-V that uses machine instructions and hardware to enforce isolation, by virtually extending each memory unit with an additional tag that is defined by data-flow. It grants stack protection, standard library enhancement, kernel data protection, virtual function table protection, code pointer protection and information leak prevention. It's easy to use and imposes low performance overhead, while improving security.
 	
 	\item Secure Channel between Rich Execution Environment and Trusted Execution Environment (SeCReT) \cite{secretPaper} - it is a framework that is focused in securing the communications between the Rich Execution Environments (REE) and the TEE built in ARM TrustZone, to add to the idea of isolation from the OS. It enables legitimate processes to use a session key in the REE, which is regarded as unsafe. To protect the key, SeCReT verifies the code's integrity and control-flow of the process every time a switch between user mode and kernel mode takes place. SeCReT's key-protection mechanism is only activated during the runtime of the process that has permission to access TrustZone, so it minimizes the performance overhead.
 	
@@ -421,46 +421,17 @@ Graphene-SGX also supports application partitioning, enabling it to run small pi
 \subsection{Network services protection approaches}
 
 Security and privacy have become one of the main concerns for both users and developers, therefore software technologies, like TLS and even anonymous networks like Tor, have become quite popular. At the same time, hardware approaches capable of providing TEEs (e.g. Intel-SGX) have also made contributions to help with this concerns. 
-As these technologies are being adapted by applications, it's also believed that they can have a significant impact on networking, since it can be used, for instance, to solve policy privacy issues in inter-domain routing, thus protecting ISPs policies. 
+As these technologies are being adapted by applications, it's also believed that they can have a significant impact on networking security, since they can be used, for instance, to solve policy privacy issues in inter-domain routing, thus protecting ISPs policies. 
 
-In \cite{torSGXPaper}, it's shown that leveraging hardware protection of TEEs can grant benefits, such as simplify the overall design of the application, as well as securely introduce in-network functionality into TLS sessions. 
+In \cite{torSGXPaper} it's shown that leveraging hardware protection of TEEs can grant benefits, such as simplify the overall design of the application, as well as securely introduce in-network functionality into TLS sessions. 
 The same paper also presents a possible approach to reach security and privacy on a network level, by building a prototype on top of OpenSGX, that shows that SGX-enabled applications have modest performance losses compared to one with no SGX support, while significantly improving it's security and privacy.
 
+Also at the networking security level, the usage of Network Function Virtualization (NFV) architecture by applications nowadays imply the creation of internal state as a way to allow complex cross-packet and cross-flow analysis. These states contain sensitive information, like IP addresses, user details and cached content (e.g. profile pictures), therefore should be a priority to ensure their protection from potential threats. 
 
--------
+To tackle this vulnerability, S-NFV has proven to be a valid approach. 
+S-NFV provides a secure framework for NFV applications, securing NFV states by using Intel-SGX. S-NFV divides the NFV application in two: S-NFV enclave and S-NFV host. The enclave is responsible to store the states and state processing code, while the host deals with the rest.
 
-Network Function Virtualization (NFV) applications are stateful.
-For example, a Content Distribution Network (CDN) caches web
-contents from remote servers and serves them to clients. Similarly,
-an Intrusion Detection System (IDS) and an Intrusion Prevention
-System (IPS) have both per-flow and multi-flow (shared) states to
-properly react to intrusions. On today’s NFV infrastructures, security vulnerabilities many allow attackers to steal and manipulate the
-internal states of NFV applications that share a physical resource.
-In this paper, we propose a new protection scheme, S-NFV that incorporates Intel Software Guard Extensions (Intel SGX) to securely
-isolate the states of NFV applications.
-
-
-
-
--> S-NFV, provides a secure framework for NFV ap-
-plications. S-NFV provides an interface to move the VNF states and
-state processing code inside the enclave.
-the framework needs to provide
-a model to only allow relevant states (which need protection) to be
-moved to the enclave. Also, for the framework to provide the right
-abstraction for the different types of states (per-flow, shared, and
-global), the challenge lies in understanding the state usage model
-in various NFV applications. Along with securing VNF states, we
-also propose secured administrator access to configure rules used by
-these states and to view logs generated by these state processing.
-
-RESULTS: In this paper, we took a first step toward protecting the internal
-states of NFV applications against malicious hosts and buggy ap-
-plications. By leveraging Intel SGX’s isolation, we demonstrated
-the state protection of Snort’s internal state (TagNode) and its state
-processing, by moving them into an enclave. We also perform the
-preliminary evaluation on state processing operations using real
-SGX hardware.
+In \cite{sNFVPaper} by implementing the S-NFV approach with Snort \cite{snortPaper} on top of OpenSGX was concluded that this SGX-enabled approach results in bigger overheads (aprox. 11x for gets and 9x for sets) than an SGX-disabled Snort application, at the cost of extra security.
 
 
 
