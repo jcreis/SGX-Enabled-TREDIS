@@ -11,7 +11,7 @@
 % ================
 % = Introduction =
 % ================
-In this chapter we address existing solutions that are able to protect applications from the OS or hypervisor, regardless the machine where they're running on (whether running locally or in cloud), thus increasing the level of trust an user can deposit in an execution of an application.
+In this chapter we address existing solutions that are able to protect applications from the \gls{os} or hypervisor, regardless the machine where they're running on (whether locally or remotelly), thus increasing the level of trust an user can deposit in an execution of an application.
 
 These existing solutions are organized in different sections in the following way: Section 2.1 covers Trusted Computing Environments; Section 2.2 covers software approaches that enable protection against untrusted OSes by making use of Trusted Execution Environments; Section 2.3 covers Intel-SGX frameworks; 
 
@@ -20,71 +20,83 @@ Finally, in Section 2.4 we make a critical analysis on the previously discussed 
 
 \section{Trusted Computing Environments} % (fold)
 \label{sec:tce}
-We're currently in a period where we start to depend more and more on allowing other services to do our work for us. Technologies like cloud computing require users to trust these systems. Therefore it's needed something to grant some respectable level of security, as well as being able to grant trust to the user. That's were Trusted Computing Environments (TCE) come in handy.
-A TCE is a concept that came to grant integrity and confidentiality to systems by forcing a certain machine to behave an expected way, and deny any unwanted access to the data while decrypted. This way, even if the system does not run in a trusted machine, it can be expected that it will execute as it should. 
+We're currently in a period where we start to depend more and more on allowing remote services access our data and execute our applications. Cloud computing systems require users to trust them their data. Therefore these systems need a way to assure data privacy and security, thus gaining users trust. That's were Trusted Computing Environments come in handy.
+A \gls{tce} is a concept that came to grant integrity and confidentiality to systems by forcing a certain machine to behave an expected way, while denying any unwanted access to the data while decrypted. This way, even if the system does not run in a trusted machine, it can be expected that it will execute as it should. 
 
-TCEs protect the system against components that should always be trusted, like the host OS or even system admins, due to the priviledges they've got. Thus preventing this components from abusing these privileges, and always guarantee the normal execution of the system. 
+\gls{tce}s protect the system against components that, in an ideal world, should always be trusted, like the host OS or even system admins, due to the priviledges they've got. As a result, and since these components can also be malicious, \gls{tce}s prevent them from abusing their privileges, thus ensuring the normal execution of the system. 
 
-In the following sections, as said before, we'll see how to achieve this properties, what components can be used to do it and also how each one of them works.
+In the following subsections we'll see how to achieve this properties, what hardware technologies can be used to do it and also how each one of them works.
 
 \subsection{TPM – Trusted Platform Modules }
 \label{ssec:tpm_intro}
 
-A Trusted Platform Module (TPM), proposed by the Trusted Computing Group (TCG), is a set of hardware and software technologies that aim to create trust in a local platform \cite{sgxCloudThesis}. It is identified by an Endorsment Key-pair (EK) which is unique for every TPM, and also a Storage Root Key (SRK) that is used to protect other keys and data in the TPM. 
+A \gls{tpm} \cite{tpmPaper}, proposed by the Trusted Computing Group (TCG), is a hardware chip called microcontroller that aims to create a trustable platform and make sure it remains trustworthy.
+ 
+The microcontroller is identified by an Endorsment Key-pair, which is unique for every \gls{tpm} and signed by the manufacturer. It also has a Storage Root Key (SRK) that is used to protect other keys and data inside the \gls{tpm}. 
+This chip is usually found in the motherboard of most machines nowadays, and it's mainly responsible for providing and storing cryptographic keys that can be used by the system to grant data integrity and confidentiality, as well as provide persistent and volatile memory to store these keys \cite{sgxCloudThesis}.
 
-As for the hardware, a TPM consists mainly on a chip, found usually in the motherboard of most machines nowadays, that provides and stores cryptographic keys that can be used to grant integrity and data confidentiality to the system, as well as persistent and volatile memory to store these keys. 
+\gls{tpm}s can also be complemented with software technologies to achieve better results constructing a trusted platform. 
 
-As said before, the main objective of a TPM is to create the idea of a trusted platform. This will be  provided by three main services: Encryption, Authenticated Boot and Attestation. The first one is used for pretty much every aspect related with security and privacy. The Authenticated boot consists in booting the OS in stages, as a way of keeping track of which code is trustable through the usage of Platform Configuration Registers (PCR), that store the trusted software hashes. As for the Attestation, we'll see in the next subsection.
+As said before, the main objective of a \gls{tpm} is to create the idea of a trusted platform. This will be  provided by three main services: Encryption, Authenticated Boot and Attestation. The first one is used for pretty much every aspect related with security and privacy. The Authenticated boot consists in booting the OS in stages, as a way of keeping track of which code is trustable through the usage of \gls{pcr}, that store the trusted software hashes. As for the Attestation, we'll see in the next subsection.
 
 
 \subsection{TPM – Enabled Software Attestation}
 \label{ssec:tpm_attest}
 
-TPMs enable the use of Remote attestation, which is the capability of one system to determine if other system can be trusted to run a particular piece of software as expected or not.
+\gls{tpm}s enable the use of Remote attestation, which is the capability of one system to determine if other system can be trusted to run a particular piece of software as expected or not. An example can be seen in Figure \ref{fig:tpm_attestation}.
 
-This is made possible by having a trusted configuration of state as reference, provided by the PCRs defined in the boot sequence, followed by a remote system that proceeds to challenge the trusted platform (containing the TPM) with a nonce. Then the platform creates a message with the nonce received previously and the existing configuration and calculates an hash value for that message. With an Attestation Identity Key (AIK), the message is then signed and sent back to the remote system, which then proceeds to decrypt the message with the EK public part, that then compares the result with the hash of the nonce plus the configuration it had at the begining of the challenge. 
+This is made possible by having a trusted configuration of state as reference, provided by the \gls{pcr}s defined in the boot sequence, followed by a remote system that proceeds to challenge the trusted platform (containing the \gls{tpm}) with a nonce. 
 
-If the hashes match, the remote system can then identify the TPM platform as a trusted platform.
+\begin{figure}[htbp]
+	\centering
+	{\includegraphics[width=0.5\linewidth]{tpm_attestation}}%
+	\caption{Remote Attestation process}
+	\label{fig:tpm_attestation}
+\end{figure}
+
+Then the platform creates a message with the nonce received previously and the existing configuration and calculates an hash value for that message. With an Attestation Identity Key (AIK), the message is then signed and sent back to the remote system, which then proceeds to decrypt the message with the \gls{ek} public part, that then compares the result with the hash of the nonce plus the configuration it had at the begining of the challenge. 
+
+If the hashes match, the remote system can then identify the \gls{tpm} platform as a trusted platform.
 
 \subsection{HSM – Hardware Security Modules}
 \label{ssec:hsm}
 
-Hardware Security Modules (HSM) are physical components whose main function is to provide and store cryptographic keys used to encrypt/decrypt data inside a system. HSMs can also perform cryptographic operations (e.g. encryption, hashing, etc.) as well as authenticate through verification of digital signatures and accelerate SSL connections \cite{hsmThesis}.
+\gls{hsm} \cite{hsmPaper} are physical components whose main function is to provide and store cryptographic keys used to encrypt/decrypt data inside a system. \gls{hsm}s can also perform cryptographic operations (e.g. encryption, hashing, etc.) as well as authenticate through verification of digital signatures and accelerate \gls{ssl} connections \cite{hsmThesis}.
 
-This modules are used mainly in large environment systems (e.g. large distributed systems) where there are a lot of machines communicating with each other, therefore creating a more needed sense of security. The inclusion of this modules in these big systems is actually a good idea since HSMs can also help servers relieve the workload coming from cryptographic operations. However HSMs don't quite guarantee the idea of absolute security, but increment the cost of attacking the system.
+This modules are used mainly in large environment systems (e.g. large distributed systems) where there are a lot of machines communicating with each other, therefore creating a more needed sense of security. The inclusion of this modules in these big systems is actually a good idea since \gls{hsm}s can also help servers relieve the workload caused by cryptographic operations. However \gls{hsm}s do not quite guarantee the idea of absolute security, but increment the cost of attacking the system.
 
-Although HSMs grant some extra level of security to a system, there's some drawbacks. One of them is the cost, where to buy one HSM the price varies depending on the sophistication of the security, plus the cost of maintenance makes it even more expensive. Another disadvantage is the difficulty on updating the module. Let's say a weakness was found in a cryptographic algorithm, it's hard to update the software in an already functional HSM to eliminate that weakness \cite{hsmPaper}.
+Although \gls{hsm}s grant some extra level of security to a system, there's some drawbacks. One of them is the cost, where to buy one \gls{hsm} the price varies depending on the sophistication of the security, plus the cost of maintenance makes it even more expensive. Another disadvantage is the difficulty to update a software module that is already running in a functional \gls{hsm}.
 
 \subsection{Trusted Execution Environments}
 \label{ssec:tee}
 
-A Trusted Execution Environment (TEE) is an abstraction provided by both software and hardware that guarantees isolated execution of specific programs from other programs running on the same machine \cite{guiBorgesThesis}, but also from the host OS, hypervisor or even system administrators, preventing them from leveraging their priviledges and thus take advantage of the system. A TEE also grants secured storage of sensitive data, as well as remote attestation to make sure a given program runs as expected on a remote TEE. 
+A Trusted Execution Environment is an abstraction provided by both software and hardware that guarantees isolated execution of specific programs from all the other programs running on the same machine \cite{guiBorgesThesis}, including the host OS, hypervisor or even system administrators, preventing them from leveraging their priviledges and thus take advantage of the system. A \gls{tee} also grants secured storage of sensitive data, as well as remote attestation to make sure a given program runs as expected on a remote \gls{tee}. 
 
-For a user to communicate with his program running inside an isolated environment, a key-exchange between the TEE and the user takes place. This way it is ensured both integrity and confidentiality of data during further communications.
+For a user to communicate with his program running inside an isolated environment, a key-exchange between the \gls{tee} and the user takes place. This way it is ensured both integrity and confidentiality of data during further communications.
 
-This TEE abstraction can be achieved either by using a virtual machine monitor or by running security critical software (from whole applications to little segments of code) under protection mechanisms provided by hardware \cite{pcopThesis}. 
+This \gls{tee} abstraction can be achieved either by using a virtual machine monitor or by running security critical software (from whole applications to little segments of code) under protection mechanisms provided by hardware \cite{pcopThesis}. 
 
-In the next chapters we will be looking into more dept about this hardware protection providers, that are responsable to create this trusted environments in the systems nowadays.
+In the next chapters we will be looking into more dept about this hardware protection providers, that are capable of creating trusted and isolated environments in the systems nowadays.
 
 \subsection{Intel SGX}
 \label{ssec:intelsgx}
 
-Intel Security Guard Extensions (SGX) are a set of instructions built in Intel CPUs, that allow programmers to create TEEs, called enclaves. Enclaves are isolation containers that create an isolated environment where sensitive code can be stored and executed inside, ensuring integrity and confidentiality to it. By doing so, it reduces the Trust Computing Base, in a way that most of the system software, apart from the enclaves itself, is considered not trusted.
+Intel Software Security Guard Extensions (SGX) are a set of instructions built in Intel \gls{cpu}s, that allow programmers to create \gls{tee}s, called enclaves. Enclaves are isolation containers that create an isolated environment where sensitive code can be stored and executed inside, ensuring integrity and confidentiality to it. By doing so, it reduces the \gls{tcb} in a way that most of the system software, apart from the enclaves and the \gls{cpu}, is considered not trusted.
 
-Enclaves are mapped into private regions of memory, where only the CPU as access to, reducing the TCB to only the enclave and the CPU itself. Due to this restrictions, not even the most common system libraries can be accessed inside the enclave, since the OS is not trusted. 
+Enclaves are mapped into private regions of memory, where only the \gls{cpu} has access to, reducing the \gls{tcb} to only the enclave and the \gls{cpu} itself. Due to this restrictions, not even the most common system libraries can be accessed inside the enclave, since the \gls{os} is not considered trusted. 
 
-A system that encorporates the SGX under it's architecture is divided in two components, a trusted being the enclave, and an untrusted being the rest of the system. The untrusted component requests the launch of the enclave, where the CPU then manages to allocate the enclave in a private region of memory, made available only to that particular enclave. This portion of memory is kept encrypted in volatile memory, being only decrypted by the CPU if the responsible enclave requests for it \cite{guiBorgesThesis}.
+A system that encorporates \gls{sgx} under it's architecture is divided in two: a trusted component being the enclave, and an untrusted component being the rest of the system. The untrusted one requests the launch of the enclave, where the \gls{cpu} then manages to allocate the enclave in a private region of memory, made available only to that particular enclave. This portion of memory is kept encrypted in volatile memory, being only decrypted by the \gls{cpu} if the responsible enclave requests it \cite{guiBorgesThesis}.
 
-Altough isolation is the main objective of Intel SGX, it still allows a way for both  untrusted and trusted parties to communicate. This is made possible by the functions ECALL and OCALL. ECALLs are used for an untrusted component to call for trusted code in a secured way - the enclave copies the pointers to that specific code into a buffer, who is then made visible for the untrusted component, ensuring that the untrusted party can't know the real memory address inside the enclave. To communicate the other way arround the enclave calls for an OCALL, where the enclave is temporarily exited, executing then the unstrusted function needed. After that, the enclave is re-entered. This is mainly used by the enclave to access the network or to deal with I/O disk access.
+Altough isolation is the main objective of \gls{sgx}, it still allows a way for both  untrusted and trusted parties to communicate. This is made possible by the functions ECALL and OCALL. ECALLs are used for an untrusted component to call for trusted code in a secured way - the enclave copies the pointers to that specific code into a buffer, which is then made visible for the untrusted component, ensuring that the untrusted party can't know the real memory address inside the enclave. To communicate the other way arround the enclave calls for an OCALL, where the enclave is temporarily exited, executing then the unstrusted function needed. After that, the enclave is re-entered. OCALLS are mainly used by the enclave to access the network or to deal with I/O disk access.
 
 
 \subsection{RISC-V enabled Sanctum}
 \label{ssec:sanctum}
 
-Just like Intel SGX, the main objective of Sanctum is to offer strong isolation of software modules, altough following a different approach focused in avoiding unnecessary complexity, thus granting a simple security analysis.
-To make this possible, Sanctum, which tipically runs in a RISC-V processor, combines minimal and minimally invasive hardware modifications with a trusted software security monitor that is receptive to analysis and does not perform cryptographic operations using keys. 
+Just like \gls{sgx}, the main objective of Sanctum is to offer strong isolation of software modules, altough following a different approach focused in avoiding unnecessary complexity, thus granting a simple security analysis.
+To make this possible, Sanctum \cite{sanctumPaper}, which tipically runs in a RISC-V processor, combines minimal and minimally invasive hardware modifications with a trusted software security monitor that is receptive to analysis and does not perform cryptographic operations using keys. 
 
-This minimality idea consists on reusing and slightly modifying existing well-understood mechanisms, while not modifiying CPU building blocks, only adding hardware to the interfaces between blocks, causing Sanctum to be adaptable to other processors in addition to RISC-V \cite{sanctumPaper}. 
+This minimality idea consists on reusing and slightly modifying existing well-understood mechanisms, while not modifiying \gls{cpu} building blocks, only adding hardware to the interfaces between blocks, causing Sanctum to be adaptable to other processors in addition to RISC-V. 
 
 Sanctum is a pratical approach that shows that a strong software isolation is achievable with a small set of minimally invasive hardware changes, causing reasonably low overhead. 
 This approach provides strong security guarantees dealing with side-channel attacks, such as cache timing and passive address translation attacks.
@@ -92,59 +104,42 @@ This approach provides strong security guarantees dealing with side-channel atta
 \subsection{ARM Trust Zone}
 \label{ssec:armtz}
 
-ARM TrustZone are hardware security extentions offered by ARM application processors with the same finality as Intel SGX, create insolated environments where software execute in a trustable way. 
+ARM Trust Zone \cite{armTZPaper} are hardware security extentions offered by ARM application processors with the same finality as Intel \gls{sgx}, create isolated environments where software can execute in a secured and trustable way. 
 
 To accomplish this, ARM processors implement two virtual processors backed by hardware access control, where the software stack can switch between two states called secure world (SW) and normal world (NW). 
-The first one has with higher priviledges than the second one, therefore it can access NWs copies of registers, but not the other way around. SW is also responsible of protecting running processes in the CPU, while providing secured access to peripherals. 
-Each world acts like a runtime environment and has it's own set of resources. This resources can be partioned between the two worlds or just assigned to one of them, depending on the ARM chip.
+The first one has higher priviledges than the second one, therefore it can access NWs copies of registers, but not the other way around. SW is also responsible of protecting running processes in the \gls{cpu}, while providing secured access to peripherals. 
+Each world acts like a runtime environment and has it's own set of resources. This resources can be partioned between the two worlds or just assigned to one of them, depending on the ARM chip specs.
 
 For the context switch between worlds, ARM processors implement a secured mode called Secure Monitor, where there's a special register responsable of determine if the processor runs code in SW or NW. 
 
 Most ARM processors also offer memory curtaining. This consists on the Secure Monitor allocating physical addresses of memory specifically to the SW, making this region of memory unaccessible to the rest of the system.
 
-By default, the system boots always in SW so it can provision the runtime environment before any untrusted code start to run. It eventually transitions to NW where untrusted code can start to be executed. \cite{armTZPaper}
+By default, the system boots always in SW so it can provision the runtime environment before any untrusted code start to run. It eventually transitions to NW where untrusted code can start to be executed. 
 
 
 \subsection{AMD SEV}
 \label{ssec:amdsev}
 
-AMD Secure Encrypted Virtualization (SEV) is the AMD approach to provide a TEE integrated with virtualization. It's a technology focused primarily on cloud computing environments, specifically in public infrastructure as a Service (IaaS), as its main goal is to reduce trust from higher priviledged parties (VMMs or OS), so that they can not influence the execution on the other "smaller" parties (VMs). 
+AMD Secure Encrypted Virtualization (SEV) is the AMD approach to provide a \gls{tee}, integrated with virtualization. It's a technology focused primarily on cloud computing environments, specifically in public \gls{iaas}, as its main goal is to reduce trust from higher priviledged parties (\gls{vmm}s or \gls{os}), so that they can not influence the execution on the other "smaller" parties (\gls{vm}s). 
 
 To achieve this, AMD grants encryption of memory through a technology called Secure Memory Encryption (SEM), or through TransparentSEM (TSEM) if the system runs a legacy OS or hypervisor with no need for any software modifications.
-After the data is encrypted, SEV integrates it with AMD virtualization architecture to support encrypted VMs. By doing this, every VM is now protected from his own hypervisor (VMM), unabling its access to the decrypted data. Although uncapable of accessing the VM, the VMM is still responsible of controlling each VM resources. \cite{amdPaper}
+After the data is encrypted, SEV integrates it with AMD virtualization architecture to support encrypted \gls{vm}s. By doing this, every \gls{vm} is now protected from his own hypervisor (\gls{vmm}), unabling its access to the decrypted data. Although uncapable of accessing the \gls{vm}, the \gls{vmm} is still responsible of controlling each \gls{vm}'s resources. \cite{amdPaper}
 
-Thus, AMD provides confidentiality of data by removing trust from the VMM, and creates an isolated environment for the VM to run, where only the VM and the processor can be trusted. However it does not provide integrity of data, allowing replaying attacks to take place, and has a considerably large TCB, since the OS of each VM is trusted. \cite{amdSEVPaper}
+Thus, AMD provides confidentiality of data by removing trust from the \gls{vmm}, and creates an isolated environment for the \gls{vm} to run, where only the \gls{vm} and the processor can be trusted. However it does not provide integrity of data, allowing replaying attacks to take place, and has a considerably large \gls{tcb}, since the \gls{os} of each \gls{vm} is trusted. \cite{amdSEVPaper}
 
 
 \subsection{Discussion}
 \label{ssec:tee_discussion}
 
-Write some comparison conclusions of why SGX and not the others.
+Although all the approaches discussed before aim to offer better levels of security to applications, it's possible to find some differences between them. 
 
-//TODO
-Trusted execution hardware.
+Between the hardware-only approaches TPM and \gls{hsm}, while \gls{tpm} is a "fixed" module, since it's typically on the motherboard, \gls{hsm} is a more flexible approach and can be added to the system after, either as an I/O device or via network. Also \gls{hsm} is more optimized to be used at the network level, and it's mainly used by banks to perform encryption of user data, while \gls{tpm} is more suited to deal with encryption of local files.
 
-TrustZone [51] on ARM creates an isolated
-environment for trusted kernel components. Different
-from SGX, TrustZone separates the hardware between
-the trusted and untrusted worlds, and builds a trusted path
-from the trusted kernel to other on-chip peripherals.
+Adding to this, we also discussed hardware and software approaches. 
+From the four technologies, \gls{sgx} is the one that proven to be the most reliable for our work. Comparing to ARM Trust Zone, while both really popular in today's systems, \gls{sgx} supports remote attestation while ARM's approach does not. AMD SEV does not provide protection against replaying attacks, and though it's capable of running whole \gls{vm}s, it does not support remote attestation, much like ARM's approach. It's also less used by the community than \gls{sgx}. Sanctum offers a feature that \gls{sgx} does not offer, which is protection against side-channel attacks. Although the fact that Sactum's implementation was focused on dealing with software attacks resulted in a minimal design for it's enclaves, thus being more susceptible to physical attacks. Also adding the fact that it's the less used approach from all four and it targeted RISC-V processors, made \gls{sgx} a better option.
 
-AMD is introducing a feature in future chips called
-SEV (Secure Encrypted Virtualization) [27], which ex-
-tends nested paging with encryption. SEV is designed
-to run the whole virtual machines, whereas SGX is de-
-signed for a piece of application code. SEV does not
-provide comparable integrity protection or the protection
-against replay attacks on SGX. Graphene-SGX provides
-the best of both worlds: unmodified applications with
-confidentiality and integrity protections in hardware.
+Altough \gls{sgx} does not protect an application from side-channel attacks, it ensures hardware integrity and confidentiality of data, adding to the fact that it has proven to be capable of running unmodified applications, by using recently developed frameworks.
 
-Sanctum [19] is a RISC-V processor prototype that
-features a minimal and open design for enclaves. Sanc-
-tum also defends against some side channels, such as
-page fault address and cache timing, by virtualizing the
-page table and page fault handler inside each enclave.
 
 
 
