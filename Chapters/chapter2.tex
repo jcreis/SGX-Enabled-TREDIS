@@ -138,7 +138,7 @@ Between the hardware-only approaches TPM and \gls{hsm}, while \gls{tpm} is a "fi
 Adding to this, we also discussed hardware and software approaches. 
 From the four technologies, \gls{sgx} is the one that proven to be the most reliable for our work. Comparing to ARM Trust Zone, while both really popular in today's systems, \gls{sgx} supports remote attestation while ARM's approach does not. AMD SEV does not provide protection against replaying attacks, and though it's capable of running whole \gls{vm}s, it does not support remote attestation, much like ARM's approach. It's also less used by the community than \gls{sgx}. Sanctum offers a feature that \gls{sgx} does not offer, which is protection against side-channel attacks. Although the fact that Sactum's implementation was focused on dealing with software attacks resulted in a minimal design for it's enclaves, thus being more susceptible to physical attacks. Also adding the fact that it's the less used approach from all four and it targeted RISC-V processors, made \gls{sgx} a better option.
 
-Altough \gls{sgx} does not protect an application from side-channel attacks, it ensures hardware integrity and confidentiality of data, adding to the fact that it has proven to be capable of running unmodified applications, by using recently developed frameworks.
+Altough \gls{sgx} does not protect an application from side-channel attacks, it ensures hardware integrity and confidentiality of data, adding the fact that it has proven to be capable of running unmodified applications, by using recently developed frameworks.
 
 
 
@@ -152,11 +152,11 @@ Altough \gls{sgx} does not protect an application from side-channel attacks, it 
 \section{TEE/SGX Enabled Protection Against Untrusted OSes} % (fold)
 \label{sec:tee_enabled_frameworks}
 
-A lot of applications these days depend on sensitive data to operate and so protecting these data must be taken into account while designing the application. 
+A lot of applications these days depend on sensitive data to operate therefore protecting these data must be taken into account while designing the application. 
 
-One of the things we have to think about is the size of the TCB, and how to reduce it as much as possible without losing much of the operability of the system. Typically, the host OS is considered safe, trustworthy, although that is not always the case. A compromised OS can give complete access to this sensitive data, regardless of how well designed the application is. That's why this is a major security problem and must be tackled in today's systems. 
+One of the things we have to think about is the size of the \gls{tcb}, and how to reduce it as much as possible without losing the operability of the system. Typically, the host \gls{os} is considered safe, trustworthy, although that is not always the case. A compromised \gls{os} can give complete access to this sensitive data, regardless of how well designed the application is. That's why this is a major security problem and must be tackled in today's systems. 
 
-In the following sections will be discussed how to achieve security for this particular problem, how to remove the OS from our TCB without losing functionability of the system, preferably without any major drawbacks in the system's performance. Thus we'll introduce some software techniques that can increase the security of an application against that threat.
+In the following subsections will be discussed how to achieve security for this particular problem, how to remove the OS from our TCB without losing functionability of the system, preferably without any major drawbacks in the system's performance. Thus we'll introduce some software techniques that can increase the security of an application against that threat.
 
 \subsection{Virtual Ghost}
 \label{ssec:virtghost}
@@ -294,6 +294,16 @@ There are also other approaches that tackle the same problem of trusting the OS,
 Another conclusion about the differences of the approaches. 
  
 //TODO
+
+Virtual Ghost - 
+performs well compared to previous approaches; it outperforms InkTag on five out of seven of the
+LMBench microbenchmarks with improvements between
+1.3x and 14.3x. For network downloads, Virtual Ghost experiences a 45% reduction in bandwidth at most for small
+files and nearly no reduction in bandwidth for large files
+and web traffic. An application we modified to use ghost
+memory shows a maximum additional overhead of 5% due
+to the Virtual Ghost protections. We also demonstrate Virtual Ghost’s efficacy by showing how it defeats sophisticated
+rootkit attacks.
 
 Protection against untrusted OSes.
 
