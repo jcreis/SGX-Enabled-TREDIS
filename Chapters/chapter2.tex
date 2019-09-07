@@ -17,7 +17,172 @@ These existing solutions are organized in different sections in the following wa
 
 Finally, in Section 2.4 we make a critical analysis on the previously discussed techniques, while covering it's main advantages and disadvantages.
 
+\section{Protection in untrusted OSes}
 
+\section{Hardware-Enabled TEE - Trusted Execution Environments}
+
+\section{Hardware-Enabled TEE Solutions}
+\subsection{XOM}
+\subsection{ARM TrustZone}
+\label{ssec:armtz}
+
+ARM Trust Zone \cite{armTZPaper} are hardware security extentions offered by ARM application processors with the same finality as Intel \gls{sgx}, create isolated environments where software can execute in a secured and trustable way. 
+
+To accomplish this, ARM processors implement two virtual processors backed by hardware access control, where the software stack can switch between two states called secure world (SW) and normal world (NW). 
+The first one has higher priviledges than the second one, therefore it can access NWs copies of registers, but not the other way around. SW is also responsible of protecting running processes in the \gls{cpu}, while providing secured access to peripherals. 
+Each world acts like a runtime environment and has it's own set of resources. This resources can be partioned between the two worlds or just assigned to one of them, depending on the ARM chip specs.
+
+For the context switch between worlds, ARM processors implement a secured mode called Secure Monitor, where there's a special register responsable of determine if the processor runs code in SW or NW. 
+
+Most ARM processors also offer memory curtaining. This consists on the Secure Monitor allocating physical addresses of memory specifically to the SW, making this region of memory unaccessible to the rest of the system.
+
+By default, the system boots always in SW so it can provision the runtime environment before any untrusted code start to run. It eventually transitions to NW where untrusted code can start to be executed. 
+
+\subsection{AMD-SEV}
+\label{ssec:amdsev}
+AMD Secure Encrypted Virtualization (SEV) is the AMD approach to provide a \gls{tee}, integrated with virtualization. It's a technology focused primarily on cloud computing environments, specifically in public \gls{iaas}, as its main goal is to reduce trust from higher priviledged parties (\gls{vmm}s or \gls{os}), so that they can not influence the execution on the other "smaller" parties (\gls{vm}s). 
+
+To achieve this, AMD grants encryption of memory through a technology called Secure Memory Encryption (SEM), or through TransparentSEM (TSEM) if the system runs a legacy OS or hypervisor with no need for any software modifications.
+After the data is encrypted, SEV integrates it with AMD virtualization architecture to support encrypted \gls{vm}s. By doing this, every \gls{vm} is now protected from his own hypervisor (\gls{vmm}), unabling its access to the decrypted data. Although uncapable of accessing the \gls{vm}, the \gls{vmm} is still responsible of controlling each \gls{vm}'s resources. \cite{amdPaper}
+
+Thus, AMD provides confidentiality of data by removing trust from the \gls{vmm}, and creates an isolated environment for the \gls{vm} to run, where only the \gls{vm} and the processor can be trusted. However it does not provide integrity of data, allowing replaying attacks to take place, and has a considerably large \gls{tcb}, since the \gls{os} of each \gls{vm} is trusted. \cite{amdSEVPaper}
+
+\subsection{Sanctum}
+\label{ssec:sanctum}
+Just like \gls{sgx}, the main objective of Sanctum is to offer strong isolation of software modules, altough following a different approach focused in avoiding unnecessary complexity, thus granting a simple security analysis.
+To make this possible, Sanctum \cite{sanctumPaper}, which tipically runs in a RISC-V processor, combines minimal and minimally invasive hardware modifications with a trusted software security monitor that is receptive to analysis and does not perform cryptographic operations using keys. 
+
+This minimality idea consists on reusing and slightly modifying existing well-understood mechanisms, while not modifiying \gls{cpu} building blocks, only adding hardware to the interfaces between blocks, causing Sanctum to be adaptable to other processors in addition to RISC-V. 
+
+Sanctum is a pratical approach that shows that a strong software isolation is achievable with a small set of minimally invasive hardware changes, causing reasonably low overhead. 
+This approach provides strong security guarantees dealing with side-channel attacks, such as cache timing and passive address translation attacks.
+
+\subsection{Intel-SGX}
+\label{ssec:intelsgx}
+Intel Software Security Guard Extensions (SGX) are a set of instructions built in Intel \gls{cpu}s, that allow programmers to create \gls{tee}s, called enclaves. Enclaves are isolation containers that create an isolated environment where sensitive code can be stored and executed inside, ensuring integrity and confidentiality to it. By doing so, it reduces the \gls{tcb} in a way that most of the system software, apart from the enclaves and the \gls{cpu}, is considered not trusted.
+
+Enclaves are mapped into private regions of memory, where only the \gls{cpu} has access to, reducing the \gls{tcb} to only the enclave and the \gls{cpu} itself. Due to this restrictions, not even the most common system libraries can be accessed inside the enclave, since the \gls{os} is not considered trusted. 
+
+A system that encorporates \gls{sgx} under it's architecture is divided in two: a trusted component being the enclave, and an untrusted component being the rest of the system. The untrusted one requests the launch of the enclave, where the \gls{cpu} then manages to allocate the enclave in a private region of memory, made available only to that particular enclave. This portion of memory is kept encrypted in volatile memory, being only decrypted by the \gls{cpu} if the responsible enclave requests it \cite{guiBorgesThesis}.
+
+Altough isolation is the main objective of \gls{sgx}, it still allows a way for both  untrusted and trusted parties to communicate. This is made possible by the functions ECALL and OCALL. ECALLs are used for an untrusted component to call for trusted code in a secured way - the enclave copies the pointers to that specific code into a buffer, which is then made visible for the untrusted component, ensuring that the untrusted party can't know the real memory address inside the enclave. To communicate the other way arround the enclave calls for an OCALL, where the enclave is temporarily exited, executing then the unstrusted function needed. After that, the enclave is re-entered. OCALLS are mainly used by the enclave to access the network or to deal with I/O disk access.
+
+\section{SGX-Enabled Frameworks and Shielded Applications}
+\subsection{Shielded protected applications in untrusted Clouds}
+\subsection{SCONE}
+\subsection{Haven}
+\subsection{OpenSGX}
+\subsection{Panoply}
+\subsection{VC3}
+\label{ssec:vc3_mapreduce}
+
+Verifiable Confidential Cloud Computing (VC3) \cite{vc3Paper} is a framework that achieves confidentiality and integrity of data, as well as verifiability of execution of code with good performance through MapReduce \cite{mapReduce} techniques. It uses Intel SGX processors as a building block and runs on unmodified Hadoop \cite{hadoop}.
+In VC3 users implement MapReduce jobs, compile and encrypt them, thus obtaining a private enclave code E-. They then join it with a small portion of public code E+, that implements the protocols for key exchange and job execution.
+Users then upload the resulting binary code to the cloud, where enclaves containing both E- and E+ are initialized by an untrusted framework F. 
+
+\begin{figure}[htbp]
+	\centering
+	{\includegraphics[width=0.6\linewidth]{vc3_design}}%
+	\caption{VC3 memory design model on the left, component dependencies on the right}
+\end{figure}
+
+A MapReduce begins with a key exchange between the user and the E+ code running in the enclave. After this, E+ can proceed to decrypt E- and process the encrypted data. VC3 isolates this processing from the OS by keeping an interface between the E+ layer and the outside of the enclave. This interface consists of basically two functions: readKV() and writeKV(), for reading a key-value pair on Hadoop or write it, respectively. Also, the data inside of the enclave is passed to the outside, more specifically from E+ to the untrusted F, by using a virtual address space shared by both.
+With VC3, both E- and the user data are always encrypted while in the cloud, except when processed by the trusted processor, while allowing Hadoop to manage the execution of VC3 jobs. Map and reduce nodes are seen as regular worker node to Hadoop, therefore Hadoop can provide its normal scheduling and fault-tolerance mechanisms, as well as load balancing. VC3 accomplishes this keeping Hadoop, the OS and the hypervisor out of the TCB.
+
+\subsection{Protected Zookeeper}
+\label{ssec:protected_zookeeper}
+
+ZooKeeper \cite{zookeeper} is a replicated synchronization service for distributed systems with eventual consistency. However, ZooKeeper does not guarantee privacy of data stored inside of it by default.
+
+Protected ZooKeeper \cite{protectedZooKeeper} is an approach that eliminates this privacy concerns, by placing an aditional layer between the client and the ZooKeeper, refered as ZooKeeper Privacy Proxy (ZPP). ZPP is a layer responsible for the encryption of all sensitive information, during a communication between a client and the ZooKeeper. 
+Clients communicate with the proxy via a SSL connection, where the packets are encrypted by an individual session key. Here, ZPP acts like a normal ZooKeeper replica to the client. 
+After receiving the packets from the client, ZPP extracts the sensitive data, encrypts it with a mechanism that allows the data to be decrypted by the proxy later on, and forwards the encrypted packet to a ZooKeeper replica where it can be stored with integrity ensured.
+
+ZPP runs inside a TEE, located in the cloud, allowing it to store encryption keys and process plaintext data safely. As a result, even if the attacker is the cloud provider itself, the integrity of the data will still be granted since the attacker won't be able to access or alter anything running inside the TEE.
+
+ZPP also retains all original ZooKeeper functionality, and does not affect ZooKeeper's internal behaviour. Therefore adapting existing ZooKeeper applications to this concept of ZPP it's easily done.
+
+This approach allows applications in the cloud to use ZooKeeper without privacy concerns at the cost of a small decrease of throughput.
+\subsection{Ryoan}
+\label{ssec:ryoan_sandboxing}
+
+Ryoan \cite{ryoanPaper} consists on a distributed sandbox that allows users to protect the execution of their data. This is achieved with the help of Intel SGX \cite{intelSGX} \cite{sgxPaper} enclaves, creating sandbox instances that protect data from untrusted software while also preventing leaks of data, which is a weakness of enclaves caused by side channel attacks.
+Ryoan does not include any priviledged software (e.g. OS and hypervisor) in it's TCB, while trusting only the hardware (SGX enclave) to assure secrecy and integrity of the data.
+
+It's main goal is to prevent leakage of secret data. This is done by preventing modules from sending sensitive data over their communications if outside the system boundaries, as well as eliminating stores to unprotected memory and system calls, made possible by the use of a trusted sandbox Native Client (NaCl). 
+
+\begin{figure}[htbp]
+	\centering
+	{\includegraphics[width=0.6\linewidth]{ryoan_design}}%
+	\caption{Instance of Ryoan running on a single machine}
+\end{figure}
+
+Ryoan's approach consists on confining the untrusted application in a NaCl, responsable of controlling system calls, I/O channels and data sizes. This NaCl sandbox is implemented inside the enclave, and can communicate with other instances of the NaCl, forming a distributed sandbox between users and different service providers. Inside the sandbox, the untrusted application can execute safely on secret data. The NaCl sandbox uses a load time code to ensure that the module can not do anything it shouldn't, thus violating the sandbox. To handle faults, exceptions or errors inside the NaCl sandbox, Ryoan uses an unprotected trampoline code, that can enter the enclave and read the information about the fault so it can handle it.
+\subsection{Opaque}
+\label{ssec:opaque}
+
+Opaque \cite{opaquePaper} is a distributed data analytics platform that guarantee encryption, secure computation and integrity to a wide range of queries. Therefore, instead of being implemented in the application layer or the execution layer as this kind of security approaches usually are, Opaque is implemented in the query optimization layer. 
+
+It is implemented with minimal modifications on Spark SQL, and uses Intel SGX technology as a way to grant confidentiality and integrity of the data. 
+However, the use of enclaves can still be threatened by access pattern leakage that can occur at memory-level, when a malicious OS infers information about encrypted data just by monitoring memory page accesses, and at network-level, when network traffic reveals information about encrypted data.
+
+Opaque hides access patterns in the system by using distributed oblivious relational operators and optimizes these by implementing new query planning techniques. It can be executed in three modes
+
+\begin{itemize}
+	\item encryption mode: provides data encryption and authentication, while granting correct execution.
+	\item oblivious mode: provides oblivious execution, protecting against access pattern leakage.
+	\item oblivious pad mode: extends the oblivious mode by adding prevention of size leakage.
+\end{itemize}
+
+Opaque is an approach that is able to grant oblivious execution 3 times faster than other specialized oblivious protocols.
+
+\subsection{Graphene-SGX}
+\label{ssec:grapheneSGX}
+
+The usage of Intel SGX, and similar technologies, have proven to add a great sense of privacy to the storage and execution of data in applications. However this tecnologies impose restrictions (e.g., disallowing system calls inside the enclave) that require the applications to be changed so they can benefit from this extra layer of security. 
+
+Graphene-SGX \cite{graphenePaper} came to help circunvent those restrictions, while still assure security to the data. It is a library OS that aims to reproduce system calls, respecting security concerns, so that unmodified applications can use them to keep executing normally without interacting directly with the OS or hypervisor. 
+
+By using a library OS, the system is expected to lose performance and, since a new layer of software was added, to increase the size of the TCB. 
+Although these assumptions are true, they are quite often exagerated. Graphene-SGX's performance goes from matching a Linux process to less than 2x in most executions of single-processes.
+Graphene-SGX has also shown some great results comparing it to other similar approaches that use shim layers, such as SCONE \cite{sconePaper} and Panoply \cite{panoplyPaper}, where it shows to be performancewise similar to SCONE and faster 5-10 percent than Panoply, while adding 54k lines of code to the TCB compairing to SCONE's 97k and Panoply 20k.
+
+Graphene's main goal is to run unmodified applications on SGX quickly. Thus, whilst the size of the TCB is not the smallest compairing to the other approaches, developers can reduce the TCB as needed as a way to reach a more optimal solution. 
+
+Graphene-SGX also supports application partitioning, enabling it to run small pieces of one application in multiple enclaves. This can be useful, for instance, to applications with different privilege levels while still increasing the security of the application.
+\subsection{Other approaches}
+\subsubsection{SGX-Enabled Network Protocols and Services}
+M.-W. Shih, M. Kumar, T. Kim, and A. Gavrilovska. S-NFV: Securing NFV states by
+using SGX. In Proceedings of the ACM Interna- tional Workshop on Security in
+Software Defined Networks &amp; Network Function Virtualization (SDN-NFV Security),
+pages 45–48. ACM, 2016.
+
+S. Kim, Y. Shin, J. Ha, T. Kim, and D. Han. A first step towards leveraging commodity
+trusted execu- tion environments for network applications. In Pro- ceedings of the
+14th ACM Workshop on Hot Topics in Networks (HotNets), page 7. ACM, 2015.
+\subsubsection{Trusted Cloud-Based System Administration}
+Tese de Mestrado DI-FCT-UNL, Sup. HJ
+\subsubsection{SGX-enabled Virtualization}
+https://dl.acm.org/citation.cfm?id=3311076
+\subsubsection{SGX-Enabled Linux Containers}
+https://www.cise.ufl.edu/~butler/pubs/codaspy19.pdf
+\subsubsection{SGX-Enabled Searchable Encryption}
+\subsubsection{ShieldStore}
+https://dl.acm.org/citation.cfm?id=3303951
+\subsubsection{EnclaveDB}
+https://ieeexplore.ieee.org/document/8418608
+
+
+
+% --------------------------------------------------^ ^ ^ ^ ^ ^ ^---------------------------------------------- %
+
+% ------------------------------------------^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ------------------------------------- %
+
+% ------------------------------------------ ^ NEW VERSION UPDATE ABOVE ^ ------------------------------------- %
+
+% ------------------------------------------^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ^ ------------------------------------- %
+
+% --------------------------------------------------^ ^ ^ ^ ^ ^ ^---------------------------------------------- %
 
 \section{Trusted Computing Environments} % (fold)
 \label{sec:tce}
@@ -80,53 +245,25 @@ This \gls{tee} abstraction can be achieved either by using a virtual machine mon
 In the next chapters we will be looking into more dept about this hardware protection providers, that are capable of creating trusted and isolated environments in the systems nowadays.
 
 \subsection{Intel SGX}
-\label{ssec:intelsgx}
 
-Intel Software Security Guard Extensions (SGX) are a set of instructions built in Intel \gls{cpu}s, that allow programmers to create \gls{tee}s, called enclaves. Enclaves are isolation containers that create an isolated environment where sensitive code can be stored and executed inside, ensuring integrity and confidentiality to it. By doing so, it reduces the \gls{tcb} in a way that most of the system software, apart from the enclaves and the \gls{cpu}, is considered not trusted.
 
-Enclaves are mapped into private regions of memory, where only the \gls{cpu} has access to, reducing the \gls{tcb} to only the enclave and the \gls{cpu} itself. Due to this restrictions, not even the most common system libraries can be accessed inside the enclave, since the \gls{os} is not considered trusted. 
 
-A system that encorporates \gls{sgx} under it's architecture is divided in two: a trusted component being the enclave, and an untrusted component being the rest of the system. The untrusted one requests the launch of the enclave, where the \gls{cpu} then manages to allocate the enclave in a private region of memory, made available only to that particular enclave. This portion of memory is kept encrypted in volatile memory, being only decrypted by the \gls{cpu} if the responsible enclave requests it \cite{guiBorgesThesis}.
-
-Altough isolation is the main objective of \gls{sgx}, it still allows a way for both  untrusted and trusted parties to communicate. This is made possible by the functions ECALL and OCALL. ECALLs are used for an untrusted component to call for trusted code in a secured way - the enclave copies the pointers to that specific code into a buffer, which is then made visible for the untrusted component, ensuring that the untrusted party can't know the real memory address inside the enclave. To communicate the other way arround the enclave calls for an OCALL, where the enclave is temporarily exited, executing then the unstrusted function needed. After that, the enclave is re-entered. OCALLS are mainly used by the enclave to access the network or to deal with I/O disk access.
 
 
 \subsection{RISC-V enabled Sanctum}
-\label{ssec:sanctum}
 
-Just like \gls{sgx}, the main objective of Sanctum is to offer strong isolation of software modules, altough following a different approach focused in avoiding unnecessary complexity, thus granting a simple security analysis.
-To make this possible, Sanctum \cite{sanctumPaper}, which tipically runs in a RISC-V processor, combines minimal and minimally invasive hardware modifications with a trusted software security monitor that is receptive to analysis and does not perform cryptographic operations using keys. 
 
-This minimality idea consists on reusing and slightly modifying existing well-understood mechanisms, while not modifiying \gls{cpu} building blocks, only adding hardware to the interfaces between blocks, causing Sanctum to be adaptable to other processors in addition to RISC-V. 
 
-Sanctum is a pratical approach that shows that a strong software isolation is achievable with a small set of minimally invasive hardware changes, causing reasonably low overhead. 
-This approach provides strong security guarantees dealing with side-channel attacks, such as cache timing and passive address translation attacks.
 
 \subsection{ARM Trust Zone}
-\label{ssec:armtz}
 
-ARM Trust Zone \cite{armTZPaper} are hardware security extentions offered by ARM application processors with the same finality as Intel \gls{sgx}, create isolated environments where software can execute in a secured and trustable way. 
 
-To accomplish this, ARM processors implement two virtual processors backed by hardware access control, where the software stack can switch between two states called secure world (SW) and normal world (NW). 
-The first one has higher priviledges than the second one, therefore it can access NWs copies of registers, but not the other way around. SW is also responsible of protecting running processes in the \gls{cpu}, while providing secured access to peripherals. 
-Each world acts like a runtime environment and has it's own set of resources. This resources can be partioned between the two worlds or just assigned to one of them, depending on the ARM chip specs.
 
-For the context switch between worlds, ARM processors implement a secured mode called Secure Monitor, where there's a special register responsable of determine if the processor runs code in SW or NW. 
-
-Most ARM processors also offer memory curtaining. This consists on the Secure Monitor allocating physical addresses of memory specifically to the SW, making this region of memory unaccessible to the rest of the system.
-
-By default, the system boots always in SW so it can provision the runtime environment before any untrusted code start to run. It eventually transitions to NW where untrusted code can start to be executed. 
 
 
 \subsection{AMD SEV}
-\label{ssec:amdsev}
 
-AMD Secure Encrypted Virtualization (SEV) is the AMD approach to provide a \gls{tee}, integrated with virtualization. It's a technology focused primarily on cloud computing environments, specifically in public \gls{iaas}, as its main goal is to reduce trust from higher priviledged parties (\gls{vmm}s or \gls{os}), so that they can not influence the execution on the other "smaller" parties (\gls{vm}s). 
 
-To achieve this, AMD grants encryption of memory through a technology called Secure Memory Encryption (SEM), or through TransparentSEM (TSEM) if the system runs a legacy OS or hypervisor with no need for any software modifications.
-After the data is encrypted, SEV integrates it with AMD virtualization architecture to support encrypted \gls{vm}s. By doing this, every \gls{vm} is now protected from his own hypervisor (\gls{vmm}), unabling its access to the decrypted data. Although uncapable of accessing the \gls{vm}, the \gls{vmm} is still responsible of controlling each \gls{vm}'s resources. \cite{amdPaper}
-
-Thus, AMD provides confidentiality of data by removing trust from the \gls{vmm}, and creates an isolated environment for the \gls{vm} to run, where only the \gls{vm} and the processor can be trusted. However it does not provide integrity of data, allowing replaying attacks to take place, and has a considerably large \gls{tcb}, since the \gls{os} of each \gls{vm} is trusted. \cite{amdSEVPaper}
 
 
 \subsection{Discussion}
@@ -360,91 +497,25 @@ In the next sections we'll discuss frameworks that can accomplish solutions to t
 
 
 \subsection{VC3 protection for MapReduce Jobs}
-\label{ssec:vc3_mapreduce}
-
-Verifiable Confidential Cloud Computing (VC3) \cite{vc3Paper} is a framework that achieves confidentiality and integrity of data, as well as verifiability of execution of code with good performance through MapReduce \cite{mapReduce} techniques. It uses Intel SGX processors as a building block and runs on unmodified Hadoop \cite{hadoop}.
-In VC3 users implement MapReduce jobs, compile and encrypt them, thus obtaining a private enclave code E-. They then join it with a small portion of public code E+, that implements the protocols for key exchange and job execution.
-Users then upload the resulting binary code to the cloud, where enclaves containing both E- and E+ are initialized by an untrusted framework F. 
-
-\begin{figure}[htbp]
-	\centering
-	{\includegraphics[width=0.6\linewidth]{vc3_design}}%
-	\caption{VC3 memory design model on the left, component dependencies on the right}
-\end{figure}
-
-A MapReduce begins with a key exchange between the user and the E+ code running in the enclave. After this, E+ can proceed to decrypt E- and process the encrypted data. VC3 isolates this processing from the OS by keeping an interface between the E+ layer and the outside of the enclave. This interface consists of basically two functions: readKV() and writeKV(), for reading a key-value pair on Hadoop or write it, respectively. Also, the data inside of the enclave is passed to the outside, more specifically from E+ to the untrusted F, by using a virtual address space shared by both.
-With VC3, both E- and the user data are always encrypted while in the cloud, except when processed by the trusted processor, while allowing Hadoop to manage the execution of VC3 jobs. Map and reduce nodes are seen as regular worker node to Hadoop, therefore Hadoop can provide its normal scheduling and fault-tolerance mechanisms, as well as load balancing. VC3 accomplishes this keeping Hadoop, the OS and the hypervisor out of the TCB.
 
 
 
 
 \subsection{Protected ZooKeeper}
-\label{ssec:protected_zookeeper}
 
-ZooKeeper \cite{zookeeper} is a replicated synchronization service for distributed systems with eventual consistency. However, ZooKeeper does not guarantee privacy of data stored inside of it by default.
- 
-Protected ZooKeeper \cite{protectedZooKeeper} is an approach that eliminates this privacy concerns, by placing an aditional layer between the client and the ZooKeeper, refered as ZooKeeper Privacy Proxy (ZPP). ZPP is a layer responsible for the encryption of all sensitive information, during a communication between a client and the ZooKeeper. 
-Clients communicate with the proxy via a SSL connection, where the packets are encrypted by an individual session key. Here, ZPP acts like a normal ZooKeeper replica to the client. 
-After receiving the packets from the client, ZPP extracts the sensitive data, encrypts it with a mechanism that allows the data to be decrypted by the proxy later on, and forwards the encrypted packet to a ZooKeeper replica where it can be stored with integrity ensured.
- 
-ZPP runs inside a TEE, located in the cloud, allowing it to store encryption keys and process plaintext data safely. As a result, even if the attacker is the cloud provider itself, the integrity of the data will still be granted since the attacker won't be able to access or alter anything running inside the TEE.
-
-ZPP also retains all original ZooKeeper functionality, and does not affect ZooKeeper's internal behaviour. Therefore adapting existing ZooKeeper applications to this concept of ZPP it's easily done.
-
-This approach allows applications in the cloud to use ZooKeeper without privacy concerns at the cost of a small decrease of throughput.
 
 \subsection{Ryoan Sandboxing}
-\label{ssec:ryoan_sandboxing}
 
-Ryoan \cite{ryoanPaper} consists on a distributed sandbox that allows users to protect the execution of their data. This is achieved with the help of Intel SGX \cite{intelSGX} \cite{sgxPaper} enclaves, creating sandbox instances that protect data from untrusted software while also preventing leaks of data, which is a weakness of enclaves caused by side channel attacks.
-Ryoan does not include any priviledged software (e.g. OS and hypervisor) in it's TCB, while trusting only the hardware (SGX enclave) to assure secrecy and integrity of the data.
-
-It's main goal is to prevent leakage of secret data. This is done by preventing modules from sending sensitive data over their communications if outside the system boundaries, as well as eliminating stores to unprotected memory and system calls, made possible by the use of a trusted sandbox Native Client (NaCl). 
-
-\begin{figure}[htbp]
-	\centering
-	{\includegraphics[width=0.6\linewidth]{ryoan_design}}%
-	\caption{Instance of Ryoan running on a single machine}
-\end{figure}
-
-Ryoan's approach consists on confining the untrusted application in a NaCl, responsable of controlling system calls, I/O channels and data sizes. This NaCl sandbox is implemented inside the enclave, and can communicate with other instances of the NaCl, forming a distributed sandbox between users and different service providers. Inside the sandbox, the untrusted application can execute safely on secret data. The NaCl sandbox uses a load time code to ensure that the module can not do anything it shouldn't, thus violating the sandbox. To handle faults, exceptions or errors inside the NaCl sandbox, Ryoan uses an unprotected trampoline code, that can enter the enclave and read the information about the fault so it can handle it.
 
 
 
 \subsection{Opaque}
-\label{ssec:opaque}
 
-Opaque \cite{opaquePaper} is a distributed data analytics platform that guarantee encryption, secure computation and integrity to a wide range of queries. Therefore, instead of being implemented in the application layer or the execution layer as this kind of security approaches usually are, Opaque is implemented in the query optimization layer. 
-
-It is implemented with minimal modifications on Spark SQL, and uses Intel SGX technology as a way to grant confidentiality and integrity of the data. 
-However, the use of enclaves can still be threatened by access pattern leakage that can occur at memory-level, when a malicious OS infers information about encrypted data just by monitoring memory page accesses, and at network-level, when network traffic reveals information about encrypted data.
-
-Opaque hides access patterns in the system by using distributed oblivious relational operators and optimizes these by implementing new query planning techniques. It can be executed in three modes
-
-\begin{itemize}
-	\item encryption mode: provides data encryption and authentication, while granting correct execution.
-	\item oblivious mode: provides oblivious execution, protecting against access pattern leakage.
-	\item oblivious pad mode: extends the oblivious mode by adding prevention of size leakage.
-\end{itemize}
-
-Opaque is an approach that is able to grant oblivious execution 3 times faster than other specialized oblivious protocols.
 
 
 
 \subsection{Graphene-SGX}
-\label{ssec:grapheneSGX}
 
-The usage of Intel SGX, and similar technologies, have proven to add a great sense of privacy to the storage and execution of data in applications. However this tecnologies impose restrictions (e.g., disallowing system calls inside the enclave) that require the applications to be changed so they can benefit from this extra layer of security. 
-
-Graphene-SGX \cite{graphenePaper} came to help circunvent those restrictions, while still assure security to the data. It is a library OS that aims to reproduce system calls, respecting security concerns, so that unmodified applications can use them to keep executing normally without interacting directly with the OS or hypervisor. 
-
-By using a library OS, the system is expected to lose performance and, since a new layer of software was added, to increase the size of the TCB. 
-Although these assumptions are true, they are quite often exagerated. Graphene-SGX's performance goes from matching a Linux process to less than 2x in most executions of single-processes.
-Graphene-SGX has also shown some great results comparing it to other similar approaches that use shim layers, such as SCONE \cite{sconePaper} and Panoply \cite{panoplyPaper}, where it shows to be performancewise similar to SCONE and faster 5-10 percent than Panoply, while adding 54k lines of code to the TCB compairing to SCONE's 97k and Panoply 20k.
-
-Graphene's main goal is to run unmodified applications on SGX quickly. Thus, whilst the size of the TCB is not the smallest compairing to the other approaches, developers can reduce the TCB as needed as a way to reach a more optimal solution. 
-
-Graphene-SGX also supports application partitioning, enabling it to run small pieces of one application in multiple enclaves. This can be useful, for instance, to applications with different privilege levels while still increasing the security of the application.
 
 \subsection{Network services protection approaches}
 \label{ssec:sgx_network_frameworks}
