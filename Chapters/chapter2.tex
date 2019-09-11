@@ -19,7 +19,21 @@ Finally, in Section 2.4 we make a critical analysis on the previously discussed 
 
 \section{Protection in untrusted OSes}
 
+Intro about the need of protecting from untrusted OSes
+
+Virtual Ghost
+Flicker
+MUSHI
+SeCage
+InkTag
+Sego
+All uses SMM (no work draft do prof)
+
 \section{Hardware-Enabled TEE - Trusted Execution Environments}
+
+talk about TEE
+maybe about TPM + HSM
+
 
 \section{Hardware-Enabled TEE Solutions}
 \subsection{XOM}
@@ -151,10 +165,15 @@ Graphene's main goal is to run unmodified applications on SGX quickly. Thus, whi
 
 Graphene-SGX also supports application partitioning, enabling it to run small pieces of one application in multiple enclaves. This can be useful, for instance, to applications with different privilege levels while still increasing the security of the application.
 \subsection{Other approaches}
+
+Talk about S-NFV - (ler versao july2019 tese antiga)
+
+Talk about hotNets
+
 \subsubsection{SGX-Enabled Network Protocols and Services}
 M.-W. Shih, M. Kumar, T. Kim, and A. Gavrilovska. S-NFV: Securing NFV states by
 using SGX. In Proceedings of the ACM Interna- tional Workshop on Security in
-Software Defined Networks &amp; Network Function Virtualization (SDN-NFV Security),
+Software Defined Networks amp; Network Function Virtualization (SDN-NFV Security),
 pages 45–48. ACM, 2016.
 
 S. Kim, Y. Shin, J. Ha, T. Kim, and D. Han. A first step towards leveraging commodity
@@ -172,7 +191,13 @@ https://dl.acm.org/citation.cfm?id=3303951
 \subsubsection{EnclaveDB}
 https://ieeexplore.ieee.org/document/8418608
 
+\subsection{Summary and Discussion}
 
+ShieldStore vs EnclaveDB
+
+Graphene
+
+Dissertation Approach
 
 % --------------------------------------------------^ ^ ^ ^ ^ ^ ^---------------------------------------------- %
 
@@ -244,25 +269,6 @@ This \gls{tee} abstraction can be achieved either by using a virtual machine mon
 
 In the next chapters we will be looking into more dept about this hardware protection providers, that are capable of creating trusted and isolated environments in the systems nowadays.
 
-\subsection{Intel SGX}
-
-
-
-
-
-\subsection{RISC-V enabled Sanctum}
-
-
-
-
-\subsection{ARM Trust Zone}
-
-
-
-
-
-\subsection{AMD SEV}
-
 
 
 
@@ -299,115 +305,27 @@ In the following subsections will be discussed how to achieve security for this 
 \subsection{Virtual Ghost}
 \label{ssec:virtghost}
 
-Virtual Ghost was presented in 2014 \cite{virtGhostPaper} as an approach to provide application security against untrusted OSes without requiring higher privileges. 
-
-To do so, it introduces the idea of ghost memory which is unaccessible to the OS to read or write, and provides the system with trusted services such as ghost memory management, key management, as well as encryption and signing services. 
-
-Virtual Ghost therefore suggests a different design approach.
-It uses compiler intrumentation to protect the system from external exploits of the OS, by sandboxing and using control-flow integrity and interposes a thin abstraction layer between the kernel and the hardware. Although this layer is similar to a hypervisor, it appears as a library of functions that the kernel code can call directly to interact with the hardware, thus avoiding the need of giving higher privileges than the OS itself. 
-
-By using ghost memory and, as said before, preventing the OS from reading and writing ghost memory pages rather than allowing to access this regions of memory, Virtual Ghost makes the system safe from a direct threat from the OS.
-
-Overhead for non-secure data is also prevented since, with that type of data, system calls made by the application don't need encryption or hashing.
-
-Virtual Ghost gives the application flexibility on choosing the encryption and hashing algorithm, so that the system can obtain the desired tradeoff between performance and security.
-
-It is an approach that offers protection from kernel malware, while ensuring comparable performance to TEEs, while adding a layer of protection against external attacks on the kernel itself.
-
-
-
 \subsection{Flicker}
 \label{ssec:flicker}
 
-Flicker \cite{flickerPaper} is an infrastructure that provides secured isolated execution of sensitive code while trusting a small TCB, which significantly improves the security and reliability of the code Flicker executes. Although Flicker does not achieve the same level of protection from physical tampering as secure coprocessors do, it provides the same strong guarantees by using modern commodity hardware.
-
-This isolation idea is guaranteed by trusting as few as 250 additional lines of code and, as a result, Flicker circumvents legacy software and eliminates reliance on their correctness, therefore reducing the TCB. Once the TCB has been precisely defined, it's possible for the system to achieve reliability and security.  
-
-When Flicker starts, none of the software already executing can monitor or interfere with it's execution. Also, all traces of it's execution can be eliminated before non-Flicker execution resumes.
-
-It also provides fine-grained attestation of the code executed to an external party, where the party using Flicker does not leak any information about the state of the system software. 
-
-To achieve these properties, Flicker needs hardware that support late launch and attestation, such as AMD and Intel commodity processors, and it's still capable of guarantee them even if the BIOS and OS have become malicious to the system.
 
 \subsection{MUSHI}
 \label{ssec:mushi}
-
-MUSHI, or MUltiple level Security cloud with strong Hardware level Isolation, is a framework that provides hardware level isolation and protection to individual guest VMs executing in a cloud infrastructure. It guarantees confidentiality and integrity of a VM even during malicious attacks from both inside and outside the cloud environment.
-
-MUSHI is mainly designed to deal with multi-level security (MLS) \cite{mlsMIT} systems, therefore MUSHI's main goal is to provide a trusted isolated environment for VM execution. To achieve this, VMs should be instantiated securely and should remain that way throughout their life cycle. With that in mind, MUSHI guarantees the following properties
-
-\begin{itemize}
-	\item Trusted Execution - upon starting a VM, the integrity of both kernel and user image, as well as MUSHI itself, should be attested to the user, thus defining a trusted initial state
-
-	\item Isolation - VMs running on the same machine should be isolated. As a result, both confidentiality and integrity will be provided to the user VM during execution. However it does not prevent side channel attacks
-	
-	\item User Image Confidentiality - MUSHI provides user image encryption with a key provided by the user itself
-	
-\end{itemize}
-
-MUSHI depends on a very small TCB, including only the hardware, hardware virtualization, BIOS and System Management Mode. It can be implemented using modern commodity hardware containing SMM memory (SMRAM), necessary for the isolation between the host and VM. For remote attestation of VM images, it's done used a TPM. \cite{mushiPaper}
 
 
 \subsection{SeCage}
 \label{ssec:secage}
 
-SeCage \cite{SeCagePaper} is an approach that aims to protect user-defined secrets from application potential threats and malicious OS through hardware virtualization, thus isolating sensitive code and critical secrets while denying hypervisor intervention during runtime.
-It's designed to deal with a strong adversary model, assuming that both application and OS can be compromised, while suporting large-scale software, which usually means a big attack surface.
-
-SeCage devides the system in compartments, where secret compartments have all the functions with permissions to access and manipulate those secrets, and a main compartment is resposible to handle the rest of the code.
-
-The main goals of SeCage are to assure confidentiality of user secrets (e.g., cryptographic keys) and to be a pratical approach with small overheads for large software systems. To achieve this, it ensures
-
-\begin{itemize}
-	\item Hybrid analysis of secrets - provides a mechanism that prevents secrets from being disclosed during runtime, while not affecting their normal usage. For it, SeCage combines static and dynamic analysis. The first one is used to discover potencial functions related to the secrets, while the second one complements the first one, being more precise than the first one. With this, SeCage defines secret compartments, containing a set of secrets and their most common functions. This ensures that only the functions inside a compartment can access that set of secrets.  
-	\item Hypervisor protection - isolate each compartment in a completely isolated address space through hardware virtualization, making them unaccessible to the Hypervisor. Only if a function outside a compartment tries to access a secret without permission, it's the Hypervisor job to handle that violation.
-	\item Separating control and data plane - since each compartment needs to communicate with each other, there will eventually be contact with the hypervisor. Therefore, instead of frequent VM exits which cause high overheads, SeCage minimazes hypervisor intervention by only require it to define policies on whether two compartments can communicate (control plane) for as long as they conform to those policies (data plane)
-	
-\end{itemize}
-
-SeCage was shown useful protecting large-scale system software from HeartBleed attacks, kernel memory disclosure and rootkit memory scanning, without adding any significant performance overhead to the application.
 
 
 \subsection{InkTag}
 \label{ssec:inktag}
-
-InkTag \cite{inkTagPaper} is a virtualization-based architecture that protects trusted applications from an untrusted OS, allowing trusted applications to securely use untrusted OS services. InkTag admits trust in the hypervisor, which is responsible to protect the application code, data, and control flow from the OS, allowing applications to execute in isolation, in a high-assurance process (HAP). 
-Trusted applications can securely and privately share data without interference from the OS or other applications. Each secure application communicates directly with the InkTag hypervisor via hypercalls to detect OS misbehavior.
-
-It introduces a concept called paraverification, which is a technique that simplifies the hypervisor by forcing the untrusted OS to participate in its own verification. As a result, the OS notifies the hypervisor when there is any update to be made to the state, which the hypervisor then checks for correctness.
-InkTag also ensures virtualization through hardware, which is used to grant isolation, as well as separate secure from insecure data.
-Access control policies can be specified by each trusted applications to access their secure files, with privacy and integrity of them managed by InkTag through encryption and hashing. 
- 
-Other important aspect of InkTag is recoverability. InkTag is capable of ensuring crash consistency between file data and metadata. Metadata, which consists in hashed data, is fundamental to guarantee integrity of data therefore, with this consistency granted, InkTag hypervisor can protect the integrity of files even if the system crashes. If for some reason some data is inconsistent, the application must discard it.
-
 
 
 
 
 \subsection{Sego}
 \label{ssec:sego}
-
-Sego \cite{segoPaper} is a hypervisor-based system that gives strong privacy and integrity guarantees to trusted applications, even when the guest OS is compromised or hostile, by removing the trust from the OS. Sego verifies OS services, like the file system, instead of replacing them.
-
-To protect the application from the untrusted OS, Sego relies on a trusted hypervisor and assumes that hardware always executes hypervisor code correctly.
-It uses paraverification, where the guest OS communicates its actions and intent to the hypervisor, therefore making this verification of the untrusted OS behavior more efficient and easy.
-
-\begin{figure}[htbp]
-	\centering
-	{\includegraphics[width=0.5\linewidth]{sego_architecture}}%
-	\caption{Sego Architecture Overview}
-	\label{fig:sego}
-\end{figure}
-
-
-Sego executes trusted code in a HAP. After booting the OS, the hypervisor starts the HAP in a way that the HAP itself can verify its own initial code and data, similar to a TPM. Once running, the hypervisor ensures that HAP's registers and trusted address space are isolated from the OS. 
-Everytime the HAP wants to perform a system call, it must inform the hypervisor of its intent, so that the hypervisor can verify OS activity. HAPs use a small library called libsego as a way to handle system calls and get Sego services without having to change their code. 
-Each HAP also contains an untrusted trampoline code, that uses to interact with the OS. This is used as a way to protect HAP control-flow, since it uses this trampoline as the issuer for the system calls, therefore never compromising the HAP itself. Figure \ref{fig:sego} shows well enough Sego's overall design without going into to much dept, refering which components are included in the TCB and which are not. 
-
-Context switches are handled by the hypervisor, hiding any information about the HAP from the OS.
-
-Sego does not guarantee OS availability. A compromised OS can simply shut down or refuse to schedule processes. However this is easily detected.
-
 
 
 
@@ -493,28 +411,6 @@ The need for cloud computing is constantly growing in modern applications. It is
 Although the usage of TEEs aim to tackle this problem by running and storing sensitive data on a isolated environment, protecting that data from unauthorized access. To accomplish this, the main approach is to devide the application into trusted and untrusted parts, reducing the TCB as much as possible as a way to reduce security breaches. 
 In the next sections we'll discuss frameworks that can accomplish solutions to the problem described above, by working with Intel-SGX as the TEE provider, as a way to complement its regular execution.
 
-
-
-
-\subsection{VC3 protection for MapReduce Jobs}
-
-
-
-
-\subsection{Protected ZooKeeper}
-
-
-\subsection{Ryoan Sandboxing}
-
-
-
-
-\subsection{Opaque}
-
-
-
-
-\subsection{Graphene-SGX}
 
 
 \subsection{Network services protection approaches}
