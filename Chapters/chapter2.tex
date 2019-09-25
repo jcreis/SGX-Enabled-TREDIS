@@ -11,29 +11,53 @@
 % ================
 % = Introduction =
 % ================
-In this chapter we address existing solutions that are able to protect applications from the \gls{os} or hypervisor, regardless the machine where they're running on (whether locally or remotelly), thus increasing the level of trust an user can deposit in an execution of an application.
+We’re currently in a period where we start to depend more and more on allowing remote services to access our data and execute our applications. Cloud computing systems require users to trust them with their data. Therefore these systems need a way to assure data privacy
+and security, thus gaining users trust.
+
+In this chapter we address existing solutions that are able to protect applications from the \gls{os} or hypervisor, regardless the machine where they're running on, thus increasing the level of trust an user can deposit in an execution of an application.
+
+
+-------------------------- TO DO ----------------------------
 
 These existing solutions are organized in different sections in the following way: Section 2.1 covers Trusted Computing Environments; Section 2.2 covers some relevant approaches that enable protection against untrusted OSes by making use of Trusted Execution Environments; Section 2.3 covers Intel-SGX frameworks; 
 
 Finally, in Section 2.4 we make a critical analysis on the previously discussed techniques, while covering it's main advantages and disadvantages.
 
+-------------------------- END OF TO DO ----------------------------
+
 \section{Protection in untrusted OSes}
 
-Intro about the need of protecting from untrusted OSes
+A lot of applications these days depend on sensitive data to operate. Therefore protecting this data must be taken into account while designing the application. 
+One of the things we have to think about is the size of the TCB, and how to reduce it as much as possible without losing the operability of the system. 
+Typically, the host OS is considered safe and trustworthy, although that is not always the case. A compromised OS can give complete access to sensitive data, if not isolated from the application. That’s why this is a major security problem and must be tackled in today’s systems.
 
-Virtual Ghost
-Flicker
-MUSHI
-SeCage
-InkTag
-Sego
-All uses SMM (no work draft do prof)
+Approaches like Virtual Ghost \cite{virtGhostPaper}, Flicker \cite{flickerPaper}, MUSHI \cite{mushiPaper}, SeCage \cite{SeCagePaper}, InkTag \cite{inkTagPaper}, Sego \cite{segoPaper}, grant security by isolating the sensitive data from the untrusted \gls{os} either by monitoring the application while it runs, or by enforcing memory isolation by using virtualization.
+
+
+-------------------------- TO DO -----------------------------
+
+			drawback of those approaches (inktag, virtghost...)
+			and why aren't enough
+			
+-------------------------- END OF TO DO -----------------------------
 
 \section{Hardware-Enabled TEE - Trusted Execution Environments}
 
-talk about TEE
-maybe about TPM + HSM
+A \gls{tee} is an abstraction provided by both software and hardware that guarantees isolated execution of specific programs in a machine, including the host \gls{os}, hypervisor or even system administrators, preventing them from leveraging their priviledges. A \gls{tee} also provides integrity of applications running inside it, along with confidentiality of their assets.
 
+The first attempts to implement a \gls{tee} on a cloud system consisted of combining a hypervisor with isolation properties and a \gls{tpm}. 
+
+A \gls{tpm} \cite{tpmPaper} consists of a hardware chip, called microcontroller, that aims to create a trustable platform, through encryption and authenticated boot, and make sure it remains trustworthy, through remote attestation. 
+It provides cryptographic functions that can't be modified, and a private key (Endorsment Key) that is unique to every \gls{tpm} made, working as an identifier for each \gls{tpm}.
+However, \gls{tpm}s have several problems when applied to the cloud due to being designed with the intention to offer security to a single machine. Thus, a distributed environment would not be the best kind of environment for a \gls{tpm} to work on.
+
+With that in mind, new hardware-enabled solutions were developed to be more flexible and cloud friendly than the \gls{tpm}. Technologies like ARM TrustZone, Intel SGX, AMD-SEV, and others, will be approached in the following section.
+
+-------------------------- TO DO -----------------------------
+
+ 			HSM ?????
+
+-------------------------- END OF TO DO -----------------------------
 
 \section{Hardware-Enabled TEE Solutions}
 \subsection{XOM}
