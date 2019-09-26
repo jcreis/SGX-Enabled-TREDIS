@@ -67,7 +67,7 @@ With that in mind, new hardware-enabled solutions were developed to be more flex
 \section{Hardware-Enabled TEE Solutions}
 
 
-The idea of using hardware to provide trusted execution environments started appearing as a way to deal with piracy, with examples like TCPA and Microsoft's Palladium being the most known ones. By making use of hardware, it was possible to encrypt data (DVD's, for example) that could only be decrypted by a specific hardware, making it impossible to copy. 
+The idea of using hardware to provide trusted execution environments started appearing as a way to deal with piracy, with examples like TCPA \cite{tcpaPaper} and Microsoft's Palladium being the most known ones. By making use of hardware, it was possible to encrypt data (DVD's, for example) that could only be decrypted by a specific hardware, making it impossible to copy. 
 
 Although this approaches were effective back in the day, both of them place their trust in the hardware, not trusting the \gls{os} entirely. 
 Thus, since any application does not trust the \gls{os}, it does not trust the application to properly use its resources either. Therefore, some of the protection aspects of the \gls{os} must be moved into the hardware, as well as changing the interface between the \gls{os} and the application so it supports the hardware security features.
