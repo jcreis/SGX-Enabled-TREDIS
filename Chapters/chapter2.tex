@@ -16,14 +16,16 @@ and security, thus gaining users trust.
 
 In this chapter we address existing solutions that are able to protect applications from the \gls{os} or hypervisor, regardless the machine where they're running on, thus increasing the level of trust an user can deposit in an execution of an application.
 
+These existing solutions are organized in different sections in the following way: 
+Section 2.1 covers protection against untrusted \gls{os}es; 
+Section 2.2 covers \gls{tee}s and hardware-enabled approaches;
+In Section 2.3 we cover, in more detail, hardware-enabled \gls{tee} solutions used today.
+Section 2.4 covers shielded applications and frameworks compatible with Intel-\gls{sgx}, which is the \gls{tee} technology we choose for our approach.
+Finally, in Section 2.4 we make a critical analysis on the topics previously discussed, while covering their main advantages and disadvantages.
 
--------------------------- TO DO ----------------------------
 
-These existing solutions are organized in different sections in the following way: Section 2.1 covers Trusted Computing Environments; Section 2.2 covers some relevant approaches that enable protection against untrusted OSes by making use of Trusted Execution Environments; Section 2.3 covers Intel-SGX frameworks; 
 
-Finally, in Section 2.4 we make a critical analysis on the previously discussed techniques, while covering it's main advantages and disadvantages.
 
--------------------------- END OF TO DO ----------------------------
 
 \section{Protection in untrusted OSes}
 
@@ -41,6 +43,8 @@ Approaches like Virtual Ghost \cite{virtGhostPaper}, Flicker \cite{flickerPaper}
 			
 -------------------------- END OF TO DO -----------------------------
 
+
+
 \section{Hardware-Enabled TEE - Trusted Execution Environments}
 
 A \gls{tee} is an abstraction provided by both software and hardware that guarantees isolated execution of specific programs in a machine, including the host \gls{os}, hypervisor or even system administrators, preventing them from leveraging their priviledges. A \gls{tee} also provides integrity of applications running inside it, along with confidentiality of their assets.
@@ -49,18 +53,95 @@ The first attempts to implement a \gls{tee} on a cloud system consisted of combi
 
 A \gls{tpm} \cite{tpmPaper} consists of a hardware chip, called microcontroller, that aims to create a trustable platform, through encryption and authenticated boot, and make sure it remains trustworthy, through remote attestation. 
 It provides cryptographic functions that can't be modified, and a private key (Endorsment Key) that is unique to every \gls{tpm} made, working as an identifier for each \gls{tpm}.
+
 However, \gls{tpm}s have several problems when applied to the cloud due to being designed with the intention to offer security to a single machine. Thus, a distributed environment would not be the best kind of environment for a \gls{tpm} to work on.
 
 With that in mind, new hardware-enabled solutions were developed to be more flexible and cloud friendly than the \gls{tpm}. Technologies like ARM TrustZone, Intel SGX, AMD-SEV, and others, will be approached in the following section.
 
 -------------------------- TO DO -----------------------------
 
- 			HSM ?????
+ 			should we talk about HSM ?????
 
 -------------------------- END OF TO DO -----------------------------
 
 \section{Hardware-Enabled TEE Solutions}
+
+
+The idea of using hardware to provide trusted execution environments started appearing as a way to deal with piracy, with examples like TCPA and Microsoft's Palladium being the most known ones. By making use of hardware, it was possible to encrypt data (DVD's, for example) that could only be decrypted by a specific hardware, making it impossible to copy. 
+
+Although this approaches were effective back in the day, both of them place their trust in the hardware, not trusting the \gls{os} entirely. 
+Thus, since any application does not trust the \gls{os}, it does not trust the application to properly use its resources either. Therefore, some of the protection aspects of the \gls{os} must be moved into the hardware, as well as changing the interface between the \gls{os} and the application so it supports the hardware security features.
+
+XOM \cite{xomPaper}, described in the next subsection, was developed as a way to deal with these changes that were required to use this idea of trusted computing in a better way.
+
+
 \subsection{XOM}
+
+
+
+
+-------------------------- TO DO -----------------------------
+
+
+
+XOM | a processor architecture that provides
+copy protection and tamper-resistance functions. In XOM,
+only the processor is trusted; main memory and the operat-
+ing system are not trusted. 
+
+Our operating system (XOMOS) manages hardware
+resources for applications that don't trust it. This requires a
+division of responsibilities between the operating system and
+hardware that is unlike previous systems.
+
+There are several good reasons for creating tamper-res-
+istant software including enabling
+mobile code to run on untrusted platforms without the risk
+of tampering or intellectual property theft, and enabling the
+deployment of trusted clients in distributed services such as
+banking transactions, on-line gaming, electronic voting, and
+digital content distribution.
+
+Tamper-resistance can be enforced using software or hardware techniques
+
+Trusting the hardware rather than the software has in-
+teresting implications for operating systems design. Since
+sharing hardware resources among multiple users is a di-
+cult task, often requiring complex policy decisions, it is most
+naturally done in software by an operating system.
+
+This paper explores the design of an operating system that
+runs on hardware that supports tamper-resistant software.
+
+Our operating system is intended to work with an existing
+processor architecture called XOM, which stands for eXe-
+cute Only Memory [17]. In the XOM processor architec-
+ture, programs do not trust the operating system or external
+memory, but instead, trust the processor hardware to pro-
+tect their code and data.
+
+XOM can protect against a sophisticated attacker who may have physical access to the hardware
+
+The XOM attack model also assumes that main memory may be compromised by an adversary. The XOM processor
+not only encrypts values in memory, but also stores hashes of
+those values in memory as well.
+It will only accept encrypted values
+from memory if accompanied byavalid hash.
+
+Currently, there exist various initiatives that place the
+trust in modern computing systems in an hardware component rather in the OS
+In these systems,
+the applications don't trust the operating system to protect
+their data, but the operating system also does not trust the
+application to properly use its resources.
+As a result the interface between the operating system and applications must change to support the hardware security features, and some of the protection aspects of the operating system must
+be moved into the hardware.
+This paper studied how these
+changes can be implemented and what the impact of those
+changes on the performance of the system is.
+ 
+-------------------------- END OF TO DO -----------------------------
+
 \subsection{ARM TrustZone}
 \label{ssec:armtz}
 
@@ -107,10 +188,45 @@ Altough isolation is the main objective of \gls{sgx}, it still allows a way for 
 
 \section{SGX-Enabled Frameworks and Shielded Applications}
 \subsection{Shielded protected applications in untrusted Clouds}
+
+-------------------------- TO DO -----------------------------
+
+
+
+-------------------------- END OF TO DO -----------------------------
+
 \subsection{SCONE}
+
+-------------------------- TO DO -----------------------------
+
+
+
+-------------------------- END OF TO DO -----------------------------
+
 \subsection{Haven}
+
+-------------------------- TO DO -----------------------------
+
+
+
+-------------------------- END OF TO DO -----------------------------
+
 \subsection{OpenSGX}
+
+-------------------------- TO DO -----------------------------
+
+
+
+-------------------------- END OF TO DO -----------------------------
+
 \subsection{Panoply}
+
+-------------------------- TO DO -----------------------------
+
+
+
+-------------------------- END OF TO DO -----------------------------
+
 \subsection{VC3}
 \label{ssec:vc3_mapreduce}
 
@@ -190,11 +306,19 @@ Graphene's main goal is to run unmodified applications on SGX quickly. Thus, whi
 Graphene-SGX also supports application partitioning, enabling it to run small pieces of one application in multiple enclaves. This can be useful, for instance, to applications with different privilege levels while still increasing the security of the application.
 \subsection{Other approaches}
 
+-------------------------- TO DO -----------------------------
+
 Talk about S-NFV - (ler versao july2019 tese antiga)
 
 Talk about hotNets
 
+-------------------------- END OF TO DO -----------------------------
+
+
 \subsubsection{SGX-Enabled Network Protocols and Services}
+
+-------------------------- TO DO -----------------------------
+
 M.-W. Shih, M. Kumar, T. Kim, and A. Gavrilovska. S-NFV: Securing NFV states by
 using SGX. In Proceedings of the ACM Interna- tional Workshop on Security in
 Software Defined Networks amp; Network Function Virtualization (SDN-NFV Security),
@@ -203,25 +327,73 @@ pages 45–48. ACM, 2016.
 S. Kim, Y. Shin, J. Ha, T. Kim, and D. Han. A first step towards leveraging commodity
 trusted execu- tion environments for network applications. In Pro- ceedings of the
 14th ACM Workshop on Hot Topics in Networks (HotNets), page 7. ACM, 2015.
+
+-------------------------- END OF TO DO -----------------------------
+
 \subsubsection{Trusted Cloud-Based System Administration}
+
+-------------------------- TO DO -----------------------------
+
 Tese de Mestrado DI-FCT-UNL, Sup. HJ
+
+-------------------------- END OF TO DO -----------------------------
+
 \subsubsection{SGX-enabled Virtualization}
+
+-------------------------- TO DO -----------------------------
+
 https://dl.acm.org/citation.cfm?id=3311076
+
+-------------------------- END OF TO DO -----------------------------
+
 \subsubsection{SGX-Enabled Linux Containers}
+
+-------------------------- TO DO -----------------------------
+
 https://www.cise.ufl.edu/~butler/pubs/codaspy19.pdf
+
+-------------------------- END OF TO DO -----------------------------
+
 \subsubsection{SGX-Enabled Searchable Encryption}
+
+-------------------------- TO DO -----------------------------
+
+-------------------------- END OF TO DO -----------------------------
+
+
 \subsubsection{ShieldStore}
+
+-------------------------- TO DO -----------------------------
+
 https://dl.acm.org/citation.cfm?id=3303951
+
+-------------------------- END OF TO DO -----------------------------
+
 \subsubsection{EnclaveDB}
+
+-------------------------- TO DO -----------------------------
+
 https://ieeexplore.ieee.org/document/8418608
 
-\subsection{Summary and Discussion}
+-------------------------- END OF TO DO -----------------------------
+
+
+
+
+
+
+\section{Summary and Discussion}
+
+-------------------------- TO DO -----------------------------
 
 ShieldStore vs EnclaveDB
 
 Graphene
 
 Dissertation Approach
+
+
+-------------------------- END OF TO DO -----------------------------
 
 % --------------------------------------------------^ ^ ^ ^ ^ ^ ^---------------------------------------------- %
 
