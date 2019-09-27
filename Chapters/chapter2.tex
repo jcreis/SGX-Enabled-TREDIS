@@ -72,73 +72,25 @@ The idea of using hardware to provide trusted execution environments started app
 Although this approaches were effective back in the day, both of them place their trust in the hardware, not trusting the \gls{os} entirely. 
 Thus, since any application does not trust the \gls{os}, it does not trust the application to properly use its resources either. Therefore, some of the protection aspects of the \gls{os} must be moved into the hardware, as well as changing the interface between the \gls{os} and the application so it supports the hardware security features.
 
-XOM \cite{xomPaper}, described in the next subsection, was developed as a way to deal with these changes that were required to use this idea of trusted computing in a better way.
+XOM, described in the next subsection, was developed as a way to deal with these changes that were required to use this idea of trusted computing in a better way.
 
 
 \subsection{XOM}
 
+XOM \cite{xomPaper}, which stands for eXecute Only Memory, is a processor architecture that is able to provide copy protection and tamper-resistence functions, 
+good for enabling code to run in untrusted platforms, deployment of trusted clients in distributed systems like banking transactions, online gaming and electronic voting, but also fundamental to deal with piracy back in the day it was published. 
 
+The main idea is to only trust the processor to protect the code and data, thus not trusting the main memory nor any software, including the host \gls{os}.
+However, this idea of only trusting hardware has some implications for \gls{os}es design. This happens due to the fact that sharing hardware resources between multiple users is a hard job, specially without trusting any software. It is usually easier to have this policies performed by the \gls{os}. Therefore, not trusting the software entirely can sometimes be a drawback.  
 
+For XOM architecture to be used, it is required a specific \gls{os} (XOMOS). XOMOS runs on hardware that supports tamper-resistant software, and is adapted to manage hardware resources for applications that do not trust it.
+
+XOM offers protection against attackers who may have physical access to the hardware itself, as well as main memory protection, if compromised. For it, the XOM processor encrypts the values in memory and stores the hash of those values in memory as well. It then only accepts encrypted values from memory if followed by a valid respective hash. 
 
 -------------------------- TO DO -----------------------------
 
 
 
-XOM | a processor architecture that provides
-copy protection and tamper-resistance functions. In XOM,
-only the processor is trusted; main memory and the operat-
-ing system are not trusted. 
-
-Our operating system (XOMOS) manages hardware
-resources for applications that don't trust it. This requires a
-division of responsibilities between the operating system and
-hardware that is unlike previous systems.
-
-There are several good reasons for creating tamper-res-
-istant software including enabling
-mobile code to run on untrusted platforms without the risk
-of tampering or intellectual property theft, and enabling the
-deployment of trusted clients in distributed services such as
-banking transactions, on-line gaming, electronic voting, and
-digital content distribution.
-
-Tamper-resistance can be enforced using software or hardware techniques
-
-Trusting the hardware rather than the software has in-
-teresting implications for operating systems design. Since
-sharing hardware resources among multiple users is a di-
-cult task, often requiring complex policy decisions, it is most
-naturally done in software by an operating system.
-
-This paper explores the design of an operating system that
-runs on hardware that supports tamper-resistant software.
-
-Our operating system is intended to work with an existing
-processor architecture called XOM, which stands for eXe-
-cute Only Memory [17]. In the XOM processor architec-
-ture, programs do not trust the operating system or external
-memory, but instead, trust the processor hardware to pro-
-tect their code and data.
-
-XOM can protect against a sophisticated attacker who may have physical access to the hardware
-
-The XOM attack model also assumes that main memory may be compromised by an adversary. The XOM processor
-not only encrypts values in memory, but also stores hashes of
-those values in memory as well.
-It will only accept encrypted values
-from memory if accompanied byavalid hash.
-
-Currently, there exist various initiatives that place the
-trust in modern computing systems in an hardware component rather in the OS
-In these systems,
-the applications don't trust the operating system to protect
-their data, but the operating system also does not trust the
-application to properly use its resources.
-As a result the interface between the operating system and applications must change to support the hardware security features, and some of the protection aspects of the operating system must
-be moved into the hardware.
-This paper studied how these
-changes can be implemented and what the impact of those
-changes on the performance of the system is.
  
 -------------------------- END OF TO DO -----------------------------
 
