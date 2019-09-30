@@ -37,7 +37,7 @@ Typically, the host OS is considered safe and trustworthy, although that is not 
 
 Approaches like Virtual Ghost \cite{virtGhostPaper}, Flicker \cite{flickerPaper}, MUSHI \cite{mushiPaper}, SeCage \cite{SeCagePaper}, InkTag \cite{inkTagPaper}, Sego \cite{segoPaper}, grant security by isolating the sensitive data from the untrusted \gls{os} either by monitoring the application while it runs, or by enforcing memory isolation by using virtualization.
 
-
+%todo
 -------------------------- TO DO -----------------------------
 
 			drawback of those approaches (inktag, virtghost...)
@@ -62,6 +62,7 @@ However, \gls{tpm}s have several problems when applied to the cloud due to being
 
 With that in mind, new hardware-enabled solutions were developed to be more flexible and cloud friendly than the \gls{tpm}. Technologies like ARM TrustZone, Intel SGX, AMD-SEV, and others, will be approached in the following section.
 
+%todo
 -------------------------- TO DO -----------------------------
 
  			should we talk about HSM ?????
@@ -185,7 +186,7 @@ Assuring a shielded execution of an application fundamentally means that both co
 
 
 \subsection{SCONE}
-
+%todo
 -------------------------- TO DO -----------------------------
 
 
@@ -194,21 +195,76 @@ Assuring a shielded execution of an application fundamentally means that both co
 
 \subsection{Haven}
 
+Haven is the first system to achieve shielded execution of unmodified legacy applications for a commodity \gls{os} (Windows) and hardware, achieving mutual distrust with the entire host software stack.
+
+It leverages Intel-\gls{sgx} to protect against privileged code and physical attacks, but also against the challenge of executing unmodified legacy binaries while protecting them from an untrusted host.
+
+Instead of shielding only specific parts of applications and data by placing them inside enclaves, Haven aims to protect entire unmodified applications, written without any knowledge of SGX. 
+
+However, there may be problems with this approach. 
+Executing entire chunks of legacy binary code inside an SGX enclave pushes the limits of SGX, and while the code to be protected was written assuming that the \gls{os} executing the code would execute it properly, this may not be the case. The \gls{os} may be malicious. For this latest problem, the so called "Iago attack", Haven uses a library OS adapted from Drawbridge, running inside an SGX enclave.
+%todo \cite{drawbridge}
+
+
+%todo
 -------------------------- TO DO -----------------------------
 
-Our prototype, Haven \cite{havenPaper},
-is the first system to achieve shielded execution of unmodified legacy applications, including SQL Server and
-Apache, on a commodity OS (Windows) and commodity hardware
+Haven shields applica-
+tions using mechanisms such as private scheduling,
+distrustful virtual memory management, and an en-
+crypted and integrity-protected file system.
 
-Haven leverages the hardware protection of
-Intel SGX to defend against privileged code and physical attacks such as memory probes, but also addresses the
-dual challenges of executing unmodified legacy binaries
-and protecting them from a malicious host
+
+
+Haven
+implements these primitives using a mutually-distrusting
+interface with the host OS. This ensures shielded execu-
+tion of unmodified applications; a malicious host cannot
+trick an application into divulging its secrets nor executing
+incorrectly. Combined with a remote attestation mecha-
+nism [2], Haven gives the user an end-to-end guarantee of
+application security without trusting the cloud provider,
+its software, or any hardware beyond the processor itself.
+
+
+FINAL THOUGHTS:
+the trusted computing base (TCB) of
+Haven is substantial, because the LibOS includes a large
+subset of Windows. However, in contrast to the current
+cloud model, all code in the enclave, and thus all code in
+the user’s TCB, is under user control.
+
+haven's goal is not to minimise the TCB, but
+rather to give the user equivalent trust in the confidential-
+ity and integrity of their data when moving an application
+from a private data centre to a public cloud.
+In this re-
+gard, Haven addresses two real threats: a malicious em-
+ployee of the cloud provider with either admin privileges
+or hardware access, or a government subpoena.
+
+Besides the software TCB, Haven also relies on the pro-
+cessor’s correctness. While a feature like SGX undoubt-
+edly adds complexity, hardware (even microcode) is ex-
+tremely hard for an attacker to modify, and hardware ven-
+dors perform significant validation to ensure correctness.
+
+
+CONCLUSION:
+Today’s cloud platforms offer many advantages, but these
+are often outweighed by the risks inherent in a hierarchi-
+cal security architecture: the provider is trusted with full
+access to user data. To eliminate this risk, Haven imple-
+ments shielded execution of unmodified server applica-
+tions in an untrusted cloud host. Haven brings us one step
+closer to a true “utility computing” model for the cloud,
+where the utility provides resources (processor cores, stor-
+age, and networking) but has no access to user data.
 
 -------------------------- END OF TO DO -----------------------------
 
 \subsection{OpenSGX}
-
+%todo
 -------------------------- TO DO -----------------------------
 
 
@@ -216,7 +272,7 @@ and protecting them from a malicious host
 -------------------------- END OF TO DO -----------------------------
 
 \subsection{Panoply}
-
+%todo
 -------------------------- TO DO -----------------------------
 
 
@@ -301,7 +357,7 @@ Graphene's main goal is to run unmodified applications on SGX quickly. Thus, whi
 
 Graphene-SGX also supports application partitioning, enabling it to run small pieces of one application in multiple enclaves. This can be useful, for instance, to applications with different privilege levels while still increasing the security of the application.
 \subsection{Other approaches}
-
+%todo
 -------------------------- TO DO -----------------------------
 
 Talk about S-NFV - (ler versao july2019 tese antiga)
@@ -312,7 +368,7 @@ Talk about hotNets
 
 
 \subsubsection{SGX-Enabled Network Protocols and Services}
-
+%todo
 -------------------------- TO DO -----------------------------
 
 M.-W. Shih, M. Kumar, T. Kim, and A. Gavrilovska. S-NFV: Securing NFV states by
@@ -327,7 +383,7 @@ trusted execu- tion environments for network applications. In Pro- ceedings of t
 -------------------------- END OF TO DO -----------------------------
 
 \subsubsection{Trusted Cloud-Based System Administration}
-
+%todo
 -------------------------- TO DO -----------------------------
 
 Tese de Mestrado DI-FCT-UNL, Sup. HJ
@@ -335,7 +391,7 @@ Tese de Mestrado DI-FCT-UNL, Sup. HJ
 -------------------------- END OF TO DO -----------------------------
 
 \subsubsection{SGX-enabled Virtualization}
-
+%todo
 -------------------------- TO DO -----------------------------
 
 https://dl.acm.org/citation.cfm?id=3311076
@@ -343,7 +399,7 @@ https://dl.acm.org/citation.cfm?id=3311076
 -------------------------- END OF TO DO -----------------------------
 
 \subsubsection{SGX-Enabled Linux Containers}
-
+%todo
 -------------------------- TO DO -----------------------------
 
 https://www.cise.ufl.edu/~butler/pubs/codaspy19.pdf
@@ -351,14 +407,14 @@ https://www.cise.ufl.edu/~butler/pubs/codaspy19.pdf
 -------------------------- END OF TO DO -----------------------------
 
 \subsubsection{SGX-Enabled Searchable Encryption}
-
+%todo
 -------------------------- TO DO -----------------------------
 
 -------------------------- END OF TO DO -----------------------------
 
 
 \subsubsection{ShieldStore}
-
+%todo
 -------------------------- TO DO -----------------------------
 
 https://dl.acm.org/citation.cfm?id=3303951
@@ -366,7 +422,7 @@ https://dl.acm.org/citation.cfm?id=3303951
 -------------------------- END OF TO DO -----------------------------
 
 \subsubsection{EnclaveDB}
-
+%todo
 -------------------------- TO DO -----------------------------
 
 https://ieeexplore.ieee.org/document/8418608
@@ -379,7 +435,7 @@ https://ieeexplore.ieee.org/document/8418608
 
 
 \section{Summary and Discussion}
-
+%todo
 -------------------------- TO DO -----------------------------
 
 ShieldStore vs EnclaveDB
