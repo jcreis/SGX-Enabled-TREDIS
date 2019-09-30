@@ -202,66 +202,14 @@ It leverages Intel-\gls{sgx} to protect against privileged code and physical att
 Instead of shielding only specific parts of applications and data by placing them inside enclaves, Haven aims to protect entire unmodified applications, written without any knowledge of SGX. 
 
 However, there may be problems with this approach. 
-Executing entire chunks of legacy binary code inside an SGX enclave pushes the limits of SGX, and while the code to be protected was written assuming that the \gls{os} executing the code would execute it properly, this may not be the case. The \gls{os} may be malicious. For this latest problem, the so called "Iago attack", Haven uses a library OS adapted from Drawbridge, running inside an SGX enclave.
-%todo \cite{drawbridge}
+Executing entire chunks of legacy binary code inside an SGX enclave pushes the limits of SGX, and while the code to be protected was written assuming that the \gls{os} executing the code would run it properly, this may not be the case. The \gls{os} may be malicious. For this latest problem, the so called "Iago attack", Haven uses a library OS adapted from Drawbridge \cite{drawbridge}, running inside an SGX enclave. 
 
+By combining with a remote attestation mechanism, Haven is able to guarantee to the user end-to-end security without the need of trusting the provider.
 
-%todo
--------------------------- TO DO -----------------------------
+Although this approach may need a substantial \gls{tcb} size (LibOS quite large), all this code is inside the enclave, which makes it under user's control. 
 
-Haven shields applica-
-tions using mechanisms such as private scheduling,
-distrustful virtual memory management, and an en-
-crypted and integrity-protected file system.
+That's the main goal of Haven: give the user trust by granting confidentiality and integrity of their data when moving an application from a private area to a public cloud. 
 
-
-
-Haven
-implements these primitives using a mutually-distrusting
-interface with the host OS. This ensures shielded execu-
-tion of unmodified applications; a malicious host cannot
-trick an application into divulging its secrets nor executing
-incorrectly. Combined with a remote attestation mecha-
-nism [2], Haven gives the user an end-to-end guarantee of
-application security without trusting the cloud provider,
-its software, or any hardware beyond the processor itself.
-
-
-FINAL THOUGHTS:
-the trusted computing base (TCB) of
-Haven is substantial, because the LibOS includes a large
-subset of Windows. However, in contrast to the current
-cloud model, all code in the enclave, and thus all code in
-the user’s TCB, is under user control.
-
-haven's goal is not to minimise the TCB, but
-rather to give the user equivalent trust in the confidential-
-ity and integrity of their data when moving an application
-from a private data centre to a public cloud.
-In this re-
-gard, Haven addresses two real threats: a malicious em-
-ployee of the cloud provider with either admin privileges
-or hardware access, or a government subpoena.
-
-Besides the software TCB, Haven also relies on the pro-
-cessor’s correctness. While a feature like SGX undoubt-
-edly adds complexity, hardware (even microcode) is ex-
-tremely hard for an attacker to modify, and hardware ven-
-dors perform significant validation to ensure correctness.
-
-
-CONCLUSION:
-Today’s cloud platforms offer many advantages, but these
-are often outweighed by the risks inherent in a hierarchi-
-cal security architecture: the provider is trusted with full
-access to user data. To eliminate this risk, Haven imple-
-ments shielded execution of unmodified server applica-
-tions in an untrusted cloud host. Haven brings us one step
-closer to a true “utility computing” model for the cloud,
-where the utility provides resources (processor cores, stor-
-age, and networking) but has no access to user data.
-
--------------------------- END OF TO DO -----------------------------
 
 \subsection{OpenSGX}
 %todo
