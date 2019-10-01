@@ -186,12 +186,19 @@ Assuring a shielded execution of an application fundamentally means that both co
 
 
 \subsection{SCONE}
-%todo
--------------------------- TO DO -----------------------------
+
+Container-based virtualization has become quite popular for offering better performance properties than the use of \gls{vm}s, however it offers weaker isolation guarantees, therefore less security. 
+That's why we observe that containers usually execute network services (i.e. Redis). These are systems that don't need as much system calls as the other services, since they can do a lot via networking, thus keeping a small TCB for increased security.
+
+SCONE \cite{sconePaper} is a mechanism for Linux containers that increases the confidentiality and integrity of services running inside them by making use of Intel-\gls{sgx}.
+
+SCONE increases the security of the system while trying to keep the performance levels reasonable. 
+It does it by: 
+(1) keeping the size of the container's \gls{tcb} as small as possible, by linking a (small) library inside the enclave to a standard C library interface exposed to container processes. The system calls are executed outside the enclave, and networking is protected by \gls{tls}. 
+(2) maximizes the time threads spend inside the enclave by supporting user-level threading and assynchronous system calls, thus allowing a thread outside the enclave to execute system calls without the need for enclave threads to exit.
+This increases the performance since major performance losses are caused by enclave threads entering/exiting, due to the costs of encrypting/decrypting the data.
 
 
-
--------------------------- END OF TO DO -----------------------------
 
 \subsection{Haven}
 
