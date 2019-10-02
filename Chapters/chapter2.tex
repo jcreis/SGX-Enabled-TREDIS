@@ -219,12 +219,23 @@ That's the main goal of Haven: give the user trust by granting confidentiality a
 
 
 \subsection{OpenSGX}
-%todo
--------------------------- TO DO -----------------------------
 
+OpenSGX \cite{opensgx_paper} was developed as a way to help with the access to \gls{tee} software technologies, since these type of technologies were only available for a selected group of researchers. 
+It was made available as an open source platform, and by providing \gls{tee} and \gls{os} emulation, it contributed a lot for expanding the possibility of research in this area, as well as promoting the development of SGX applications. 
 
+OpenSGX emulates the hardware components of Intel-SGX and it's ecosystem, including \gls{os} interfaces and user library, as a way to run enclave programs. To emulate Intel-SGX at intruction-level, OpenSGX extended an open-source emulator, QEMU.
+It's pratical properties result due to six components working with each other: (1) Hardware emulation module: SGX emulation, by providing SGX instructions, data structures, \gls{epc} and it's access protection, and \gls{sgx} processor key; (2) \gls{os} emulation: since some \gls{sgx} instructions are priviledged (should be executed by the kernel), OpenSGX defines new system calls to perform SGX operations, such as dynamic memory allocation and enclave provisioning; (3) Enclave loader: enclave must be properly loaded to \gls{epc}; (4) User library: provides a library (sgxlib) with a useful set of functions to be used inside and outside the enclave; (5) Debugging support; (6) Performance monitoring: allow users to collect performance statistics about enclave programs.
 
--------------------------- END OF TO DO -----------------------------
+\begin{figure}[htbp]
+	\centering
+	{\includegraphics[width=0.6\linewidth]{opensgx_design}}%
+	\caption{Overview design of OpenSGX framework and memory state of an active enclave program}
+\end{figure}
+
+In Figure \ref{fig:opensgx_design} we see an overall example of this framework, where a regular program (Wrapper) and a secured program (Enclave Program) both run as a single process in the same virtual address space. Due to the fact that Intel-SGX uses privilege instructions to setup enclaves, the requests from the Wrapper programare handled by the OpenSGX set of system calls.
+
+OpenSGX was proven capable of running nontrivial applications and promotes the implementation and evaluation of new ideas. By being the first open-source framework to emulate a SGX environment, it was shown to be fundamental to the growth in the \gls{tee} area.
+
 
 \subsection{Panoply}
 %todo
