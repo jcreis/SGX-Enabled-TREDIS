@@ -238,12 +238,19 @@ OpenSGX was proven capable of running nontrivial applications and promotes the i
 
 
 \subsection{Panoply}
-%todo
--------------------------- TO DO -----------------------------
 
+Panoply \cite{panoplyPaper} is a system that works as a bridge between SGX-native abstractions and standard \gls{os} abstractions, required by most commodity Linux applications. 
+It divides a system into multiple components, called micro-containers (or "micron"), and runs each one of them inside its own enclave. 
+However, when microns communicate with each other, their communication goes through a channel under the \gls{os} control. Thus, Panoply design goals are focused on supporting \gls{os} abstractions with a low \gls{tcb}, while also securing inter-enclave communications.
 
+Panoply's design consists of a set of runtime libraries (shim library included) and a build toolchain that helps developers to prepare microns.
+With this, a programmer can assign annotations to functions to specify which micron should execute a specific function. If not assigned any annotation, a function will be designated to a default micron, who shall execute it. Inter-micron flow integrity is also provided during this stage. 
 
--------------------------- END OF TO DO -----------------------------
+Upon a micron start, Panoply gives it a micron-id which will be used for all further interactions with other microns. It will use this id as a way to assure that only authorized microns can send/receive messages.
+To extend this inter-micron interaction security, Panoply also provides authenticated encryption of every message, makes use of unique sequence numbers, and acknoledgement messages are sent for every inter-enclave communication. Thus, Panoply can protect microns from silent aborts, replaying, or tampering attacks.
+
+Unlike many other SGX-based frameworks, Panoply supports unlimited multi-threading and forking. Multi-threading in a way that, if a micron reaches its maximum concurrent thread limit, a new micron is launched and all shared memory operations are safely performed. Forking is achieved by replicating a parent micron's data and sending it to the child, over a secure communication.
+
 
 \subsection{VC3}
 \label{ssec:vc3_mapreduce}
