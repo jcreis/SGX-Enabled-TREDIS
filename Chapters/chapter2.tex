@@ -35,10 +35,127 @@ A lot of applications these days depend on sensitive data to operate. Therefore 
 One of the things we have to think about is the size of the TCB, and how to reduce it as much as possible without losing the operability of the system. 
 Typically, the host OS is considered safe and trustworthy, although that is not always the case. A compromised OS can give complete access to sensitive data, if not isolated from the application. That’s why this is a major security problem and must be tackled in today’s systems.
 
-Approaches like Virtual Ghost \cite{virtGhostPaper}, Flicker \cite{flickerPaper}, MUSHI \cite{mushiPaper}, SeCage \cite{SeCagePaper}, InkTag \cite{inkTagPaper}, Sego \cite{segoPaper}, grant security by isolating the sensitive data from the untrusted \gls{os} either by monitoring the application while it runs, or by enforcing memory isolation by using virtualization.
+Approaches like Virtual Ghost, Flicker, MUSHI \cite{mushiPaper}, SeCage \cite{SeCagePaper}, InkTag \cite{inkTagPaper}, Sego \cite{segoPaper}, grant security by isolating the sensitive data from the untrusted \gls{os} either by monitoring the application while it runs, or by enforcing memory isolation by using virtualization.
 
-%todo
--------------------------- TO DO -----------------------------
+%-----------------------------------------
+
+Virtual Ghost \cite{virtGhostPaper} provides application security against untrusted \gls{os}es by implementing the idea of ghost memory, which is unaccessible for the \gls{os} to read or write, as well as providing trusted services like ghost memory management, key management, and encryption and signing services. 
+
+It relies in sandboxing to protect the system from the \gls{os}, where a thin layer of abstraction is interposed between the kernel and the hardware. This layer works as a library of functions that the kernel can call directly, without the need of higher priviledges being given to it. 
+
+Thus, Virtual Ghost protects the system against a direct threat from the \gls{os}, without losing significant levels of performance.
+
+%-----------------------------------------
+
+Flicker \cite{flickerPaper} provides secured isolated execution of sensitive code by relying on hardware facilities, such as AMD and Intel commodity processors, to run certain pieces of code in a confined environment, while reducing the \gls{tcb} to as few as 250 additional lines of code. 
+
+When Flicker starts, none of the software already executing can monitor or interfere with it’s execution and all traces of it’s execution can be eliminated before non-Flicker execution resumes. 
+
+Thus, with a small TCB and a good level of isolation during the execution fase, where no data is leaked nor possible to access while inside the confined environment, the system can achieve reliability and security.
+
+%-----------------------------------------
+
+MUSHI \cite{mushiPaper} is designed to deal mainly with multi-level security systems, and provides isolation to individual guest \gls{vm}s executing in a cloud infrastructure. MUSHI ensures that \gls{vm}s are instantiated securely and remain that way throughout their life cycle. 
+
+It offers: 1- Trusted Execution, where both the kernel and user image, as well as MUSHI itself, are attested upon a \gls{vm} start using a \gls{tpm}, and thus defining a trusted initial state; 2- Isolation, where each \gls{vm} executing on the same machine runs isolated, as a way to guarantee confidentiality and integrity; 3- User Image Confidentiality, by encrypting the user image with a cryptographic key provided by the user itself.
+
+MUSHI guarantees confidentiality and integrity of a VM even during malicious attacks from both inside and outside the cloud environment.
+It trusts a \gls{tcb} relatively small, including only the hardware, hardware virtualization, BIOS and System Management Mode, and can be implemented with quite ease using modern commodity hardware containing SMM memory (SMRAM), necessary for the isolation between the host and VM.
+
+
+%-----------------------------------------
+
+SeCage [20] is an approach that aims to protect user-defined secrets from application
+potential threats and malicious OS through hardware virtualization, thus isolating sensi-
+tive code and critical secrets while denying hypervisor intervention during runtime. It’s
+designed to deal with a strong adversary model, assuming that both application and OS
+can be compromised, while suporting large-scale software, which usually means a big
+attack surface.
+SeCage devides the system in compartments, where secret compartments have all the
+functions with permissions to access and manipulate those secrets, and a main compart-
+ment is resposible to handle the rest of the code.
+
+The main goals of SeCage are to assure confidentiality of user secrets (e.g., cryp-
+tographic keys) and to be a pratical approach with small overheads for large software
+
+systems. To achieve this, it ensures
+• Hybrid analysis of secrets - provides a mechanism that prevents secrets from being
+disclosed during runtime, while not affecting their normal usage. For it, SeCage
+combines static and dynamic analysis. The first one is used to discover potencial
+functions related to the secrets, while the second one complements the first one, be-
+ing more precise than the first one. With this, SeCage defines secret compartments,
+containing a set of secrets and their most common functions. This ensures that only
+the functions inside a compartment can access that set of secrets.
+• Hypervisor protection - isolate each compartment in a completely isolated address
+space through hardware virtualization, making them unaccessible to the Hypervisor.
+Only if a function outside a compartment tries to access a secret without permission,
+it’s the Hypervisor job to handle that violation.
+• Separating control and data plane - since each compartment needs to communicate
+with each other, there will eventually be contact with the hypervisor. Therefore,
+instead of frequent VM exits which cause high overheads, SeCage minimazes hyper-
+visor intervention by only require it to define policies on whether two compartments
+can communicate (control plane) for as long as they conform to those policies (data
+plane)
+SeCage was shown useful protecting large-scale system software from HeartBleed
+attacks, kernel memory disclosure and rootkit memory scanning, without adding any
+significant performance overhead to the application.
+
+%-----------------------------------------
+
+InkTag [12] is a virtualization-based architecture that protects trusted applications from
+an untrusted OS, allowing trusted applications to securely use untrusted OS services.
+
+InkTag admits trust in the hypervisor, which is responsible to protect the application
+code, data, and control flow from the OS, allowing applications to execute in isolation, in
+a high-assurance process (HAP). Trusted applications can securely and privately share
+data without interference from the OS or other applications. Each secure application com-
+municates directly with the InkTag hypervisor via hypercalls to detect OS misbehavior.
+
+It introduces a concept called paraverification, which is a technique that simplifies the
+hypervisor by forcing the untrusted OS to participate in its own verification. As a result,
+the OS notifies the hypervisor when there is any update to be made to the state, which
+the hypervisor then checks for correctness. InkTag also ensures virtualization through
+hardware, which is used to grant isolation, as well as separate secure from insecure data.
+Access control policies can be specified by each trusted applications to access their secure
+files, with privacy and integrity of them managed by InkTag through encryption and
+hashing.
+Other important aspect of InkTag is recoverability. InkTag is capable of ensuring crash
+consistency between file data and metadata. Metadata, which consists in hashed data,
+is fundamental to guarantee integrity of data therefore, with this consistency granted,
+InkTag hypervisor can protect the integrity of files even if the system crashes. If for some
+reason some data is inconsistent, the application must discard it.
+
+%-----------------------------------------
+
+Sego [18] is a hypervisor-based system that gives strong privacy and integrity guarantees
+to trusted applications, even when the guest OS is compromised or hostile, by removing
+the trust from the OS. Sego verifies OS services, like the file system, instead of replacing
+them.
+To protect the application from the untrusted OS, Sego relies on a trusted hypervisor
+and assumes that hardware always executes hypervisor code correctly. It uses paraverifica-
+tion, where the guest OS communicates its actions and intent to the hypervisor, therefore
+making this verification of the untrusted OS behavior more efficient and easy.
+
+Figure 2.2: Sego Architecture Overview
+
+Sego executes trusted code in a HAP. After booting the OS, the hypervisor starts the
+HAP in a way that the HAP itself can verify its own initial code and data, similar to a TPM.
+Once running, the hypervisor ensures that HAP’s registers and trusted address space are
+isolated from the OS. Everytime the HAP wants to perform a system call, it must inform
+the hypervisor of its intent, so that the hypervisor can verify OS activity. HAPs use a
+small library called libsego as a way to handle system calls and get Sego services without
+having to change their code. Each HAP also contains an untrusted trampoline code, that
+uses to interact with the OS. This is used as a way to protect HAP control-flow, since
+it uses this trampoline as the issuer for the system calls, therefore never compromising
+the HAP itself. Figure 2.2 shows well enough Sego’s overall design without going into to
+much dept, refering which components are included in the TCB and which are not.
+Context switches are handled by the hypervisor, hiding any information about the
+HAP from the OS.
+Sego does not guarantee OS availability. A compromised OS can simply shut down or
+refuse to schedule processes. However this is easily detected.
+
+
+
 
 			drawback of those approaches (inktag, virtghost...)
 			and why aren't enough
@@ -58,29 +175,17 @@ The first attempts to implement a \gls{tee} on a cloud system consisted of combi
 A \gls{tpm} \cite{tpmPaper} consists of a hardware chip, called microcontroller, that aims to create a trustable platform, through encryption and authenticated boot, and make sure it remains trustworthy, through remote attestation. 
 It provides cryptographic functions that can't be modified, and a private key (Endorsment Key) that is unique to every \gls{tpm} made, working as an identifier for each \gls{tpm}.
 
-However, \gls{tpm}s have several problems when applied to the cloud due to being designed with the intention to offer security to a single machine. Thus, a distributed environment would not be the best kind of environment for a \gls{tpm} to work on.
+However, \gls{tpm}s have several problems when applied to the cloud due to being designed with the intention to offer security to a single machine. It is not flexible enough to guarantee that anyone can get the encrypted data from a different node.
+Thus, a distributed environment would not be the best kind of environment for a \gls{tpm} to work on.
 
-With that in mind, new hardware-enabled solutions were developed to be more flexible and cloud friendly than the \gls{tpm}. Technologies like ARM TrustZone, Intel SGX, AMD-SEV, and others, will be approached in the following section.
+The current best practice for protecting secrets in a cloud system uses \gls{hsm}s. 
 
-%todo
--------------------------- TO DO -----------------------------
+\gls{hsm} \cite{hsmPaper} are physical components whose main function is to provide and store cryptographic keys used to encrypt/decrypt data inside a system. \gls{hsm}s can also perform cryptographic operations (e.g. encryption, hashing, etc.) as well as authenticate through verification of digital signatures and accelerate \gls{ssl} connections \cite{hsmThesis}, by relieving the servers from some of the workload caused by operations envolving cryptography. 
 
- 			should we talk about HSM ?????
- 			
- 			The current best practice for protecting secrets in the
- 			cloud uses hardware security modules (HSMs)
- 			These dedicated appliances rely on tamper-proof hardware to protect critical secrets, such as keys, and support
- 			a range of cryptographic functions, but come at a significant cost, and do not usually run general-purpose applications.
- 			Typical deployments use HSMs to protect key
- 			material, but transiently decrypt data on untrusted nodes
- 			for computation, rendering the data vulnerable to the
- 			threats outlined above 
- 			
- 			+ 
- 			
- 			HSM subsection of previous version
+Thus, the system can protect critical secrets, such as cryptographic keys, and support a range of cryptographic functions.
 
--------------------------- END OF TO DO -----------------------------
+With that in mind, new hardware-enabled solutions were developed to be more flexible and cloud friendly than the \gls{tpm}, or to incorporate the advantages of \gls{hsm} to the system. We'll dive into technologies like ARM TrustZone, Intel SGX, AMD-SEV, and others, in the following section.
+
 
 % =======================
 %  N E W   S E C T I O N        (2.3)
@@ -249,7 +354,7 @@ With this, a programmer can assign annotations to functions to specify which mic
 Upon a micron start, Panoply gives it a micron-id which will be used for all further interactions with other microns. It will use this id as a way to assure that only authorized microns can send/receive messages.
 To extend this inter-micron interaction security, Panoply also provides authenticated encryption of every message, makes use of unique sequence numbers, and acknoledgement messages are sent for every inter-enclave communication. Thus, Panoply can protect microns from silent aborts, replaying, or tampering attacks.
 
-Unlike many other SGX-based frameworks, Panoply supports unlimited multi-threading and forking. Multi-threading in a way that, if a micron reaches its maximum concurrent thread limit, a new micron is launched and all shared memory operations are safely performed. Forking is achieved by replicating a parent micron's data and sending it to the child, over a secure communication.
+Unlike many other SGX-based frameworks, Panoply supports unlimited multi-threading and forking. Multi-threading in a way that, if a micron reaches its maximum concurrent thread limit, a new micron is launched and all shared memory operations are safely performed. Forking is achieved by replicating a parent micron's data and sending it to the child, over a secure communication. 
 
 
 \subsection{VC3}
@@ -473,7 +578,7 @@ If the hashes match, the remote system can then identify the \gls{tpm} platform 
 \subsection{HSM – Hardware Security Modules}
 \label{ssec:hsm}
 
-\gls{hsm} \cite{hsmPaper} are physical components whose main function is to provide and store cryptographic keys used to encrypt/decrypt data inside a system. \gls{hsm}s can also perform cryptographic operations (e.g. encryption, hashing, etc.) as well as authenticate through verification of digital signatures and accelerate \gls{ssl} connections \cite{hsmThesis}.
+\gls{hsm} \cite{hsmPaper} are physical components whose main function is to provide and store cryptographic keys used to encrypt/decrypt data inside a system. \gls{hsm}s can also perform cryptographic operations (e.g. encryption, hashing, etc.) as well as authenticate through verification of digital signatures and accelerate \gls{ssl} connections \cite{hsmThesis}, by relieving the servers from some of the workload caused by operations envolving cryptography. 
 
 This modules are used mainly in large environment systems (e.g. large distributed systems) where there are a lot of machines communicating with each other, therefore creating a more needed sense of security. The inclusion of this modules in these big systems is actually a good idea since \gls{hsm}s can also help servers relieve the workload caused by cryptographic operations. However \gls{hsm}s do not quite guarantee the idea of absolute security, but increment the cost of attacking the system.
 
