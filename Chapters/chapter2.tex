@@ -35,7 +35,7 @@ A lot of applications these days depend on sensitive data to operate. Therefore 
 One of the things we have to think about is the size of the TCB, and how to reduce it as much as possible without losing the operability of the system. 
 Typically, the host OS is considered safe and trustworthy, although that is not always the case. A compromised OS can give complete access to sensitive data, if not isolated from the application. That’s why this is a major security problem and must be tackled in today’s systems.
 
-Approaches like Virtual Ghost, Flicker, MUSHI \cite{mushiPaper}, SeCage \cite{SeCagePaper}, InkTag \cite{inkTagPaper}, Sego \cite{segoPaper}, grant security by isolating the sensitive data from the untrusted \gls{os} either by monitoring the application while it runs, or by enforcing memory isolation by using virtualization.
+Approaches like Virtual Ghost, Flicker, MUSHI, SeCage, InkTag, Sego, all grant security by isolating the sensitive data from the untrusted \gls{os} either by monitoring the application while it runs, or by enforcing memory isolation by using virtualization.
 
 %-----------------------------------------
 
@@ -65,97 +65,48 @@ It trusts a \gls{tcb} relatively small, including only the hardware, hardware vi
 
 %-----------------------------------------
 
-SeCage [20] is an approach that aims to protect user-defined secrets from application
-potential threats and malicious OS through hardware virtualization, thus isolating sensi-
-tive code and critical secrets while denying hypervisor intervention during runtime. It’s
-designed to deal with a strong adversary model, assuming that both application and OS
-can be compromised, while suporting large-scale software, which usually means a big
-attack surface.
-SeCage devides the system in compartments, where secret compartments have all the
-functions with permissions to access and manipulate those secrets, and a main compart-
-ment is resposible to handle the rest of the code.
+SeCage \cite{SeCagePaper} uses hardware virtualization to protect user-defined secrets from potential threats and malicious \gls{os}es, by isolating sensitive code and critical secrets while denying to the hypervisor any possibility of intervention during runtime.
 
-The main goals of SeCage are to assure confidentiality of user secrets (e.g., cryp-
-tographic keys) and to be a pratical approach with small overheads for large software
+It devides the system in compartments, where secret compartments have all the permissions to access and manipulate the user-defined secrets, and a main compartment responsable for handling the rest of the code.
 
-systems. To achieve this, it ensures
-• Hybrid analysis of secrets - provides a mechanism that prevents secrets from being
-disclosed during runtime, while not affecting their normal usage. For it, SeCage
-combines static and dynamic analysis. The first one is used to discover potencial
-functions related to the secrets, while the second one complements the first one, be-
-ing more precise than the first one. With this, SeCage defines secret compartments,
-containing a set of secrets and their most common functions. This ensures that only
-the functions inside a compartment can access that set of secrets.
-• Hypervisor protection - isolate each compartment in a completely isolated address
-space through hardware virtualization, making them unaccessible to the Hypervisor.
-Only if a function outside a compartment tries to access a secret without permission,
-it’s the Hypervisor job to handle that violation.
-• Separating control and data plane - since each compartment needs to communicate
-with each other, there will eventually be contact with the hypervisor. Therefore,
-instead of frequent VM exits which cause high overheads, SeCage minimazes hyper-
-visor intervention by only require it to define policies on whether two compartments
-can communicate (control plane) for as long as they conform to those policies (data
-plane)
-SeCage was shown useful protecting large-scale system software from HeartBleed
-attacks, kernel memory disclosure and rootkit memory scanning, without adding any
-significant performance overhead to the application.
+SeCage is designed to assure confidentiality of user-secrets, adding a small overhead while supporting large-scale software. To achieve this, it ensures: 1- Hybrid analysis of secrets, where static and dynamic analysis are combined to define secret compartments to execute secrets, preventing them from being disclosed during runtime; 2- Hypervisor protection, by using hardware virtualization to isolate each compartment; 3- Separating control and data plane, where minimal hypervisor intervention is required to deal with communications between compartments. The hypervisor is limited to define policies on whether two compartments can communicate (control plane) for as long as they conform to those policies. 
 
 %-----------------------------------------
 
-InkTag [12] is a virtualization-based architecture that protects trusted applications from
-an untrusted OS, allowing trusted applications to securely use untrusted OS services.
+InkTag \cite{inkTagPaper} also uses a virtualization-based approach in order to grant applications protection from untrusted \gls{os}es.
 
-InkTag admits trust in the hypervisor, which is responsible to protect the application
-code, data, and control flow from the OS, allowing applications to execute in isolation, in
-a high-assurance process (HAP). Trusted applications can securely and privately share
-data without interference from the OS or other applications. Each secure application com-
-municates directly with the InkTag hypervisor via hypercalls to detect OS misbehavior.
+Unlike SeCage, InkTag admits trust in the hypervisor. The hypervisor is responsible to protect the application
+code, data, and control flow from the OS, allowing applications to execute in isolation, in high-assurance processes (HAP). Trusted applications can communicate directly with the InkTag hypervisor via hypercalls, as a way to detect \gls{os} misbehavior.
 
-It introduces a concept called paraverification, which is a technique that simplifies the
-hypervisor by forcing the untrusted OS to participate in its own verification. As a result,
-the OS notifies the hypervisor when there is any update to be made to the state, which
-the hypervisor then checks for correctness. InkTag also ensures virtualization through
-hardware, which is used to grant isolation, as well as separate secure from insecure data.
-Access control policies can be specified by each trusted applications to access their secure
-files, with privacy and integrity of them managed by InkTag through encryption and
-hashing.
-Other important aspect of InkTag is recoverability. InkTag is capable of ensuring crash
-consistency between file data and metadata. Metadata, which consists in hashed data,
-is fundamental to guarantee integrity of data therefore, with this consistency granted,
-InkTag hypervisor can protect the integrity of files even if the system crashes. If for some
-reason some data is inconsistent, the application must discard it.
+It introduces a concept called paraverification, which simplifies the hypervisor by forcing the untrusted \gls{os} to participate in its own verification. As a result, the \gls{os} notifies the InkTag hypervisor upon any update to be made to the state, which the hypervisor can check for correctness. 
+InkTag also isolates secure from unsafe data through hardware virtualization, and allows each application to specify their own access control policies, managing their data's privacy and integrity through encryption and hashing.
+Other important aspect of InkTag is recoverability. InkTag hypervisor can protect the integrity of files even if the system crashes, by ensuring consistency between file data and metadata upon a crash.
+
 
 %-----------------------------------------
 
-Sego [18] is a hypervisor-based system that gives strong privacy and integrity guarantees
-to trusted applications, even when the guest OS is compromised or hostile, by removing
-the trust from the OS. Sego verifies OS services, like the file system, instead of replacing
-them.
-To protect the application from the untrusted OS, Sego relies on a trusted hypervisor
-and assumes that hardware always executes hypervisor code correctly. It uses paraverifica-
-tion, where the guest OS communicates its actions and intent to the hypervisor, therefore
-making this verification of the untrusted OS behavior more efficient and easy.
+Like InkTag, Sego \cite{segoPaper} is also an hypervisor-based system that gives strong privacy and integrity guarantees to trusted applications. To protect applications from untrusted \gls{os}es, Sego removes the trust from the \gls{os}, relying only on a trusted hypervisor which is assumed to always execute correctly. It also enforces paraverification, where the \gls{os} communicates its intentions to the hypervisor, thus keeping track of its behavior.
 
-Figure 2.2: Sego Architecture Overview
+\begin{figure}[htbp]
+	\centering
+	{\includegraphics[width=0.6\linewidth]{sego_architecture}}%
+	\caption{Sego Architecture Overview}
+	\label{segoArchitecture}
+\end{figure}
 
-Sego executes trusted code in a HAP. After booting the OS, the hypervisor starts the
-HAP in a way that the HAP itself can verify its own initial code and data, similar to a TPM.
-Once running, the hypervisor ensures that HAP’s registers and trusted address space are
-isolated from the OS. Everytime the HAP wants to perform a system call, it must inform
-the hypervisor of its intent, so that the hypervisor can verify OS activity. HAPs use a
-small library called libsego as a way to handle system calls and get Sego services without
-having to change their code. Each HAP also contains an untrusted trampoline code, that
-uses to interact with the OS. This is used as a way to protect HAP control-flow, since
-it uses this trampoline as the issuer for the system calls, therefore never compromising
-the HAP itself. Figure 2.2 shows well enough Sego’s overall design without going into to
-much dept, refering which components are included in the TCB and which are not.
-Context switches are handled by the hypervisor, hiding any information about the
-HAP from the OS.
-Sego does not guarantee OS availability. A compromised OS can simply shut down or
-refuse to schedule processes. However this is easily detected.
+Sego is designed to execute trusted code in an \gls{hap}.
+After booting the \gls{os}, the hypervisor starts the \gls{hap}, in a way that the \gls{hap} itself can verify its own initial code and data, similar to a \gls{tpm}.
+Once running, the hypervisor ensures that the \gls{hap}’s registers and trusted address space are isolated from the \gls{os}. Everytime the \gls{hap} wants to perform a system call, it must inform
+the hypervisor of its intent, so that the hypervisor can verify the \gls{os}'s activity. \gls{hap}s use a
+small library called libsego as a way to handle system calls and get Sego services without having to change their code. Each \gls{hap} also contains an untrusted trampoline code, that
+uses to interact with the \gls{os}. This protects its control-flow, since it uses this trampoline as issuer for system calls, therefore never compromising the \gls{hap} itself. Figure \ref{fig:segoArchitecture} shows well enough Sego’s overall design without going into too much dept, indicating which components are included in the \gls{tcb} and which are not.
+Context switches are handled by the hypervisor, thus hiding any information about the \gls{hap} from the OS.
+
+Sego does not guarantee \gls{os} availability. A compromised \gls{os} can simply shut down or refuse to schedule processes. However this is easily detected.
 
 
 
+----------
 
 			drawback of those approaches (inktag, virtghost...)
 			and why aren't enough
@@ -335,9 +286,10 @@ It's pratical properties result due to six components working with each other: (
 	\centering
 	{\includegraphics[width=0.6\linewidth]{opensgx_design}}%
 	\caption{Overview design of OpenSGX framework and memory state of an active enclave program}
+	\label{openSGXDesign}
 \end{figure}
 
-In Figure \ref{fig:opensgx_design} we see an overall example of this framework, where a regular program (Wrapper) and a secured program (Enclave Program) both run as a single process in the same virtual address space. Due to the fact that Intel-SGX uses privilege instructions to setup enclaves, the requests from the Wrapper programare handled by the OpenSGX set of system calls.
+In Figure \ref{fig:openSGXDesign} we see an overall example of this framework, where a regular program (Wrapper) and a secured program (Enclave Program) both run as a single process in the same virtual address space. Due to the fact that Intel-SGX uses privilege instructions to setup enclaves, the requests from the Wrapper programare handled by the OpenSGX set of system calls.
 
 OpenSGX was proven capable of running nontrivial applications and promotes the implementation and evaluation of new ideas. By being the first open-source framework to emulate a SGX environment, it was shown to be fundamental to the growth in the \gls{tee} area.
 
@@ -436,9 +388,32 @@ Graphene's main goal is to run unmodified applications on SGX quickly. Thus, whi
 Graphene-SGX also supports application partitioning, enabling it to run small pieces of one application in multiple enclaves. This can be useful, for instance, to applications with different privilege levels while still increasing the security of the application.
 \subsection{Other approaches}
 %todo
+
+
+This increased need for security seen nowadays caused network related technologies to also become popular, leading to a lot of effort by the community to make viable approaches to tackle this kind of security problems. 
+Hardware approaches capable of providing \gls{tee}s (e.g. Intel-\gls{sgx}) have recently been used to make some contributions to deal with modern network security concerns as a way to, for example, solve policy privacy issues in inter-domain routing, thus protecting ISPs policies.
+
+In \cite{torSGXPaper} it’s shown that leveraging hardware protection of TEEs can grant benefits, such as simplify the overall design of the application, as well as securely introduce in-network functionality into TLS sessions. The same paper also presents a possible approach to reach security and privacy on a network level, by building a prototype on top of OpenSGX, that shows that SGX-enabled applications have modest performance losses compared to one with no SGX support, while significantly improving it’s security and privacy.
+
+Also at the networking security level, the usage of Network Function Virtualization (NFV) architecture by applications nowadays imply the creation of internal state as a way to allow complex cross-packet and cross-flow analysis. 
+These states contain sensitive information, like IP addresses, user details and cached content (e.g. profile pictures), therefore should be a priority to ensure their protection from potential threats.
+To tackle this vulnerability, S-NFV \cite{sNFVPaper} has proven to be a valid approach, by providing a secure framework for NFV applications, securing NFV states by using Intel-SGX.
+
+S-NFV divides the NFV application in two: S-NFV enclave and S-NFV host. The enclave is responsible to store the states and state processing code, while the host deals with the rest.
+
+In \cite{sNFVPaper} by implementing the S-NFV approach with Snort \cite{snortPaper} on top of OpenSGX was
+concluded that this SGX-enabled approach results in bigger overheads (aprox. 11x for
+gets and 9x for sets) than an SGX-disabled Snort application, at the cost of extra security.
+
+
+ 
+
+   
+
+
+
 -------------------------- TO DO -----------------------------
 
-Talk about S-NFV - (ler versao july2019 tese antiga)
 
 Talk about hotNets
 
