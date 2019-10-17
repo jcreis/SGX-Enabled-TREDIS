@@ -389,8 +389,18 @@ Graphene-SGX also supports application partitioning, enabling it to run small pi
 \subsection{Other approaches}
 %todo
 
+-------------------------- TO DO -----------------------------
 
-This increased need for security seen nowadays caused network related technologies to also become popular, leading to a lot of effort by the community to make viable approaches to tackle this kind of security problems. 
+
+Need any intro or just go straight to the subsections?
+
+-------------------------- END OF TO DO -----------------------------
+
+
+\subsubsection{SGX-Enabled Network Protocols and Services}
+%todo
+
+The increased need for security seen nowadays caused network related technologies to also become popular, from security protocols (TLS) to anonymous browsers (Tor), leading to a lot of effort by the community to make viable approaches to tackle network security problems. 
 Hardware approaches capable of providing \gls{tee}s (e.g. Intel-\gls{sgx}) have recently been used to make some contributions to deal with modern network security concerns as a way to, for example, solve policy privacy issues in inter-domain routing, thus protecting ISPs policies.
 
 In \cite{torSGXPaper} it’s shown that leveraging hardware protection of TEEs can grant benefits, such as simplify the overall design of the application, as well as securely introduce in-network functionality into TLS sessions. The same paper also presents a possible approach to reach security and privacy on a network level, by building a prototype on top of OpenSGX, that shows that SGX-enabled applications have modest performance losses compared to one with no SGX support, while significantly improving it’s security and privacy.
@@ -406,35 +416,6 @@ concluded that this SGX-enabled approach results in bigger overheads (aprox. 11x
 gets and 9x for sets) than an SGX-disabled Snort application, at the cost of extra security.
 
 
- 
-
-   
-
-
-
--------------------------- TO DO -----------------------------
-
-
-Talk about hotNets
-
--------------------------- END OF TO DO -----------------------------
-
-
-\subsubsection{SGX-Enabled Network Protocols and Services}
-%todo
--------------------------- TO DO -----------------------------
-
-M.-W. Shih, M. Kumar, T. Kim, and A. Gavrilovska. S-NFV: Securing NFV states by
-using SGX. In Proceedings of the ACM Interna- tional Workshop on Security in
-Software Defined Networks amp; Network Function Virtualization (SDN-NFV Security),
-pages 45–48. ACM, 2016.
-
-S. Kim, Y. Shin, J. Ha, T. Kim, and D. Han. A first step towards leveraging commodity
-trusted execu- tion environments for network applications. In Pro- ceedings of the
-14th ACM Workshop on Hot Topics in Networks (HotNets), page 7. ACM, 2015.
-
--------------------------- END OF TO DO -----------------------------
-
 \subsubsection{Trusted Cloud-Based System Administration}
 %todo
 -------------------------- TO DO -----------------------------
@@ -445,9 +426,33 @@ Tese de Mestrado DI-FCT-UNL, Sup. HJ
 
 \subsubsection{SGX-enabled Virtualization}
 %todo
--------------------------- TO DO -----------------------------
 
-https://dl.acm.org/citation.cfm?id=3311076
+Has we already pointed out previously, Intel-\gls{sgx} has drawn much attention from the community in the last few years, which also made cloud providers to start implementing \gls{sgx} into their cloud systems (Microsoft's Azure confidential computing or IBM Cloud are examples of that). Also, new cloud programming frameworks have already been created with the ability to support \gls{sgx}. 
+
+However, while most of the research on Intel-\gls{sgx} have been concentrated on its security and programmability properties, there are a lot of questions to answer about how the usage of \gls{sgx} affects the performance of a virtualized system. This is relevant since virtualization is the main building block of cloud computing.
+
+In \cite{sgxVirtualizationPaper} an exaustive evaluation about the performance of \gls{sgx} on a virtualized system, concluding that:
+
+(1) Hypervisors don't need to intercept every \gls{sgx} instruction to enable \gls{sgx} for being virtualized. Was concluded that there is only one indispensable \gls{sgx} function, ECREATE, which is responsable to virtualize \gls{sgx} launch control.
+
+As a result, gls{sgx} on \gls{vm}s is considered to have an acceptable overhead.
+
+(2)  \gls{sgx} overhead on \gls{vm}s when running memory-heavy benchmarks consists mainly of address translation when using nested paging. If instead it uses shadow paging, the overhead becomes insignificant. 
+\cite{sgxVirtualizationPaper} shows that this can be optimized by using shadow paging for \gls{epc} to reduce translation overhead, and nested paging for general usage.
+
+(3) On the contrary, when running benchmarks involving many context switches (e.g., HTTP benchmarks), shadow paging performs worse than nested paging.
+
+(4) The use of \gls{sgx} causes a heavy drop in performance switching between application and enclave, whether it's using virtualization or not. This drop causes server applications using \gls{sgx} to be affected.
+\cite{sgxVirtualizationPaper} specifies that this can be addressed by using mechanisms (e.g. HotCalls \cite{hotcallsPaper}) that work as a fast call interface between the aplication and enclave code. This interfaces reduce the overhead of ecalls and ocalls, helping the porting of applications to \gls{sgx}.
+
+(5) Swapping \gls{epc} pages is really expensive, and this also applies for all systems using \gls{sgx}. 
+Upon the start, \gls{sgx} measures the contents of the enclave, thus triggering enclave swapping if enclave's memory size is larger than the available \gls{epc} size. 
+This was shown in \cite{sgxVirtualizationPaper} to be optimizable by minimizing enclave's size, thus reducing swapping and consequently increasing enclave performance.
+Virtualization causes an additional overhead, which increases based on the number of threads running inside the enclave.
+
+Finally, \cite{sgxVirtualizationPaper} proposes an automatic selection of an appropriate memory virtualization technique, by dynamically detecting the characteristics of a given workload to identify whether it is suitable with nested or shadow paging.
+
+
 
 -------------------------- END OF TO DO -----------------------------
 
