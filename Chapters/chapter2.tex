@@ -453,16 +453,18 @@ Virtualization causes an additional overhead, which increases based on the numbe
 Finally, \cite{sgxVirtualizationPaper} proposes an automatic selection of an appropriate memory virtualization technique, by dynamically detecting the characteristics of a given workload to identify whether it is suitable with nested or shadow paging.
 
 
-
--------------------------- END OF TO DO -----------------------------
-
 \subsubsection{SGX-Enabled Linux Containers}
 %todo
--------------------------- TO DO -----------------------------
+Lately, container solutions such as Linux Containers (LXC) and Docker have proved to be compelling alternatives to virtualization in cloud computing systems, due to the fact that they need less computing resources, allowing more deployments per physical machine to take place, as well as reducing infrastructure costs. However, some concerns have been raised since containers share a common \gls{os} kernel, therefore any vulnerability of the kernel would put all the other containers on the system in danger.
 
-https://www.cise.ufl.edu/~butler/pubs/codaspy19.pdf
+While various solutions including Haven, Graphene-SGX, SCONE, Panoply have been proposed to secure applications and containers in the cloud environment by using Intel-\gls{sgx}, these approaches still generate some concerns, like the need to expand the TCB and enclave size, limited support for key features like remote attestation, and ignore hardware constraints on \gls{epc} size (instead of relying on \gls{epc} page swapping, which lead to serious performance losses). 
+This issues are the result of a still incomplete infrastructure, from the \gls{os} to the application layer. 
 
--------------------------- END OF TO DO -----------------------------
+In \cite{lxcsgxPaper} these exact concerns are addressed by introducing a platform for Linux Containers (LXC) that leverage Intel-\gls{sgx} in the cloud environment, called lxcsgx. 
+This lxcsgx platform offers an infrastructure that supports: (1) Remote attestation; (2) \gls{epc} memory control for containers to prevent malicious overuse of resources; (3) Software \gls{tpm} that can easily allow legacy applications to use \gls{sgx}; (4) GCC plugin to assist with the partitioning of applications, thus reducing the \gls{tcb}.
+
+Lxcsgx was proven in \cite{lxcsgxPaper} to offer the lowest overhead to the overall system when compared to the previously spoken solutions, while also addressing potential issues these could have. 
+
 
 \subsubsection{SGX-Enabled Searchable Encryption}
 %todo
