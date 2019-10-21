@@ -418,11 +418,17 @@ gets and 9x for sets) than an SGX-disabled Snort application, at the cost of ext
 
 \subsubsection{Trusted Cloud-Based System Administration}
 %todo
--------------------------- TO DO -----------------------------
+The use of cloud platforms lead to a significant increase of security and privacy risks. Thus, cloud services are now higly dependent on trusting its administrators, as well as their good behaviour. Since this is not always the case, it has become a must to protect the users from potencial cloud system administration threats. 
+To tackle this problem, some solutions have been proposed with the help of trusted computing technology. However, their focus have been conducted on Infrastructure-as-a-Service (IaaS) environments, which are simpler to maintain than in PaaS and SaaS approaches.
 
-Tese de Mestrado DI-FCT-UNL, Sup. HJ
+\cite{sgxCloudThesis} proposes a solution that addresses trustworthy and security in PaaS and SaaS environments while preserving essential system administration functions by leveraging Intel-\gls{sgx}. By making use of \gls{sgx}, it provides an environment for cloud customers to review the security conditions of cloud nodes, more specifically those that run their applications and handle their data.
 
--------------------------- END OF TO DO -----------------------------
+The main idea behind this approach is to allow the administrative staff necessary privileges according to escalation policies enforced for different roles, instead of never granting full administrative privileges on the computing nodes.
+
+The administrative roles for cloud nodes are divided into four or five independent roles, depending if it's a SaaS or PaaS environment, each with their own permissions. Each role works under supervision of internal or external auditors. The internal auditors being the ones hired by the provider, while the external are hired by customers, as a way to execute protocols decided by both in a trustable way. The solution both enables control of cloud trusted nodes operational states, designated to run customer's computations, as well as remote attestation of the boot sequence of PaaS or SaaS stacks. Finally, by including logging of changes in node's states, this solution is able to offer trustworthy in the execution of functions and protocols.
+
+This approach was shown in \cite{sgxCloudThesis} to have minimal performance impact, as well low storage overheads, while being a compelling approach to be used to increase detail of management protocols and tools in cloud environments and data-centers.
+
 
 \subsubsection{SGX-enabled Virtualization}
 %todo
