@@ -474,9 +474,19 @@ Lxcsgx was proven in \cite{lxcsgxPaper} to offer the lowest overhead to the over
 
 \subsubsection{SGX-Enabled Searchable Encryption}
 %todo
--------------------------- TO DO -----------------------------
 
--------------------------- END OF TO DO -----------------------------
+Processing and storing data in cloud environments is still considered too risky by many. To deal with this, systems started to support \gls{tee}s as a way to provide trust to their users, making sure all their data remains private. 
+However, working with encrypted data is not always as easy as it sounds, since software-based approaches made specifically for search encrypted information still lack some properties, good performance being one of the main ones. Well known approaches like Fully Homomorphic Encryption (FHE), though they offer a good extra security properties, are not pratical in large distributed systems. As for hardware-based existing approaches, they proved not to scale well due to hardware limitations, as well as depending in a large \gls{tcb}, which can become susceptible to threats.
+
+CryptDB \cite{cryptDBPaper} is a database system capable of processing SQL queries over encrypted data. It is an approach that supports order-preserving encryption for efficient search, which lead to a low performance overhead due to the use of internal index structures, and also allowing range queries on ciphertexts to happen the same way as if the data was in plaintext. However, some research can be seen in \cite{naveedPaper} about this particular type of encryption, showing that it is possible to recover the original plaintexts, thus making systems like this incapable of providing enough security guarantees to the data.
+
+As a result, new approaches like HardIDX started to become more popular, for providing security properties by supporting the use of trusted execution techniques, while offering decent levels of performance.
+
+HardIDX \cite{hardIDXPaper} is a hardware approach that provides the possibility of searching over encrypted data, leveraging Intel-\gls{sgx}. It implements only a small core of operations, in particular searches (on a single value or value ranges), in the \gls{tee}.
+This approach uses B+-tree as the structure to organize all data, which is found in many \gls{dbms}s.
+
+Unlike previous hardware-based approaches, HardIDX implements a small size \gls{tcb} and memory footprint in the \gls{tee}, thus exposing a small atack surface, as well as granting good performance results while executing complex searches on large chunks of data, all this while being able to scale the system to large indexes, as proved in \cite{hardIDXPaper}. 
+
 
 
 \subsubsection{ShieldStore}
