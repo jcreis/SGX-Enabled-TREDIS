@@ -491,15 +491,35 @@ Unlike previous hardware-based approaches, HardIDX implements a small size \gls{
 
 \subsubsection{ShieldStore}
 %todo
--------------------------- TO DO -----------------------------
+The increasing research on trusted computation technologies, in particular \gls{tee}s like \gls{sgx} made possible for cloud users to run their applications safely in potentially malicious systems. One of the most used type of applications in these cloud systems are key-value stores, like Redis \cite{redisWebsite} and memcached \cite{memcachedWebsite}. These type of data stores are used in many systems nowadays due to their architecture offering fast access to data, due to maintaining data in main memory, as well as granting durability by writing the data to persistent storage.  Due to the importance of these type of systems in todays systems stack, there is a special interest in allowing them to be protected by trusted technology. However, one of the critical limitations of \gls{sgx} is the size of the \gls{epc}, which represents its protected memory region. 
 
-https://dl.acm.org/citation.cfm?id=3303951
+To circumvent this memory restriction, a in-memory key-value store designed to leverage \gls{sgx}, ShieldStore \cite{shieldStorePaper}, was presented. ShieldStore provides fast execution of queries over large data, by maintaining the majority of the data structures outside enclave memory region, hence contributing to overcome \gls{sgx} memory limitations.
 
--------------------------- END OF TO DO -----------------------------
+ShieldStore runs inside the enclave to protect encryption keys, remote attestation, and to perform all the logic necessary to the Key-Value Store execution.
+
+ShieldStore design starts by remote attesting the server-side, verifying \gls{sgx} support of the processor, the code and other critical memory state of an enclave. Then, using Intel-\gls{sgx} libraries, the client and the server exchange keys so that a secure channel between both parties is created. The client then send a request, to which the server deciphers and verifies, and thus accessing the Key-Value Store for the desired data. To note that the client does not access the server's ciphertexts neither needs to know the key the server used to encrypt the values. The server then decrypts the stored data, and encrypts it again with the session key previously decided when establishing the secure channel with the client, and a reply is sent to the client.    
+
+This is an approach capable of minimizing the unnecessary memory encryption overhead of paging, and also eliminate \gls{epc} page faults, which are the main factors impacting the performance of these kind of encrypted data storage systems. Also, ally to the optimization of the index structures, that enabled them for fast access and protection of keys and values, ShieldStore is proven to be an efficient, reliable Key-Value store capable of leveraging \gls{sgx} advantages.
+
 
 \subsubsection{EnclaveDB}
 %todo
 -------------------------- TO DO -----------------------------
+EnclaveDB [24] is a privacy enhanced and secure database that works alongside with
+Intel SGX and provides an Structured Query Language (SQL). It uses its technology to
+maintain all sensitive information inside SGX enclaves in order to keep them secure from
+an threat model of strong adversaries that can control the entire software stack on the
+database server. It resists attack from the administrator server, the database administrator
+and attacker who may compromised the operating system, the hypervisor or the database
+server.
+Following Intel’s application guidelines, EnclaveDB has an two part architecture:
+trusted (running on the enclave) and untrusted modules. The enclave hosts a query
+processing engine, natively compiled stored procedures and a trusted kernel which provides API’s for sealing and remote attestation. The untrusted host process runs all other
+compo- nents of the database server. Figure 2.2 shows the architecture of the enclaveDB
+server-side.
+Leveraging TEE, EnclaveDB then provides a database with a SQL interface and guarantees confidentiality and integrity with low overhead. With its design it also reduces the
+TCB to a smaller set than any other "normal"database.
+
 
 https://ieeexplore.ieee.org/document/8418608
 
