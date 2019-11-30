@@ -386,12 +386,9 @@ Graphene-SGX also supports application partitioning, enabling it to run small pi
 \subsection{Other approaches}
 %todo
 
--------------------------- TO DO -----------------------------
 
+Other approaches appeared as a way to deal with more specific problems, by making use of trusted computing. We'll go into topics like Networking, Administration of Cloud Systems, Virtualization, Containers, searchable Encryption as well as encrypted Databases, and how to take advantages of \gls{sgx} in these specific areas. 
 
-Need any intro or just go straight to the subsections?
-
--------------------------- END OF TO DO -----------------------------
 
 
 \subsubsection{SGX-Enabled Network Protocols and Services}
@@ -400,17 +397,17 @@ Need any intro or just go straight to the subsections?
 The increased need for security seen nowadays caused network related technologies to also become popular, from security protocols (TLS) to anonymous browsers (Tor), leading to a lot of effort by the community to make viable approaches to tackle network security problems. 
 Hardware approaches capable of providing \gls{tee}s (e.g. Intel-\gls{sgx}) have recently been used to make some contributions to deal with modern network security concerns as a way to, for example, solve policy privacy issues in inter-domain routing, thus protecting ISPs policies.
 
-In \cite{torSGXPaper} it’s shown that leveraging hardware protection of TEEs can grant benefits, such as simplify the overall design of the application, as well as securely introduce in-network functionality into TLS sessions. The same paper also presents a possible approach to reach security and privacy on a network level, by building a prototype on top of OpenSGX, that shows that SGX-enabled applications have modest performance losses compared to one with no SGX support, while significantly improving it’s security and privacy.
+In \cite{torSGXPaper} it is shown that leveraging hardware protection of \gls{tee}s can grant benefits, such as simplify the overall design of the application, as well as securely introduce in-network functionality into TLS sessions. The same paper also presents a possible approach to reach security and privacy on a network level, by building a prototype on top of OpenSGX, that shows that \gls{sgx}-enabled applications have modest performance losses compared to one with no \gls{sgx} support, while significantly improving it’s security and privacy.
 
 Also at the networking security level, the usage of Network Function Virtualization (NFV) architecture by applications nowadays imply the creation of internal state as a way to allow complex cross-packet and cross-flow analysis. 
-These states contain sensitive information, like IP addresses, user details and cached content (e.g. profile pictures), therefore should be a priority to ensure their protection from potential threats.
-To tackle this vulnerability, S-NFV \cite{sNFVPaper} has proven to be a valid approach, by providing a secure framework for NFV applications, securing NFV states by using Intel-SGX.
+These states contain sensitive information, like IP addresses, user details and cached content (e.g. profile pictures), therefore it should be a priority to ensure their protection from potential threats.
+To tackle this vulnerability, S-NFV \cite{sNFVPaper} has proven to be a valid approach, by providing a secure framework for NFV applications, securing NFV states by using Intel-\gls{sgx}.
 
 S-NFV divides the NFV application in two: S-NFV enclave and S-NFV host. The enclave is responsible to store the states and state processing code, while the host deals with the rest.
 
 In \cite{sNFVPaper} by implementing the S-NFV approach with Snort \cite{snortPaper} on top of OpenSGX was
-concluded that this SGX-enabled approach results in bigger overheads (aprox. 11x for
-gets and 9x for sets) than an SGX-disabled Snort application, at the cost of extra security.
+concluded that this \gls{sgx}-enabled approach results in bigger overheads (aprox. 11x for
+gets and 9x for sets) than a \gls{sgx}-disabled Snort application, at the cost of extra security.
 
 
 \subsubsection{Trusted Cloud-Based System Administration}
@@ -418,11 +415,11 @@ gets and 9x for sets) than an SGX-disabled Snort application, at the cost of ext
 The use of cloud platforms lead to a significant increase of security and privacy risks. Thus, cloud services are now higly dependent on trusting its administrators, as well as their good behaviour. Since this is not always the case, it has become a must to protect the users from potencial cloud system administration threats. 
 To tackle this problem, some solutions have been proposed with the help of trusted computing technology. However, their focus have been conducted on Infrastructure-as-a-Service (IaaS) environments, which are simpler to maintain than in PaaS and SaaS approaches.
 
-\cite{sgxCloudThesis} proposes a solution that addresses trustworthy and security in PaaS and SaaS environments while preserving essential system administration functions by leveraging Intel-\gls{sgx}. By making use of \gls{sgx}, it provides an environment for cloud customers to review the security conditions of cloud nodes, more specifically those that run their applications and handle their data.
+\cite{sgxCloudThesis} proposes a solution that addresses trustworthy and security in PaaS and SaaS environments while preserving essential system administration functions by leveraging Intel-\gls{sgx}. By making use of \gls{sgx}, this solution provides an environment for cloud customers to review the security conditions of cloud nodes, more specifically those that run their applications and handle their data.
 
 The main idea behind this approach is to allow the administrative staff necessary privileges according to escalation policies enforced for different roles, instead of never granting full administrative privileges on the computing nodes.
 
-The administrative roles for cloud nodes are divided into four or five independent roles, depending if it's a SaaS or PaaS environment, each with their own permissions. Each role works under supervision of internal or external auditors. The internal auditors being the ones hired by the provider, while the external are hired by customers, as a way to execute protocols decided by both in a trustable way. The solution both enables control of cloud trusted nodes operational states, designated to run customer's computations, as well as remote attestation of the boot sequence of PaaS or SaaS stacks. Finally, by including logging of changes in node's states, this solution is able to offer trustworthy in the execution of functions and protocols.
+The administrative roles for cloud nodes are divided into four or five independent roles, depending if it is a SaaS or PaaS environment, each with their own permissions. Each role works under supervision of internal or external auditors. The internal auditors being the ones hired by the provider, while the external are hired by customers, as a way to execute protocols decided by both in a trustable way. The solution enables both control of cloud trusted nodes operational states, designated to run customer's computations, as well as remote attestation of the boot sequence of PaaS or SaaS stacks. Finally, by including logging of changes in node's states, this solution is able to offer trustworthy execution of functions and protocols.
 
 This approach was shown in \cite{sgxCloudThesis} to have minimal performance impact, as well low storage overheads, while being a compelling approach to be used to increase detail of management protocols and tools in cloud environments and data-centers.
 
@@ -430,22 +427,22 @@ This approach was shown in \cite{sgxCloudThesis} to have minimal performance imp
 \subsubsection{SGX-enabled Virtualization}
 %todo
 
-Has we already pointed out previously, Intel-\gls{sgx} has drawn much attention from the community in the last few years, which also made cloud providers to start implementing \gls{sgx} into their cloud systems (Microsoft's Azure confidential computing or IBM Cloud are examples of that). Also, new cloud programming frameworks have already been created with the ability to support \gls{sgx}. 
+As we already pointed out previously, Intel-\gls{sgx} has drawn much attention from the community in the last few years, which also made cloud providers to start implementing \gls{sgx} into their cloud systems (Microsoft's Azure confidential computing or IBM Cloud are examples of that). Also, new cloud programming frameworks have already been created with the ability to support \gls{sgx}. 
 
 However, while most of the research on Intel-\gls{sgx} have been concentrated on its security and programmability properties, there are a lot of questions to answer about how the usage of \gls{sgx} affects the performance of a virtualized system. This is relevant since virtualization is the main building block of cloud computing.
 
-In \cite{sgxVirtualizationPaper} an exaustive evaluation about the performance of \gls{sgx} on a virtualized system, concluding that:
+In \cite{sgxVirtualizationPaper} an exaustive evaluation about the performance of \gls{sgx} on a virtualized system concluded that:
 
-(1) Hypervisors don't need to intercept every \gls{sgx} instruction to enable \gls{sgx} for being virtualized. Was concluded that there is only one indispensable \gls{sgx} function, ECREATE, which is responsable to virtualize \gls{sgx} launch control.
+(1) Hypervisors don't need to intercept every \gls{sgx} instruction to enable \gls{sgx} to virtualization. It was concluded that there is only one indispensable \gls{sgx} function, ECREATE, which is responsable to virtualize \gls{sgx} launch control.
 
 As a result, gls{sgx} on \gls{vm}s is considered to have an acceptable overhead.
 
-(2)  \gls{sgx} overhead on \gls{vm}s when running memory-heavy benchmarks consists mainly of address translation when using nested paging. If instead it uses shadow paging, the overhead becomes insignificant. 
+(2)  \gls{sgx} overhead on \gls{vm}s when running memory-heavy benchmarks consists mainly of address translation when using nested paging. If it uses shadow paging instead, then the overhead becomes insignificant. 
 \cite{sgxVirtualizationPaper} shows that this can be optimized by using shadow paging for \gls{epc} to reduce translation overhead, and nested paging for general usage.
 
 (3) On the contrary, when running benchmarks involving many context switches (e.g., HTTP benchmarks), shadow paging performs worse than nested paging.
 
-(4) The use of \gls{sgx} causes a heavy drop in performance switching between application and enclave, whether it's using virtualization or not. This drop causes server applications using \gls{sgx} to be affected.
+(4) The use of \gls{sgx} causes a heavy drop in performance switching between application and enclave, whether it is using virtualization or not. This drop causes server applications using \gls{sgx} to be affected.
 \cite{sgxVirtualizationPaper} specifies that this can be addressed by using mechanisms (e.g. HotCalls \cite{hotcallsPaper}) that work as a fast call interface between the aplication and enclave code. This interfaces reduce the overhead of ecalls and ocalls, helping the porting of applications to \gls{sgx}.
 
 (5) Swapping \gls{epc} pages is really expensive, and this also applies for all systems using \gls{sgx}. 
@@ -460,7 +457,7 @@ Finally, \cite{sgxVirtualizationPaper} proposes an automatic selection of an app
 %todo
 Lately, container solutions such as Linux Containers (LXC) and Docker have proved to be compelling alternatives to virtualization in cloud computing systems, due to the fact that they need less computing resources, allowing more deployments per physical machine to take place, as well as reducing infrastructure costs. However, some concerns have been raised since containers share a common \gls{os} kernel, therefore any vulnerability of the kernel would put all the other containers on the system in danger.
 
-While various solutions including Haven, Graphene-SGX, SCONE, Panoply have been proposed to secure applications and containers in the cloud environment by using Intel-\gls{sgx}, these approaches still generate some concerns, like the need to expand the TCB and enclave size, limited support for key features like remote attestation, and ignore hardware constraints on \gls{epc} size (instead of relying on \gls{epc} page swapping, which lead to serious performance losses). 
+While various solutions including Haven, Graphene-SGX, SCONE, Panoply have been proposed to secure applications and containers in cloud environments by using Intel-\gls{sgx}, these approaches still generate some concerns, like the need to expand the \gls{tcb} and enclave size, limited support for key features like remote attestation, and ignore hardware constraints on \gls{epc} size (instead of relying on \gls{epc} page swapping, which leads to serious performance losses). 
 This issues are the result of a still incomplete infrastructure, from the \gls{os} to the application layer. 
 
 In \cite{lxcsgxPaper} these exact concerns are addressed by introducing a platform for Linux Containers (LXC) that leverage Intel-\gls{sgx} in the cloud environment, called lxcsgx. 
@@ -473,16 +470,16 @@ Lxcsgx was proven in \cite{lxcsgxPaper} to offer the lowest overhead to the over
 %todo
 
 Processing and storing data in cloud environments is still considered too risky by many. To deal with this, systems started to support \gls{tee}s as a way to provide trust to their users, making sure all their data remains private. 
-However, working with encrypted data is not always as easy as it sounds, since software-based approaches made specifically for search encrypted information still lack some properties, good performance being one of the main ones. Well known approaches like Fully Homomorphic Encryption (FHE), though they offer a good extra security properties, are not pratical in large distributed systems. As for hardware-based existing approaches, they proved not to scale well due to hardware limitations, as well as depending in a large \gls{tcb}, which can become susceptible to threats.
+However, working with encrypted data is not always as easy as it sounds, since software-based approaches made specifically for searching encrypted information still lack some properties, good performance being one of the main ones. Well known approaches like Fully Homomorphic Encryption (FHE), though they offer a good extra security properties, are not pratical in large distributed systems. As for hardware-based existing approaches, they proved not to scale well due to hardware limitations, as well as depending in a large \gls{tcb}, which can become susceptible to threats.
 
 CryptDB \cite{cryptDBPaper} is a database system capable of processing SQL queries over encrypted data. It is an approach that supports order-preserving encryption for efficient search, which lead to a low performance overhead due to the use of internal index structures, and also allowing range queries on ciphertexts to happen the same way as if the data was in plaintext. However, some research can be seen in \cite{naveedPaper} about this particular type of encryption, showing that it is possible to recover the original plaintexts, thus making systems like this incapable of providing enough security guarantees to the data.
 
-As a result, new approaches like HardIDX started to become more popular, for providing security properties by supporting the use of trusted execution techniques, while offering decent levels of performance.
+As a result, new approaches like HardIDX started to become more popular, for providing security properties by supporting trusted computing techniques, while offering decent levels of performance.
 
 HardIDX \cite{hardIDXPaper} is a hardware approach that provides the possibility of searching over encrypted data, leveraging Intel-\gls{sgx}. It implements only a small core of operations, in particular searches (on a single value or value ranges), in the \gls{tee}.
 This approach uses B+-tree as the structure to organize all data, which is found in many \gls{dbms}s.
 
-Unlike previous hardware-based approaches, HardIDX implements a small size \gls{tcb} and memory footprint in the \gls{tee}, thus exposing a small atack surface, as well as granting good performance results while executing complex searches on large chunks of data, all this while being able to scale the system to large indexes, as proved in \cite{hardIDXPaper}. 
+Unlike previous hardware-based approaches, HardIDX implements a small size \gls{tcb} and memory footprint in the \gls{tee}, thus exposing a small attack surface, as well as granting good performance results while executing complex searches on large chunks of data, all this while being able to scale the system to large indexes, as proved in \cite{hardIDXPaper}. 
 
 
 
@@ -494,7 +491,7 @@ To circumvent this memory restriction, a in-memory key-value store designed to l
 
 ShieldStore runs inside the enclave to protect encryption keys, remote attestation, and to perform all the logic necessary to the Key-Value Store execution.
 
-ShieldStore design starts by remote attesting the server-side, verifying \gls{sgx} support of the processor, the code and other critical memory state of an enclave. Then, using Intel-\gls{sgx} libraries, the client and the server exchange keys so that a secure channel between both parties is created. The client then send a request, to which the server deciphers and verifies, and thus accessing the Key-Value Store for the desired data. To note that the client does not access the server's ciphertexts neither needs to know the key the server used to encrypt the values. The server then decrypts the stored data, and encrypts it again with the session key previously decided when establishing the secure channel with the client, and a reply is sent to the client.    
+ShieldStore design starts by remote attesting the server-side, verifying \gls{sgx} support of the processor, the code and other critical memory state of an enclave. Then, using Intel-\gls{sgx} libraries, the client and the server exchange keys so that a secure channel between both parties is created. The client then sends a request, to which the server deciphers and verifies, and thus accessing the Key-Value Store for the desired data. To note that the client does not access the server's ciphertexts neither needs to know the key that the server used to encrypt the values. The server then decrypts the stored data, and encrypts it again with the session key previously decided when establishing the secure channel with the client, and a reply is sent to the client.    
 
 This is an approach capable of minimizing the unnecessary memory encryption overhead of paging, and also eliminate \gls{epc} page faults, which are the main factors impacting the performance of these kind of encrypted data storage systems. Also, ally to the optimization of the index structures, that enabled them for fast access and protection of keys and values, ShieldStore is proven to be an efficient, reliable Key-Value store capable of leveraging \gls{sgx} advantages.
 
@@ -515,10 +512,24 @@ This approach fundamentally provides a database system with a SQL interface with
 
 ShieldStore vs EnclaveDB
 
-Graphene
+shieldstore minimizes unnecessary memory encryption, eliminating EPC page faults. provides fast execution of queries over large chunks of data, by maintaining data structures outside enclave memory region.
+
+-> no EPC page faults, optimized index structures which leads to increased performance
+
+enclaveDB divides the db in two modules - trusted and untrusted. Trusted has a secured query processing engine, like a SQL interface with security guarantees, and other stuff that increases security and optimizes searches, like a trusted kernel that is responsible of remote attesting and pre-compiled stored procedures. all the rest runs in untrusted module.
+
+-> low overheads, small tcb, incresed security.
+
+
+-------------------------------------------
+
+Graphene grants system calls with security guarantees, so that unmodified apps can keep executing normally with SGX
+The system loses performance and increses the TCB size tho, but not enough to make it unviable as many people may think. it makes possible for developers to reduce tcb size as they need, optimizing their own solution as they wish. 
+Also supports app partitioning, enabling run of small pieces of one apps in multiple enclaves.
 
 Dissertation Approach
 
+FUCK THIS SHIT
 
 -------------------------- END OF TO DO -----------------------------
 
