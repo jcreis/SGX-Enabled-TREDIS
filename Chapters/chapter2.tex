@@ -508,67 +508,19 @@ This approach fundamentally provides a database system with a SQL interface with
 
 \section{Summary and Discussion}
 %todo
--------------------------- TO DO -----------------------------
 
-ShieldStore vs EnclaveDB
+After going through all those approaches, there is some things that can be said while choosing which technology set suits better our objective. 
+Starting with the \gls{os} isolation systems discussed in ??(REFER CHAPTER 2.1), although capable of assuring a good sense of privacy from the \gls{os} and/or hypervisor, they do not take into account the potencial hardware vulnerabilities that a system can have while making use of sensitive data. 
 
-shieldstore minimizes unnecessary memory encryption, eliminating EPC page faults. provides fast execution of queries over large chunks of data, by maintaining data structures outside enclave memory region.
+While \gls{tpm} has proven to have problems adapting to the Cloud, \gls{tee} technology on the other hand has proven to be the way to go, by combining hardware solutions with specific software, in order to achieve a better sense of security and privacy.
 
--> no EPC page faults, optimized index structures which leads to increased performance
+Going deeper into modern technologies in this field (REFER CHAPTER 2.3), we had to choose between Intel-\gls{sgx} and ARM TrustZone from being the two most popular between the community at this point, and so more work is being developed using this two. Intel and ARM's approach differ mainly from the fact that, while ARM TrustZone is designed to implement the idea of only one secured zone, thus being widely adapted in the phone market, Intel-\gls{sgx} in the other hand is capable of supporting multiple secured zones (enclaves) for each processor, which is a very important subject in cloud systems since a cloud server usually manages execution of processes and data from different users at once. Also by not requiring additional code to grant hardware attestation, since its design also ensures it, Intel-\gls{sgx} is able to keep a smaller \gls{tcb} than ARM TrustZone. With this in mind, we choose to go with Intel-\gls{sgx} in our pratical approach.
 
-enclaveDB divides the db in two modules - trusted and untrusted. Trusted has a secured query processing engine, like a SQL interface with security guarantees, and other stuff that increases security and optimizes searches, like a trusted kernel that is responsible of remote attesting and pre-compiled stored procedures. all the rest runs in untrusted module.
-
--> low overheads, small tcb, incresed security.
-
-
--------------------------------------------
-
-Graphene grants system calls with security guarantees, so that unmodified apps can keep executing normally with SGX
-The system loses performance and increses the TCB size tho, but not enough to make it unviable as many people may think. it makes possible for developers to reduce tcb size as they need, optimizing their own solution as they wish. 
-Also supports app partitioning, enabling run of small pieces of one apps in multiple enclaves.
-
-Dissertation Approach
-
-FUCK THIS SHIT
-
--------------------------- END OF TO DO -----------------------------
+Since \gls{tee} technologies can drop significantly when simply used by itself, in (REFER CHAPTER 2.4) we go into detail on how different known technologies can positively impact the work of \gls{sgx}. Since our focus is in running an unmodified application in this kind of security environments, we opted for Graphene-SGX (REFER CHAPTER). Graphene has proven to be capable of porting unmodified applications on top of \gls{sgx} without any huge drop of performance, simply by working as a libraryOS that grants access to some restricted and secured system calls.
 
 
 
 
-\subsection{Discussion}
-\label{ssec:sgx_frameworks_discussion}
-
-Haven [15] showed
-that a library OS could run unmodified applications on
-SGX,
-
-thin “shim” layers, like SCONE [14] and Panoply [49] wrap 
-an API layer such as the system call table.
-
-
---------
-
-
-SGX frameworks and applications.
-
-VC3 [45]
-runs MapReduce jobs in SGX enclaves.
-
-Bren-
-ner et al. [17] run cluster services in ZooKeeper in an
-enclave, and transparently encrypt data in transit be-
-tween enclaves.
-
-Ryoan [22] sandboxes a piece of un-
-trusted code in the enclave to process secret data while
-preventing the loaded code from leaking secret data.
-
-Opaque [57] uses an SGX-protected layer on the Spark
-framework to generate oblivious relational operators that
-hide the access patterns of distributed queries.
-
-The \novathesis\ class can be customized with the options listed below.
 
 
 
