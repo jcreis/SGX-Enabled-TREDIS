@@ -30,6 +30,7 @@ Finally, in Section 2.5 we make a critical analysis on the topics previously dis
 
 
 \section{Protection in untrusted OSes}
+\label{sec:protect_untrustOS}
 
 A lot of applications these days depend on sensitive data to operate. Therefore protecting this data must be taken into account while designing the application. 
 One of the things we have to think about is the size of the \gls{tcb}, and how to reduce it as much as possible without losing the operability of the system. 
@@ -89,9 +90,9 @@ Like InkTag, Sego \cite{segoPaper} is also an hypervisor-based system that gives
 
 \begin{figure}[htbp]
 	\centering
-	{\includegraphics[width=0.6\linewidth]{sego_architecture}}%
+	{\includegraphics[width=0.6\linewidth]{sego_architecture}}
 	\caption{Sego Architecture Overview}
-	\label{segoArchitecture}
+	\label{fig:segoArchitecture}
 \end{figure}
 
 Sego is designed to execute trusted code in an \gls{hap}.
@@ -118,6 +119,7 @@ Sego does not guarantee \gls{os} availability. A compromised \gls{os} can simply
 % =======================
 
 \section{Hardware-Enabled TEE - Trusted Execution Environments}
+\label{sec:tpm_hsm_tees}
 
 A \gls{tee} is an abstraction provided by both software and hardware that guarantees isolated execution of specific programs in a machine, including the host \gls{os}, hypervisor or even system administrators, preventing them from leveraging their privileges. A \gls{tee} also provides integrity of applications running inside it, along with confidentiality of their assets.
 
@@ -144,7 +146,7 @@ With that in mind, new hardware-enabled solutions were developed to be more flex
 
 
 \section{Hardware-Enabled TEE Solutions}
-
+\label{sec:hardwareTEEs}
 
 The idea of using hardware to provide trusted execution environments started appearing as a way to deal with piracy, with examples like TCPA \cite{tcpaPaper} and Microsoft's Palladium being the most known ones. By making use of hardware, it was possible to encrypt data (DVD's, for example) that could only be decrypted by a specific hardware, making it almost impossible to copy. 
 
@@ -154,6 +156,7 @@ Thus, since any application does not trust the \gls{os}, it does not trust the a
 \gls{xom}, described in the next subsection, was developed as a way to deal with these changes that were required to use this idea of trusted computing in a better way.
 
 \subsection{XOM}
+\label{ssec:xom}
 
 \gls{xom} \cite{xomPaper}, which stands for eXecute Only Memory, is a processor architecture that is able to provide copy protection and tamper-resistence functions, 
 good for enabling code to run in untrusted platforms, deployment of trusted clients in distributed systems like banking transactions, online gaming and electronic voting, but also fundamental to deal with piracy back in the day it was published. 
@@ -217,7 +220,7 @@ Altough isolation is the main objective of \gls{sgx}, it still allows a way for 
 
 
 \section{SGX-Enabled Frameworks and Shielded Applications}
-
+\label{sec:sgxFrameworks}
 The need for cloud computing is constantly growing in modern applications. 
 It is a cost-effective and pratical solution to run large distributed applications, however the fact that it requires users to trust the cloud provider with their code and data creates some trust concerns for developers.
 
@@ -229,6 +232,7 @@ We will discuss those approaches in the next subsections.
 
 
 \subsection{Shielded protected applications in untrusted Clouds}
+\label{ssec:shieldedApps}
 
 As said previously, cloud computing is becoming more and more adopted in todays systems. 
 Therefore, by being a such popular technology, it is a must that their users' data remains confidential. 
@@ -243,6 +247,7 @@ Assuring a shielded execution of an application fundamentally means that both co
 
 
 \subsection{SCONE}
+\label{ssec:scone}
 
 Container-based virtualization has become quite popular for offering better performance properties than the use of \gls{vm}s, however it offers weaker isolation guarantees, therefore less security. 
 That is why we observe that containers usually execute network services (i.e. Redis). These are systems that don't need as much system calls as the other services, since they can do a lot via networking, thus keeping a small TCB for increased security.
@@ -258,6 +263,7 @@ This increases the performance since major performance losses are caused by encl
 
 
 \subsection{Haven}
+\label{ssec:haven}
 
 Haven is the first system to achieve shielded execution of unmodified legacy applications for a commodity \gls{os} (Windows) and hardware, achieving mutual distrust with the host software.
 
@@ -274,6 +280,7 @@ That's the main goal of Haven: give the user trust by granting confidentiality a
 
 
 \subsection{OpenSGX}
+\label{ssec:openSGX}
 
 OpenSGX \cite{opensgx_paper} was developed as a way to help with the access to \gls{tee} software technologies, since these type of technologies were only available for a selected group of researchers. 
 It was made available as an open source platform, and by providing \gls{tee} and \gls{os} emulation, it contributed a lot for expanding the possibility of research in this area, as well as promoting the development of SGX applications. 
@@ -283,9 +290,9 @@ Its pratical properties result of six components working together: (1) Hardware 
 
 \begin{figure}[htbp]
 	\centering
-	{\includegraphics[width=0.6\linewidth]{opensgx_design}}%
+	{\includegraphics[width=0.6\linewidth]{opensgx_design}}
 	\caption{Overview design of OpenSGX framework and memory state of an active enclave program}
-	\label{openSGXDesign}
+	\label{fig:openSGXDesign}
 \end{figure}
 
 In Figure \ref{fig:openSGXDesign} we see an overall example of this framework, where a regular program (Wrapper) and a secured program (Enclave Program) both run as a single process in the same virtual address space. Due to the fact that Intel-\gls{sgx} uses privilege instructions to setup enclaves, the requests from the Wrapper program are handled by the OpenSGX set of system calls.
@@ -294,6 +301,7 @@ OpenSGX was proven capable of running non-trivial applications, as well as promo
 
 
 \subsection{Panoply}
+\label{ssec:panoply}
 
 Panoply \cite{panoplyPaper} is a system that works as a bridge between \gls{sgx}-native abstractions and standard \gls{os} abstractions, required by most commodity Linux applications. 
 It divides a system into multiple components, called micro-containers (or "micron"), and runs each one of them inside its own enclave. 
@@ -317,7 +325,7 @@ Users then upload the resulting binary code to the cloud, where enclaves contain
 
 \begin{figure}[htbp]
 	\centering
-	{\includegraphics[width=0.6\linewidth]{vc3_design}}%
+	{\includegraphics[width=0.6\linewidth]{vc3_design}}
 	\caption{VC3 memory design model on the left, component dependencies on the right}
 \end{figure}
 
@@ -349,7 +357,7 @@ Its main goal is to prevent leakage of secret data. This is done by keeping the 
 
 \begin{figure}[htbp]
 	\centering
-	{\includegraphics[width=0.6\linewidth]{ryoan_design}}%
+	{\includegraphics[width=0.6\linewidth]{ryoan_design}}
 	\caption{Instance of Ryoan running on a single machine}
 \end{figure}
 
@@ -384,7 +392,8 @@ Graphene's main goal is to run unmodified applications on \gls{sgx} quickly. Thu
 
 Graphene-SGX also supports application partitioning, enabling it to run small pieces of one application in multiple enclaves. This can be useful, for instance, to applications with different privilege levels, while still increasing the security of the application.
 \subsection{Other approaches}
-%todo
+\label{ssec:otherSGXFrameworks}
+
 
 
 Other approaches appeared as a way to deal with more specific problems, by making use of trusted computing. We'll go into topics like Networking, Administration of Cloud Systems, Virtualization, Containers, searchable Encryption as well as encrypted Databases, and how to take advantages of \gls{sgx} in these specific areas. 
@@ -392,7 +401,8 @@ Other approaches appeared as a way to deal with more specific problems, by makin
 
 
 \subsubsection{SGX-Enabled Network Protocols and Services}
-%todo
+\label{sssec:sgxNetworking}
+
 
 The increased need for security seen nowadays caused network related technologies to also become popular, from security protocols (TLS) to anonymous browsers (Tor), leading to a lot of effort by the community to make viable approaches to tackle network security problems. 
 Hardware approaches capable of providing \gls{tee}s (e.g. Intel-\gls{sgx}) have recently been used to make some contributions to deal with modern network security concerns as a way to, for example, solve policy privacy issues in inter-domain routing, thus protecting ISPs policies.
@@ -411,7 +421,8 @@ gets and 9x for sets) than a \gls{sgx}-disabled Snort application, at the cost o
 
 
 \subsubsection{Trusted Cloud-Based System Administration}
-%todo
+\label{sssec:sgxSysAdmin}
+
 The use of cloud platforms lead to a significant increase of security and privacy risks. Thus, cloud services are now higly dependent on trusting its administrators, as well as their good behaviour. Since this is not always the case, it has become a must to protect the users from potencial cloud system administration threats. 
 To tackle this problem, some solutions have been proposed with the help of trusted computing technology. However, their focus have been conducted on Infrastructure-as-a-Service (IaaS) environments, which are simpler to maintain than in PaaS and SaaS approaches.
 
@@ -425,7 +436,8 @@ This approach was shown in \cite{sgxCloudThesis} to have minimal performance imp
 
 
 \subsubsection{SGX-enabled Virtualization}
-%todo
+\label{sssec:sgxVirt}
+
 
 As we already pointed out previously, Intel-\gls{sgx} has drawn much attention from the community in the last few years, which also made cloud providers to start implementing \gls{sgx} into their cloud systems (Microsoft's Azure confidential computing or IBM Cloud are examples of that). Also, new cloud programming frameworks have already been created with the ability to support \gls{sgx}. 
 
@@ -454,7 +466,8 @@ Finally, \cite{sgxVirtualizationPaper} proposes an automatic selection of an app
 
 
 \subsubsection{SGX-Enabled Linux Containers}
-%todo
+\label{sssec:sgxLinuxContainers}
+
 Lately, container solutions such as Linux Containers (LXC) and Docker have proved to be compelling alternatives to virtualization in cloud computing systems, due to the fact that they need less computing resources, allowing more deployments per physical machine to take place, as well as reducing infrastructure costs. However, some concerns have been raised since containers share a common \gls{os} kernel, therefore any vulnerability of the kernel would put all the other containers on the system in danger.
 
 While various solutions including Haven, Graphene-SGX, SCONE, Panoply have been proposed to secure applications and containers in cloud environments by using Intel-\gls{sgx}, these approaches still generate some concerns, like the need to expand the \gls{tcb} and enclave size, limited support for key features like remote attestation, and ignore hardware constraints on \gls{epc} size (instead of relying on \gls{epc} page swapping, which leads to serious performance losses). 
@@ -467,7 +480,8 @@ Lxcsgx was proven in \cite{lxcsgxPaper} to offer the lowest overhead to the over
 
 
 \subsubsection{SGX-Enabled Searchable Encryption}
-%todo
+\label{sssec:sgxSearchEncrypt}
+
 
 Processing and storing data in cloud environments is still considered too risky by many. To deal with this, systems started to support \gls{tee}s as a way to provide trust to their users, making sure all their data remains private. 
 However, working with encrypted data is not always as easy as it sounds, since software-based approaches made specifically for searching encrypted information still lack some properties, good performance being one of the main ones. Well known approaches like Fully Homomorphic Encryption (FHE), though they offer a good extra security properties, are not pratical in large distributed systems. As for hardware-based existing approaches, they proved not to scale well due to hardware limitations, as well as depending in a large \gls{tcb}, which can become susceptible to threats.
@@ -484,7 +498,8 @@ Unlike previous hardware-based approaches, HardIDX implements a small size \gls{
 
 
 \subsubsection{ShieldStore}
-%todo
+\label{sssec:sgxShieldStore}
+
 The increasing research on trusted computation technologies, in particular \gls{tee}s like \gls{sgx} made possible for cloud users to run their applications safely in potentially malicious systems. One of the most used type of applications in these cloud systems are key-value stores, like Redis \cite{redisWebsite} and memcached \cite{memcachedWebsite}. These type of data stores are used in many systems nowadays due to their architecture offering fast access to data, by maintaining data in main memory, as well as granting durability by writing the data to persistent storage.  Due to the importance of these type of systems in todays systems stack, there is a special interest in allowing them to be protected by trusted technology. However, one of the critical limitations of \gls{sgx} is the size of the \gls{epc}, which represents its protected memory region. 
 
 To circumvent this memory restriction, a in-memory key-value store designed to leverage \gls{sgx}, ShieldStore \cite{shieldStorePaper}, was presented. ShieldStore provides fast execution of queries over large data, by maintaining the majority of the data structures outside enclave memory region, hence contributing to overcome \gls{sgx} memory limitations.
@@ -497,6 +512,7 @@ This is an approach capable of minimizing the unnecessary memory encryption over
 
 
 \subsubsection{EnclaveDB}
+\label{sssec:sgxEnclaveDB}
 EnclaveDB \cite{enclavedbPaper} is an approach to deal also with the need to protect data, both in the storage process and the processing of that data when accessing it. It offers confidentiality and integrity of queries and data, by working alongside Intel-\gls{sgx} in order to handle all the sensitive data (queries, tables, indexes) inside enclave memory, thus keeping the data safe in cases where the database administrator is malicious, when the \gls{os} or hypervisor is compromised, and even when running the database in an untrusted host. 
 
 EnclaveDB's design is divided in two modules: trusted, running inside the enclave, and untrusted. The trusted compartment hosts a query processing engine, a transaction manager, pre-compiled stored procedures and a trusted kernel responsible for sealing and remote attestation. As for the untrusted module, it is responsible to run all the other components of the database system. 
@@ -507,16 +523,18 @@ This approach fundamentally provides a database system with a SQL interface with
 
 
 \section{Summary and Discussion}
-%todo
+\label{sec:summary}
+
 
 After going through all those approaches, there is some things that can be said while choosing which technology set suits better our objective. 
-Starting with the \gls{os} isolation systems discussed in ??(REFER CHAPTER 2.1), although capable of assuring a good sense of privacy from the \gls{os} and/or hypervisor, they do not take into account the potencial hardware vulnerabilities that a system can have while making use of sensitive data. 
 
-While \gls{tpm} has proven to have problems adapting to the Cloud, \gls{tee} technology on the other hand has proven to be the way to go, by combining hardware solutions with specific software, in order to achieve a better sense of security and privacy.
+Starting with \gls{os} isolation systems discussed in \ref{sec:protect_untrustOS}, although capable of assuring a good sense of privacy from the \gls{os}/hypervisor, they do not take into account the potencial hardware vulnerabilities that a system can have while making use of sensitive data. 
+With that in mind, opting for a \gls{tee} approach made more sense for offering a more complete sense of security.
+While \gls{tpm}s have proven to have problems adapting to the Cloud, modern \gls{tee} technology on the other hand has proven to be the way to go, by combining hardware solutions with specific software.
 
-Going deeper into modern technologies in this field (REFER CHAPTER 2.3), we had to choose between Intel-\gls{sgx} and ARM TrustZone from being the two most popular between the community at this point, and so more work is being developed using this two. Intel and ARM's approach differ mainly from the fact that, while ARM TrustZone is designed to implement the idea of only one secured zone, thus being widely adapted in the phone market, Intel-\gls{sgx} in the other hand is capable of supporting multiple secured zones (enclaves) for each processor, which is a very important subject in cloud systems since a cloud server usually manages execution of processes and data from different users at once. Also by not requiring additional code to grant hardware attestation, since its design also ensures it, Intel-\gls{sgx} is able to keep a smaller \gls{tcb} than ARM TrustZone. With this in mind, we choose to go with Intel-\gls{sgx} in our pratical approach.
+Going deeper into these modern technologies in section \ref{sec:hardwareTEEs}, we had to choose between Intel-\gls{sgx} and ARM TrustZone from being the two most popular between the community at this point, and so more work is being developed using this two. Intel and ARM's approach differ mainly from the fact that, while ARM TrustZone is designed to implement and work with the idea of only one secured zone, which lead to being widely adopted in the phone industry, Intel-\gls{sgx} in the other hand is capable of supporting multiple secured zones (enclaves) for each processor, which is a very important subject in cloud systems since a cloud server needs to be capable of managing the execution of processes and data from different users at once. Also by not requiring additional code to grant hardware attestation, since its design also ensures it, Intel-\gls{sgx} is able to keep a smaller \gls{tcb} than ARM TrustZone. With this in mind, we choose to go with Intel-\gls{sgx} in our pratical approach.
 
-Since \gls{tee} technologies can drop significantly when simply used by itself, in (REFER CHAPTER 2.4) we go into detail on how different known technologies can positively impact the work of \gls{sgx}. Since our focus is in running an unmodified application in this kind of security environments, we opted for Graphene-SGX (REFER CHAPTER). Graphene has proven to be capable of porting unmodified applications on top of \gls{sgx} without any huge drop of performance, simply by working as a libraryOS that grants access to some restricted and secured system calls.
+Since \gls{tee} technologies can drop significantly the overall systems performance when used by itself, in \ref{sec:sgxFrameworks} we go into detail on how different known technologies can positively impact the work of \gls{sgx}. Since our focus is in running an unmodified application in this kind of security environments, we opted for Graphene-SGX [\ref{ssec:grapheneSGX}]. Graphene has proven to be capable of porting unmodified applications on top of \gls{sgx} without any huge drop of performance, simply by working as a libraryOS that grants access to some restricted and secured system calls.
 
 
 

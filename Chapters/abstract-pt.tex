@@ -8,8 +8,6 @@
 
 	O Intel SGX é uma base de computação confiável para que aplicações se protejam de SOs ou Hipervisores potencialmente maliciosos. Em \textit{cloud} ou noutros ambientes de computação garantidos por terceiros, muitos utilizadores e aplicações podem beneficiar do SGX. Trabalhos já realizados que abordaram a emulação de bibliotecas de SOs visaram a execução de aplicações não modificadas sobre SGX, mas surgiu uma convicção de que esse tipo de abordagem não será interessante no que toca à performance ou ao tamanho da base de computação confiável fazendo com que, na prática, tanto modificações como a reengenharia do código de aplicações estejam sempre implícitos e sejam um melhor pré-requisito para adotar ambientes de computação com SGX.
 	
-	(HELP) this next paragraph enters the abstract? or just conclusions after it's done?
-	
 	Nesta tese pretendemos estudar as abordagens já existentes de bibliotecas de SOs e conduzir uma avaliação experimental adotando a solução recente de uma emulação de uma biblioteca de SOs para ser usada sobre o SGX, como sendo uma biblioteca completamente caracterizada que possa eventualmente ser adotada para implantar aplicações não modificadas de forma rápida, com \textit{overheads} comparáveis a aplicações modificadas para usar camadas \textit{"shim"}. O foco da nossa avaliação consistirá na virtualização da base de dados do tipo Chave-Valor  \textit{Redis}, redesenhando e implementando-a como uma base de dados Chave-Valor confiável com permissões SGX (TREDIS).
 	
 % Palavras-chave do resumo em Português
