@@ -17,11 +17,11 @@ and security, thus gaining users trust.
 In this chapter we address existing solutions that are able to protect applications from the \gls{os} or hypervisor, regardless the machine where they're running on, thus increasing the level of trust an user can deposit in an execution of an application.
 
 These existing solutions are organized in different sections in the following way: 
-Section 2.1 covers protection against untrusted \gls{os}es; 
-Section 2.2 covers \gls{tee}s and hardware-enabled approaches;
-In Section 2.3 we cover, in more detail, hardware-enabled \gls{tee} solutions used today.
-Section 2.4 covers shielded applications and frameworks compatible with Intel-\gls{sgx}, which is the \gls{tee} technology we choose for our approach.
-Finally, in Section 2.5 we make a critical analysis on the topics previously discussed, while covering their main advantages and disadvantages.
+Section \ref{sec:protect_untrustOS} covers protection against untrusted \gls{os}es; 
+Section \ref{sec:tpm_hsm_tees} covers \gls{tee}s and hardware-enabled approaches;
+In Section \ref{sec:hardwareTEEs} we cover, in more detail, hardware-enabled \gls{tee} solutions used today.
+Section \ref{sec:sgxFrameworks} covers shielded applications and frameworks compatible with Intel-\gls{sgx}, which is the \gls{tee} technology we choose for our approach.
+Finally, in Section \ref{sec:summary} we make a critical analysis on the topics previously discussed, while covering their main advantages and disadvantages.
 
 
 % =======================
@@ -105,15 +105,9 @@ Context switches are handled by the hypervisor, thus hiding any information abou
 
 Sego does not guarantee \gls{os} availability. A compromised \gls{os} can simply shut down or refuse to schedule processes. However this is easily detected.
 
+In conclusion, although all these approaches are prepared to isolate an application from untrusted hosts, they emphasize the use of software to do it, leaving behind the importance of hardware trustworthiness to the whole system.
 
-
-----------
-
-			drawback of those approaches (inktag, virtghost...)
-			and why aren't enough
-			
--------------------------- END OF TO DO -----------------------------
-
+In the following sections we will take a look on existing solutions that are able to tackle also hardware related security problems.
 % =======================
 %  N E W   S E C T I O N        (2.2)
 % =======================
