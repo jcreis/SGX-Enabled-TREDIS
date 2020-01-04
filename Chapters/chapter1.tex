@@ -12,22 +12,39 @@
 \chapter{Introduction}
 \label{cha:introduction}
 
-\begin{quotation}
-  \itshape
-  This work is licensed under the Creative Commons Attribution-NonCommercial~4.0 International License.
-  To view a copy of this license, visit \url{http://creativecommons.org/licenses/by-nc/4.0/}.
-\end{quotation}
+We are living a new era where data has more value than ever before. 
+
+The adoption of mobile devices as an almost indispensable thing in people’s everyday lives led to an absurd amount of information produced each second, by everyone, at a global scale. 
+To deal with this, numerous fields of computer science were born, and new technologies more adapted to deal with huge amounts of data were designed. 
+A major one was Cloud Computing, that appeared as a way to provide computing and storage capabilities to systems like we never saw before, while offering fault tolerance and scalability (as well as many other properties) for a reduced cost to their users. 
+
+With the adoption of cloud systems, the data could start to be stored and computed in the cloud provider, making the user free of worries concerning physical resources. Hence the popularity of this technology. Both users and smaller companies could now choose to rely on a cloud provider, who are usually hosted by huge corporations, to run their services by paying a monthly fee, thus reducing overall costs.
+
+Although this is nearly perfect, some security problems emerged, more specifically the ones regarding data privacy and security in the provider itself. 
+
+The major concern about this was the fact that, after the data reaches the cloud provider, and even if the data is stored safely (encrypted) in disk, there are still no guarantees that the data is encrypted during its execution, while on volatile memory. 
+To deal with this particular problem, a vast amount of solutions were thought to be effective, either by using some kind of virtualization or containerization, or even by relying on the hardware itself on a special way. 
+
+Some offer the possibility to isolate the execution of data from the host operating system, making system calls ineffective and blocking typical permissions these might have over the whole system, while others, particularly the more recent ones regarding Trusted Execution Environments, focused on creating a trusted memory region where data could execute fully encrypted from the outside. 
+In this subject, we highlighted Intel’s approach (Intel Software Security Guard Extensions or Intel-SGX) which presented a way to assure privacy in a specific memory region where no one except the machines processor can enter. 
+
+However, this kind of technology that isolates data has been proven to have some performance issues, since it involves a lot of encryption and decryption (usually big performance droppers). That implied that some way to increase this kind of technology’s performance was needed. This caused many frameworks to place on top of these existent approaches to be introduced (from which we’re gonna be looking only at Intel’s TEE technology - Intel-SGX - solutions). 
+From improving the performance of storaging encrypted data, to secured networking, all the way to containerization and virtualization of SGX, all these new approaches can add something useful to a system running on top of Intel-SGX. We will be focusing on library OSes approaches, since in \cite{graphenePaper} was proven to significantly improve the overall performance of a system running on top of Intel-SGX. Library OSes are libraries that puts back into the equation some system calls, in a way that the host OS still can not take advantage of the system’s execution by using them.
+ 
+With that said, and with the recent studies using library OSes, we find that this is the way to go in order to benefit the most from TEE usage, and thus it is worth to explore and find out how a system running on top of SGX performs, with the support of a library OS.
+
 
 \section{Topic Framework and Motivation} % (fold)
 \label{sec:a_bit_of_history}
 
-The \novathesis\ was originally developed to help MSc and PhD students of the Computer Science and Engineering Department of the Faculty of Sciences and Technology of NOVA University of Lisbon (DI-FCT-NOVA) to write their thesis and dissertations Using \LaTeX.
-%
-These student can easily cope with \LaTeX\ by themselves, and the only need some help in the bootstrap process to make their life easier.
+As cloud computing is getting more attention than ever, the tendency to move data to these cloud providers emerged as a cheap and efficient way to store and compute it. Data is stored in the provider's system, becoming fully dependent of the provider's system security, as well as depending on the provider's employees good behaviour, since they can act maliciously, or just combining curiosity with too much system permissions, exploiting services vulnerabilities. All this brings insecurity to the data, and raises privacy concerns.
 
-However, as the template spread out among the students from other degrees at FCT-NOVA, the demand for am easier-to-use template as grown.
-%
-And the template in its current shape aims at answering the expectations of those that, although they are not familiar with programming nor with markup languages, so still feel brave enough to give \LaTeX\ a try and rejoice with the beauty of the texts typeset by this system.
+However, there are possible ways which can be used to minimize this concerns and that is what we are going to analyse in this thesis, mostly  \gls{tee} solutions, detailed in \ref{sec:hardwareTEEs}, which appeared as a way to isolate the execution of sensitive data in secured memory regions. Although eliminating most privacy issues, their usage (by themselves) was proven to be big performance droppers ofthe overall execution of a system. This caused numerous studies to take place with the intention to figure out a way to make the most of \gls{tee}s whithout crippling too much the system performance. 
+
+One of the approaches found to be in the right path to solving this problem was placing library\gls{os}es on top of the \gls{tee}, which enable some system calls to the \gls{tee} in order to make the whole execution of data more fluid and fast. 
+
+In \cite{graphenePaper}, a library\gls{os} called Graphene is placed on top of \gls{sgx} to run Apache web server, GCC and more. It was proven that a system running Graphene can go from matching a regular Linux process performance to performing almost 2x slower than them. Considering this, \cite{graphenePaper} shown that is possible to take advantage of \gls{tee} properties whithout adding that much overhead to the overall system performance.
+
 
 % section a_bit_of_history (end)
 
