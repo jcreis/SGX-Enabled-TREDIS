@@ -12,52 +12,58 @@
 \chapter{Introduction}
 \label{cha:introduction}
 
-We are living a new era where data has more value than ever before. 
+In this chapter we introduce the context and motivation of this dissertation, as well as its problem statement, followed by the goals and expected contributions. In the end we present the structure of the document.
 
-The adoption of mobile devices as an almost indispensable thing in people’s everyday lives led to an absurd amount of information produced each second, by everyone, at a global scale. 
+
+
+
+\section{Context and Motivation}
+Data has more value than ever before. 
+The adoption of mobile devices as an almost indispensable thing in people's lives led to an imense amount of information produced each second, by everyone, at a global scale \cite{dataAnalysis1}\cite{dataAnalysis2}.
 To deal with this, numerous fields of computer science were born, and new technologies more adapted to deal with huge amounts of data were designed. 
-A major one was Cloud Computing, that appeared as a way to provide computing and storage capabilities to systems like we never saw before, while offering fault tolerance and scalability (as well as many other properties) for a reduced cost to their users. 
+A major one was Cloud Computing, which appeared as a way to remotely provide computing and storage capabilities to systems like we never saw before, as well as fault tolerance and scalability (as well as many other properties) for a reduced cost to their users \cite{cloudOrigins}. 
 
-With the adoption of cloud systems, the data could start to be stored and computed in the cloud provider, making the user free of worries concerning physical resources. Hence the popularity of this technology. Both users and smaller companies could now choose to rely on a cloud provider, who are usually hosted by huge corporations, to run their services by paying a monthly fee, thus reducing overall costs.
+Thus, the tendency to move data to these cloud providers emerged as an efficient and convinient way to store and compute it, making users free of worries regarding physical resources in their own machines. Both users and companies could now choose to rely on a cloud provider, who are usually hosted by huge corporations, to run their services.
 
-Although this is nearly perfect, some security problems emerged, more specifically the ones regarding data privacy and security in the provider itself. 
+However, the complexity behind cloud systems made them major attack targets \cite{cloudAttacksReport} and security problems, more specifically the ones regarding privacy and security of personal information, were found to be very concerning \cite{playstationAttack}. 
+Since data is stored in the provider's system, the information is dependent on the provider's security, as well as the behaviour of its staff, which have physical access to the system and can act maliciously. All this brings insecurity to the data and raises privacy concerns.
+Also, after the data reached the cloud provider, privacy is not assured during execution phase, even if it stored safely (encrypted) in disk, since to be executed it has to be fully decrypted in volatile memory. The data is then vulnerable during memory attacks, which lead to many efforts to be put into solving this particular problem.  
 
-The major concern about this was the fact that, after the data reaches the cloud provider, and even if the data is stored safely (encrypted) in disk, there are still no guarantees that the data is encrypted during its execution, while on volatile memory. 
-To deal with this particular problem, a vast amount of solutions were thought to be effective, either by using some kind of virtualization or containerization, or even by relying on the hardware itself on a special way. 
+A few solutions were thought to be effective, either by using some kind of virtualization or containerization, or even by relying on the hardware itself on a special way. 
+Some \cite{virtGhostPaper}\cite{flickerPaper}\cite{mushiPaper}\cite{SeCagePaper}\cite{inkTagPaper}\cite{segoPaper} offer the possibility to isolate the execution of data from the host \gls{os}, making system calls ineffective and blocking typical permissions these might have over the whole system, while others, particularly the more recent ones regarding Trusted Execution Environments \cite{armTZPaper}\cite{amdPaper}\cite{sanctumPaper}\cite{intelSGX}, focused on creating a trusted memory region where data could execute fully encrypted from the outside. 
 
-Some offer the possibility to isolate the execution of data from the host operating system, making system calls ineffective and blocking typical permissions these might have over the whole system, while others, particularly the more recent ones regarding Trusted Execution Environments, focused on creating a trusted memory region where data could execute fully encrypted from the outside. 
-In this subject, we highlighted Intel’s approach (Intel Software Security Guard Extensions or Intel-SGX) which presented a way to assure privacy in a specific memory region where no one except the machines processor can enter. 
-
-However, this kind of technology that isolates data has been proven to have some performance issues, since it involves a lot of encryption and decryption (usually big performance droppers). That implied that some way to increase this kind of technology’s performance was needed. This caused many frameworks to place on top of these existent approaches to be introduced (from which we’re gonna be looking only at Intel’s TEE technology - Intel-SGX - solutions). 
-From improving the performance of storaging encrypted data, to secured networking, all the way to containerization and virtualization of SGX, all these new approaches can add something useful to a system running on top of Intel-SGX. We will be focusing on library OSes approaches, since in \cite{graphenePaper} was proven to significantly improve the overall performance of a system running on top of Intel-SGX. Library OSes are libraries that puts back into the equation some system calls, in a way that the host OS still can not take advantage of the system’s execution by using them.
- 
-With that said, and with the recent studies using library OSes, we find that this is the way to go in order to benefit the most from TEE usage, and thus it is worth to explore and find out how a system running on top of SGX performs, with the support of a library OS.
+However, while offering confiability and integrity to the data, \gls{tee}s have been proven to have some performance issues, since they depend a lot on encryption and decryption (usually big performance droppers). Unfortunately, the performance loss really impacted their adoption in modern systems, which lead to figuring out a way to make this kind of technology more viable. 
+More recently, a few different approaches to place on top of \gls{tee}s have proven to soften the performance issues, creating the impression that we are in the right path to take the most advantage of \gls{tee}s. 
 
 
-\section{Topic Framework and Motivation} % (fold)
-\label{sec:a_bit_of_history}
+\section{Problem Statement}
 
-As cloud computing is getting more attention than ever, the tendency to move data to these cloud providers emerged as a cheap and efficient way to store and compute it. Data is stored in the provider's system, becoming fully dependent of the provider's system security, as well as depending on the provider's employees good behaviour, since they can act maliciously, or just combining curiosity with too much system permissions, exploiting services vulnerabilities. All this brings insecurity to the data, and raises privacy concerns.
-
-However, there are possible ways which can be used to minimize this concerns and that is what we are going to analyse in this thesis, mostly  \gls{tee} solutions, detailed in \ref{sec:hardwareTEEs}, which appeared as a way to isolate the execution of sensitive data in secured memory regions. Although eliminating most privacy issues, their usage (by themselves) was proven to be big performance droppers ofthe overall execution of a system. This caused numerous studies to take place with the intention to figure out a way to make the most of \gls{tee}s whithout crippling too much the system performance. 
-
-One of the approaches found to be in the right path to solving this problem was placing library\gls{os}es on top of the \gls{tee}, which enable some system calls to the \gls{tee} in order to make the whole execution of data more fluid and fast. 
-
-In \cite{graphenePaper}, a library\gls{os} called Graphene is placed on top of \gls{sgx} to run Apache web server, GCC and more. It was proven that a system running Graphene can go from matching a regular Linux process performance to performing almost 2x slower than them. Considering this, \cite{graphenePaper} shown that is possible to take advantage of \gls{tee} properties whithout adding that much overhead to the overall system performance.
+In this dissertation we will study how unmodified applications can be deployed with ease on top of trusted hardware (\gls{tee}), and still offer comparable performance overheads relatively to other applications running without this extra layer of security. To achieve this, we'll look into existent library \gls{os} approaches and conduct an evaluation by adopting one of them to be ported on top of trusted hardware (\gls{sgx}). 
 
 
-% section a_bit_of_history (end)
 
 
-\section{Objective} % (fold)
+\section{Objective and Expected Contributions} % (fold)
 \label{sec:disclaimer}
 
-It is up to you, the student, to read the FCT and/or NOVA regulations on how to format and submit your MSc or PhD dissertation.  
+In this subject, we highlighted Intel’s approach (Intel Software Security Guard Extensions or Intel-\gls{sgx}) which presented a way to assure privacy in a specific memory region where no one except the machines processor can enter. 
 
-This template is endorsed by the FCT-NOVA and even linked from its web pages, but it is not an official template.
-%
-This template exists to make your life easier, but in the end of the line you are accountable for both the looks and the contents of the document you submit as your dissertation.
+However, \gls{tee}s have been proven to have some performance issues, since it involves a lot of encryption and decryption (usually big performance droppers). This implied the necessity of increasing this kind of technology’s performance, which caused many frameworks to place on top of \gls{tee} to be introduced (from which we’re gonna be looking only at Intel’s TEE technology - Intel-SGX - solutions). 
+From improving the performance of storaging encrypted data, to secured networking, all the way to containerization and virtualization of SGX, all these new approaches can add something useful to a system running on top of Intel-SGX. We will be focusing on library OSes approaches, since in \cite{graphenePaper} was proven to significantly improve the overall performance of a system running on top of Intel-SGX. Library OSes are libraries that puts back into the equation some system calls, in a way that the host OS still can not take advantage of the system’s execution by using them.
 
-\section{Expected Contributions}
+With that said, and with the recent studies using library OSes, we find that this is the way to go in order to benefit the most from TEE usage, and thus it is worth to explore and find out how a system running on top of SGX performs, with the support of a library OS.
 
-\section{Document Organization}
+Our application will consist in a virtualization of the Redis Key-Value Store, running on a cloud server on top of Intel-SGX technology, which will be responsible for assuring confidentiality and integrity to the code. 
+A library OS will then be placed on top of the application as a way to improve the overall performance of the service. With this approach, we expect to achieve a viable Trusted Key-Value Store, where Redis can indeed offer privacy to data by running on top of a TEE solution.
+
+
+
+
+\section{Report Organization}
+
+The remaining of this thesis is organized as follows:
+\begin{itemize}
+	\item \textbf{Chapter \ref{cha:related_work}} gives an initial background fundamental to understand the objectives and expected contributions of this dissertation, while also covering related work references; 
+	\item \textbf{Chapter \ref{cha:approach_of_elaboration_phase}} introduces our system approach, covering the model and architecture, as well as some environment setups and implementation guidelines we considered relevant.
+	\item \textbf{Chapter \ref{cha:workplan}} presents the defined workplan for the elaboration phase, along with the planned tasks and respective expected duration.
+\end{itemize}
