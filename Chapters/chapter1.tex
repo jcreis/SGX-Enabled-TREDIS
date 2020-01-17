@@ -45,16 +45,24 @@ In this dissertation we will study how unmodified applications can be deployed w
 
 \section{Objective and Expected Contributions} % (fold)
 \label{sec:disclaimer}
+Our main objective with this thesis is to implement a secure system based on Intel-SGX
+where it is possible to deploy unmodified applications without any major performance
+drop, by adopting the usage of Graphene-SGX to be ported on top of SGX, much like \cite{graphenePaper} presented. For this, we will deploy an unmodified image of Redis \cite{redis} on top of SGX, providing privacy guarantees and isolation of sensitive data, while evaluating if the usage of Graphene-SGX in the system does indeed have a positive impact in the overall performance level.
 
-In this subject, we highlighted Intel’s approach (Intel Software Security Guard Extensions or Intel-\gls{sgx}) which presented a way to assure privacy in a specific memory region where no one except the machines processor can enter. 
+With that said, we expect our solution to deliver the following contributions:
+\begin{itemize}
+	\item Possibility to deploy with ease any unmodified application to a TEE based system: 
+	the usage of a fully-featured library OS named Graphene-SGX will make this possible \cite{graphenePaper};
+	\item Minimize TCB size with usage of TEE isolation technology: by adopting TEE technology
+	and promoting isolation of data, we intend to reduce as much as possible the TCB size,
+	ensuring that sensitive data is managed in a controlled way and exposing it to the least possible number of vulnerabilities;
+	\item Keep a system capable of assuring privacy to sensitive data with usable levels of performance:
+	again, the adoption of Graphene-SGX is expected to help deliver a better level of performance, as it has proven to be the case in \cite{graphenePaper} (...).
+\end{itemize}
 
-However, \gls{tee}s have been proven to have some performance issues, since it involves a lot of encryption and decryption (usually big performance droppers). This implied the necessity of increasing this kind of technology’s performance, which caused many frameworks to place on top of \gls{tee} to be introduced (from which we’re gonna be looking only at Intel’s TEE technology - Intel-SGX - solutions). 
-From improving the performance of storaging encrypted data, to secured networking, all the way to containerization and virtualization of SGX, all these new approaches can add something useful to a system running on top of Intel-SGX. We will be focusing on library OSes approaches, since in \cite{graphenePaper} was proven to significantly improve the overall performance of a system running on top of Intel-SGX. Library OSes are libraries that puts back into the equation some system calls, in a way that the host OS still can not take advantage of the system’s execution by using them.
 
-With that said, and with the recent studies using library OSes, we find that this is the way to go in order to benefit the most from TEE usage, and thus it is worth to explore and find out how a system running on top of SGX performs, with the support of a library OS.
-
-Our application will consist in a virtualization of the Redis Key-Value Store, running on a cloud server on top of Intel-SGX technology, which will be responsible for assuring confidentiality and integrity to the code. 
-A library OS will then be placed on top of the application as a way to improve the overall performance of the service. With this approach, we expect to achieve a viable Trusted Key-Value Store, where Redis can indeed offer privacy to data by running on top of a TEE solution.
+We expect to achieve a viable Trusted Key-Value Store, where Redis can indeed
+offer privacy to data by running on top of a TEE solution, with decent levels of performance.
 
 
 
