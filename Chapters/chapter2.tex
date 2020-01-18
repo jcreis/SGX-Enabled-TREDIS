@@ -11,10 +11,10 @@
 % ================
 % = Introduction =
 % ================
-We’re currently in a period where we start to depend more and more on allowing remote services to access our data and execute our applications. Cloud computing systems require users to trust them with their data. Therefore these systems need a way to assure data privacy
-and security, thus gaining users trust.
+Cloud computing as emerged as an efficient way for modern systems to deal with modern problems, caused by the growth of internet users worldwide over the years \cite{growthInternetUsers}, where scalability became a must and the cloud's ability to offer storage and computing power on demand made it so usefull.
+With that said, users (including companies) started choosing cloud providers as a convinient way to store their data and services, trusting that data privacy would be assured. However that is not always the case in modern cloud providers. 
 
-In this chapter we address existing solutions that are able to protect applications from the \gls{os} or hypervisor, regardless the machine where they're running on, thus increasing the level of trust an user can deposit in an execution of an application.
+In this chapter we address existing solutions that are able to grant some better level of privacy to data, by protecting applications from the \gls{os} or hypervisor, regardless the machine where they're running on, thus increasing the level of trust an user can deposit in a remote execution of an application.
 
 These existing solutions are organized in different sections in the following way: 
 Section \ref{sec:protect_untrustOS} covers protection against untrusted \gls{os}es; 
@@ -36,57 +36,68 @@ A lot of applications these days depend on sensitive data to operate. Therefore 
 One of the things we have to think about is the size of the \gls{tcb}, and how to reduce it as much as possible without losing the operability of the system. 
 Typically, the host \gls{os} is considered safe and trustworthy, although that is not always the case. A compromised \gls{os} can give complete access to sensitive data, if not isolated from the application. That’s why this is a major security problem and must be tackled in today’s systems.
 
-Approaches like Virtual Ghost, Flicker, MUSHI, SeCage, InkTag, Sego, all grant security by isolating the sensitive data from the untrusted \gls{os} either by monitoring the application while it runs, or by enforcing memory isolation by using virtualization.
+Approaches like Virtual Ghost, Flicker, MUSHI, SeCage, InkTag, Sego, all grant security by isolating the sensitive data from the untrusted \gls{os} either by monitoring the application while it runs, or by enforcing memory isolation by using virtualization.\newline
 
 %-----------------------------------------
+
+\underline{\textbf{Virtual Ghost}}  
 
 Virtual Ghost \cite{virtGhostPaper} provides application security against untrusted \gls{os}es by implementing the idea of ghost memory, which is unaccessible for the \gls{os} to read or write, as well as providing trusted services like ghost memory management, key management, and encryption and signing services. 
-
-It relies in sandboxing to protect the system from the \gls{os}, where a thin layer of abstraction is interposed between the kernel and the hardware. This layer works as a library of functions that the kernel can call directly, without the need of higher priviledges being given to it. 
-
-Thus, Virtual Ghost protects the system against a direct threat from the \gls{os}, without losing significant levels of performance.
+It relies in sandboxing to protect the system from the \gls{os}, where a thin layer of abstraction is interposed between the kernel and the hardware. This layer works as a library of functions that the kernel can call directly, without needing higher priviledges. 
+Thus, Virtual Ghost protects the system against a direct threat from the \gls{os}, without losing significant levels of performance.\newline
 
 %-----------------------------------------
 
-Flicker \cite{flickerPaper} provides secured isolated execution of sensitive code by relying on hardware facilities, such as AMD and Intel commodity processors, to run certain pieces of code in a confined environment, while reducing the \gls{tcb} to, as few as, 250 additional lines of code. 
+\underline{\textbf{Flicker}}
 
-When Flicker starts, none of the software already executing can monitor or interfere with it’s execution and all traces of it’s execution can be eliminated before non-Flicker execution resumes. 
-
-Thus, with a small TCB and a good level of isolation during the execution fase, where no data is leaked nor possible to access while inside the confined environment, the system can achieve reliability and security.
+Flicker \cite{flickerPaper} provides secured isolated execution of sensitive code by relying on commodity hardware, such as AMD and Intel processors, to run certain pieces of code in a confined environment, while reducing the \gls{tcb} to, as few as, 250 additional lines of code. 
+When Flicker starts, none of the software already executing can monitor or interfere with it’s execution and all its traces can be eliminated before non-Flicker execution resumes. 
+Thus, with a small TCB and a good level of isolation during the execution fase, where no data is leaked nor possible to access while inside the confined environment, the system can achieve reliability and security.\newline
 
 %-----------------------------------------
+
+\underline{\textbf{MUSHI}}
 
 MUSHI \cite{mushiPaper} is designed to deal mainly with multi-level security systems, and provides isolation to individual guest \gls{vm}s executing in a cloud infrastructure. MUSHI ensures that \gls{vm}s are instantiated securely and remain that way throughout their life cycle. 
-
-It offers: 1- Trusted Execution, where both the kernel and user image, as well as MUSHI itself, are attested upon a \gls{vm} start by using a \gls{tpm}, and thus defining a trusted initial state; 2- Isolation, where each \gls{vm} executing on the same machine runs isolated, as a way to guarantee confidentiality and integrity; 3- User Image Confidentiality, by encrypting the user image with a cryptographic key provided by the user itself.
-
-MUSHI guarantees confidentiality and integrity of a VM even during malicious attacks from both inside and outside the cloud environment.
-It trusts a \gls{tcb} relatively small, including only the hardware, hardware virtualization, BIOS and System Management Mode, and can be implemented with quite ease using modern commodity hardware containing SMM memory (SMRAM), necessary for the isolation between the host and VM.
-
+It is capable of offering: 
+\begin{enumerate}
+	\item \textbf{Trusted Execution}, where both the kernel and user image, as well as MUSHI itself, are attested upon a \gls{vm} start by using a \gls{tpm}, thus defining a trusted initial state;
+	\item \textbf{Isolation}, where each \gls{vm} executing on the same machine runs isolated, as a way to guarantee confidentiality and integrity;
+	\item \textbf{User Image Confidentiality}, by encrypting the user image with a cryptographic key provided by the user itself.
+\end{enumerate}
+MUSHI guarantees confidentiality and integrity of a \gls{vm} even during malicious attacks from both inside and outside the cloud environment.
+It trusts a \gls{tcb} relatively small, including only the hardware, hardware virtualization, BIOS and System Management Mode, and can be implemented with quite ease using modern commodity hardware containing SMM memory (SMRAM), necessary for the isolation between the host and \gls{vm}.\newline
 
 %-----------------------------------------
+
+\underline{\textbf{SeCage}}
 
 SeCage \cite{SeCagePaper} uses hardware virtualization to protect user-defined secrets from potential threats and malicious \gls{os}es, by isolating sensitive code and critical secrets while denying the hypervisor any possibility of intervention during runtime.
-
 It devides the system in compartments, where secret compartments have all the permissions to access and manipulate the user-defined secrets, and a main compartment responsable for handling the rest of the code.
+SeCage is designed to assure confidentiality of user-secrets, adding a small overhead while supporting large-scale software. To achieve this, it ensures:
+\begin{enumerate}
+	\item Hybrid analysis of secrets, where static and dynamic analysis are combined to define secret compartments to execute secrets, preventing them from being disclosed during runtime;
+	\item Hypervisor protection, by using hardware virtualization to isolate each compartment;
+	\item Separating control and data plane, where minimal hypervisor intervention is required to deal with communications between compartments. The hypervisor is limited to define policies on whether two compartments can communicate (control plane) for as long as they conform to those policies.
+\end{enumerate}
 
-SeCage is designed to assure confidentiality of user-secrets, adding a small overhead while supporting large-scale software. To achieve this, it ensures: 1- Hybrid analysis of secrets, where static and dynamic analysis are combined to define secret compartments to execute secrets, preventing them from being disclosed during runtime; 2- Hypervisor protection, by using hardware virtualization to isolate each compartment; 3- Separating control and data plane, where minimal hypervisor intervention is required to deal with communications between compartments. The hypervisor is limited to define policies on whether two compartments can communicate (control plane) for as long as they conform to those policies. 
 
 %-----------------------------------------
+
+\underline{\textbf{InkTag}}
 
 InkTag \cite{inkTagPaper} also uses a virtualization-based approach in order to grant applications protection from untrusted \gls{os}es.
-
 Unlike SeCage, InkTag admits trust in the hypervisor. The hypervisor is responsible to protect the application
 code, data, and control flow from the OS, allowing applications to execute in isolation, in high-assurance processes (HAP). Trusted applications can communicate directly with the InkTag hypervisor via hypercalls, as a way to detect \gls{os} misbehavior.
-
 It introduces a concept called paraverification, which simplifies the hypervisor by forcing the untrusted \gls{os} to participate in its own verification. As a result, the \gls{os} notifies the InkTag hypervisor upon any update to be made to the state, which the hypervisor can check for correctness. 
-InkTag also isolates secure from unsafe data through hardware virtualization, and allows each application to specify their own access control policies, managing their data's privacy and integrity through encryption and hashing.
-Other important aspect of InkTag is recoverability. InkTag hypervisor can protect the integrity of files even if the system crashes, by ensuring consistency between file data and metadata upon a crash.
-
+InkTag also isolates secure from unsafe data through hardware virtualization, and allows each application to specify their own access control policies, managing their data privacy and integrity through encryption and hashing.
+Other important aspect of InkTag is recoverability. InkTag hypervisor can protect the integrity of files even if the system crashes, by ensuring consistency between file data and metadata upon a crash.\newline
 
 %-----------------------------------------
+\pagebreak
+\underline{\textbf{Sego}}
 
-Like InkTag, Sego \cite{segoPaper} is also an hypervisor-based system that gives strong privacy and integrity guarantees to trusted applications. To protect applications from untrusted \gls{os}es, Sego removes the trust from the \gls{os}, relying only on a trusted hypervisor which is assumed to always execute correctly. It also enforces paraverification, where the \gls{os} communicates its intentions to the hypervisor, thus keeping track of its behavior.
+Similar to InkTag, Sego \cite{segoPaper} is also an hypervisor-based system that gives strong privacy and integrity guarantees to trusted applications. To protect applications from untrusted \gls{os}es, Sego removes the trust from the \gls{os}, relying only on a trusted hypervisor which is assumed to always execute correctly. It also enforces paraverification, where the \gls{os} communicates its intentions to the hypervisor, thus keeping track of its behavior.
 
 \begin{figure}[htbp]
 	\centering
@@ -102,8 +113,8 @@ the hypervisor of its intent, so that the hypervisor can verify the \gls{os}'s a
 small library called libsego as a way to handle system calls and get Sego services without having to change their code. Each \gls{hap} also contains an untrusted trampoline code, that
 uses to interact with the \gls{os}. This protects its control-flow, since it uses this trampoline as issuer for system calls, therefore never compromising the \gls{hap} itself. Figure \ref{fig:segoArchitecture} shows well enough Sego’s overall design without going into too much dept, indicating which components are included in the \gls{tcb} and which are not.
 Context switches are handled by the hypervisor, thus hiding any information about the \gls{hap} from the \gls{os}.
+Sego does not guarantee \gls{os} availability. A compromised \gls{os} can simply shut down or refuse to schedule processes. However this is easily detected.\newline
 
-Sego does not guarantee \gls{os} availability. A compromised \gls{os} can simply shut down or refuse to schedule processes. However this is easily detected.
 
 In conclusion, although all these approaches are prepared to isolate an application from untrusted hosts, they emphasize the use of software to do it, leaving behind the importance of hardware trustworthiness to the whole system.
 
@@ -118,17 +129,13 @@ In the following sections we will take a look on existing solutions that are abl
 A \gls{tee} is an abstraction provided by both software and hardware that guarantees isolated execution of specific programs in a machine, including the host \gls{os}, hypervisor or even system administrators, preventing them from leveraging their privileges. A \gls{tee} also provides integrity of applications running inside it, along with confidentiality of their assets.
 
 The first attempts to implement a \gls{tee} on a cloud system consisted of combining a hypervisor with isolation properties and a \gls{tpm}. 
-
 A \gls{tpm} \cite{tpmPaper} consists of a hardware chip, called microcontroller, that aims to create a trustable platform through encryption and authenticated boot, and make sure it remains trustworthy through remote attestation. 
 It provides cryptographic functions that can't be modified, and a private key (Endorsment Key) that is unique to every \gls{tpm} made, working as an identifier for the \gls{tpm} itself.
-
 However, \gls{tpm}s have several problems when applied to cloud systems, due to being designed with the intention to offer security to a single machine. It is not flexible enough to guarantee that anyone can get the encrypted data from a different node.
 Thus, a distributed environment would not be the best kind of environment for a \gls{tpm} to work on.
 
 The current best practice for protecting secrets in a cloud system uses \gls{hsm}s. 
-
 \gls{hsm} \cite{hsmPaper} are physical components whose main function is to provide and store cryptographic keys used to encrypt/decrypt data inside a system. \gls{hsm}s can also perform cryptographic operations (e.g. encryption, hashing, etc.) as well as authenticate through verification of digital signatures and accelerate \gls{ssl} connections \cite{hsmThesis}, by relieving the servers from some of the workload caused by operations envolving cryptography. 
-
 Thus, the system can protect critical secrets, such as cryptographic keys, and support a range of cryptographic functions.
 
 With that in mind, new hardware-enabled solutions were developed to be more flexible and cloud friendly than the \gls{tpm}, or to incorporate the advantages of \gls{hsm} to the system. We'll dive into technologies like ARM TrustZone, Intel SGX, AMD-SEV, and others, in the following section.
@@ -142,8 +149,7 @@ With that in mind, new hardware-enabled solutions were developed to be more flex
 \section{Hardware-Enabled TEE Solutions}
 \label{sec:hardwareTEEs}
 
-The idea of using hardware to provide trusted execution environments started appearing as a way to deal with piracy, with examples like TCPA \cite{tcpaPaper} and Microsoft's Palladium being the most known ones. By making use of hardware, it was possible to encrypt data (DVD's, for example) that could only be decrypted by a specific hardware, making it almost impossible to copy. 
-
+The idea of using hardware to provide trusted execution environments appeared as a way to deal with piracy, with examples like TCPA \cite{tcpaPaper} and Microsoft's Palladium \cite{microsoftPalladium} being the most known ones. By providing protection during execution by using hardware, it started to be possible to encrypt data (DVD's, for example) that could only be decrypted by a specific hardware, making it almost impossible to copy. 
 Although this approaches were effective back in the day, both of them place their trust in the hardware, not trusting the \gls{os} entirely. 
 Thus, since any application does not trust the \gls{os}, it does not trust the application to properly use its resources either. Therefore, some of the protection aspects of the \gls{os} must be moved into the hardware, as well as changing the interface between the \gls{os} and the application so it supports the hardware security features. 
 
@@ -152,8 +158,8 @@ Thus, since any application does not trust the \gls{os}, it does not trust the a
 \subsection{XOM}
 \label{ssec:xom}
 
-\gls{xom} \cite{xomPaper}, which stands for eXecute Only Memory, is a processor architecture that is able to provide copy protection and tamper-resistence functions, 
-good for enabling code to run in untrusted platforms, deployment of trusted clients in distributed systems like banking transactions, online gaming and electronic voting, but also fundamental to deal with piracy back in the day it was published. 
+\gls{xom} \cite{xomPaper} is a processor architecture able to provide copy protection and tamper-resistence functions, 
+usefull for enabling code to run in untrusted platforms, deployment of trusted clients in distributed systems like banking transactions, online gaming and electronic voting, but also fundamental to deal with piracy back in the day it was published. 
 
 The main idea is to only trust the processor to protect the code and data, thus not trusting the main memory nor any software, including the host \gls{os}.
 However, this idea of only trusting hardware has some implications for \gls{os}es design. This happens due to the fact that sharing hardware resources between multiple users is a hard job, specially without trusting any software. It is usually easier to have this policies performed by the \gls{os}. Therefore, not trusting the software entirely can sometimes be a drawback.  
@@ -172,27 +178,24 @@ ARM TrustZone \cite{armTZPaper} are ARMs approach to offer a \gls{tee} where sof
 To accomplish this, ARM processors implement two virtual processors backed by hardware access control, where the software stack can switch between two states: secure world (SW) and normal world (NW). 
 The first one has higher priviledges than the second one, therefore it can access NWs copies of registers, but not the other way around. SW is also responsible of protecting running processes in the \gls{cpu}, while providing secured access to peripherals. 
 Each world acts like a runtime environment and has its own set of resources. This resources can be partioned between the two worlds or just assigned to one of them, depending on the ARM chip specs.
-
 For the context switch between worlds, ARM processors implement a secured mode called Secure Monitor, where there is a special register responsable of determine if the processor runs code in SW or NW. 
 
 Most ARM processors also offer memory curtaining. This consists on the Secure Monitor allocating physical addresses of memory specifically to the SW, making this region of memory unaccessible to the rest of the system.
-
 By default, the system boots always in SW so it can provision the runtime environment before any untrusted code start to run. It eventually transitions to NW where untrusted code can start to be executed. 
 
 \subsection{AMD-SEV}
 \label{ssec:amdsev}
-AMD Secure Encrypted Virtualization (SEV) \cite{amdPaper} is the AMD approach to provide a \gls{tee}, integrated with virtualization. It is a technology focused primarily on cloud computing environments, specifically in public \gls{iaas}, as its main goal is to reduce trust from higher priviledged parties (\gls{vmm}s or \gls{os}), so that they can not influence the execution on the other "smaller" parties (\gls{vm}s). 
-
+AMD Secure Encrypted Virtualization (SEV) \cite{amdPaper} is the AMD approach to provide a \gls{tee}, integrated with virtualization. It is a technology focused on cloud computing environments, specifically in public \gls{iaas}, as its main goal is to reduce trust from higher priviledged parties (\gls{vmm}s or \gls{os}), so that they can not influence the execution on the other "smaller" parties (\gls{vm}s). 
 To achieve this, AMD grants encryption of memory through a technology called Secure Memory Encryption (SME), or through TransparentSME (TSME) if the system runs a legacy \gls{os} or hypervisor with no need for any software modifications.
-After the data is encrypted, SEV integrates it with AMD virtualization architecture to support encrypted \gls{vm}s. By doing this, every \gls{vm} is now protected from his own hypervisor (\gls{vmm}), unabling its access to the decrypted data. Although uncapable of accessing the \gls{vm}, the \gls{vmm} is still responsible of controlling each \gls{vm}'s resources. 
+After the data is encrypted, SEV integrates it with AMD virtualization architecture to support encrypted \gls{vm}s. By doing this, every \gls{vm} is protected from his own hypervisor (\gls{vmm}), unabling its access to the decrypted data. Although uncapable of accessing the \gls{vm}, the \gls{vmm} is still responsible of controlling each \gls{vm}'s resources. 
+Thus, AMD provides confidentiality of data by removing trust from the \gls{vmm}, creating an isolated environment for the \gls{vm} to run, where only the \gls{vm} and the processor can be trusted. 
 
-Thus, AMD provides confidentiality of data by removing trust from the \gls{vmm}, and creates an isolated environment for the \gls{vm} to run, where only the \gls{vm} and the processor can be trusted. However it does not provide integrity of data, allowing replaying attacks to take place, and has a considerably large \gls{tcb}, since the \gls{os} of each \gls{vm} is trusted. \cite{amdSEVPaper}
+However, ADM-SEV does not provide integrity of data, allowing replaying attacks to take place, and has a considerably large \gls{tcb}, since the \gls{os} of each \gls{vm} is trusted. \cite{amdSEVPaper}
 
 \subsection{Sanctum}
 \label{ssec:sanctum}
 The main purpose of Sanctum \cite{sanctumPaper} is to offer strong isolation of software modules, altough following a different approach focused in avoiding unnecessary complexity, thus granting a simple security analysis.
 To make this possible, Sanctum, which tipically runs in a RISC-V processor, combines minimal invasive hardware modifications with a trusted software security monitor that is receptive to analysis and does not perform cryptographic operations using keys. 
-
 This minimality idea consists on reusing and slightly modifying existing well-understood mechanisms, while not modifiying \gls{cpu} building blocks, only adding hardware to the interfaces between blocks, causing Sanctum to be adaptable to many other processors besides RISC-V. 
 
 Sanctum is a pratical approach that shows that a strong software isolation is achievable with a small set of minimally invasive hardware changes, causing reasonably low overhead. 
@@ -201,7 +204,6 @@ This approach provides strong security guarantees dealing with side-channel atta
 \subsection{Intel-SGX}
 \label{ssec:intelsgx}
 Intel Software Security Guard Extensions (SGX) \cite{intelSGX} are a set of instructions built in Intel \gls{cpu}s, that allows programmers to create \gls{tee}s, by using enclaves. Enclaves are isolation containers that create a trusted environment where sensitive code can be stored and executed inside, ensuring integrity and confidentiality to it. By doing so, it reduces the \gls{tcb} in a way that most of the system software, apart from the enclaves and the \gls{cpu}, is considered not trusted.
-
 Enclaves are mapped into private regions of memory, where only the \gls{cpu} has access to. Due to this restrictions, not even the most common system libraries can be accessed inside the enclave, since even the \gls{os} is not considered trusted. 
 
 A system that encorporates \gls{sgx} under its architecture is divided in two: a trusted component being the enclave, and an untrusted component being the rest of the system. The untrusted one requests the launch of the enclave, where the \gls{cpu} then manages to allocate the enclave in a private region of memory, made available only to that particular enclave. This portion of memory is kept encrypted in volatile memory, being only decrypted by the \gls{cpu} if the responsible enclave requests it \cite{guiBorgesThesis}.
@@ -215,10 +217,8 @@ Altough isolation is the main objective of \gls{sgx}, it still allows a way for 
 
 \section{SGX-Enabled Frameworks and Shielded Applications}
 \label{sec:sgxFrameworks}
-The need for cloud computing is constantly growing in modern applications. 
-It is a cost-effective and pratical solution to run large distributed applications, however the fact that it requires users to trust the cloud provider with their code and data creates some trust concerns for developers.
-
-Although the usage of \gls{tee}s like \gls{sgx} aim to tackle this problem by running and storing sensitive data on a isolated environment, protecting that data from unauthorized access, \gls{sgx} itself has some limitations, and does offer this extra level of security at some costs for the systems. 
+The need for cloud computing is constantly growing in modern applications, based on the fact that it is a cost-effective and pratical solution to run large distributed applications. However the fact that it requires users to fully trust the cloud provider with their code and data creates some trust concerns for developers.
+Although the usage of \gls{tee}s like \gls{sgx} aim to tackle this problem by running and storing sensitive data on an isolated environment, protecting that data from unauthorized access, \gls{sgx} itself has some limitations, and does offer this extra level of security at some costs for the systems. 
 
 Hence, to deal with the \gls{sgx} limitations, some approaches were developed to be implemented on top of it, as a way to make systems more pratical by the integration of trusted computation. 
 We will discuss those approaches in the next subsections.
@@ -228,16 +228,14 @@ We will discuss those approaches in the next subsections.
 \subsection{Shielded protected applications in untrusted Clouds}
 \label{ssec:shieldedApps}
 
-As said previously, cloud computing is becoming more and more adopted in todays systems. 
-Therefore, by being a such popular technology, it is a must that their users' data remains confidential. 
-However, most of todays cloud systems are build using a classical hierarchical security model that only aims to protect the cloud providers' code from untrusted code (users' virtual machine), while doing nothing in terms of protecting the users' data. 
-Hereupon, the users of a cloud platform must trust the provider software entirely, as well as the provider staff (i.e. system administrators or anyone with physical access to the hardware).
+As we said previously, cloud computing is becoming more and more adopted in todays systems. 
+By being such a popular technology, it is a must that their users' data remains confidential. 
+However, most of todays cloud systems are build using a classical hierarchical security model more worried on the cloud providers' software itself then their users code. 
+Hereupon, for the users of a cloud platform to trust the provider software entirely, as well as the provider staff (i.e. system administrators or anyone with physical access to the hardware), some new measures need to be adapted.
 
-Several approaches were developed as a way to deal with this potential problem, by implementing the notion of shielded execution for applications running in the cloud. 
-
-This concept consists on running server applications in the cloud inside of an isolated compartment. The cloud provider is limited to offering only raw resources (computing power, storage and networking) to the compartment, without being able to access any of the users data, except the one being transmitted over the network. 
-
-Assuring a shielded execution of an application fundamentally means that both confidentiality and integrity of the data and code running are granted, and that if the application executes, it behaves just as it is expected. As for the provider, it retains control of the resources, and may protect itself from a malicious guest \cite{havenPaper}. 
+Several approaches were developed as a way to give the user some sense of privacy, by creating the notion of shielded execution for applications running in the cloud. 
+This concept consists on running server applications in the cloud inside of an isolated compartment. The cloud provider is limited to offer only raw resources (computing power, storage and networking) to the compartment, without being able to access any of the  data, except the one being transmitted over the network. 
+Assuring a shielded execution of an application fundamentally means that both confidentiality and integrity are granted, and that if the application executes, it behaves as it is expected. As for the provider, it retains control of the resources, and may protect itself from a malicious guest \cite{havenPaper}. 
 
 
 \subsection{SCONE}
@@ -247,10 +245,11 @@ Container-based virtualization has become quite popular for offering better perf
 That is why we observe that containers usually execute network services (i.e. Redis). These are systems that don't need as much system calls as the other services, since they can do a lot via networking, thus keeping a small TCB for increased security.
 
 SCONE \cite{sconePaper} is a mechanism for Linux containers that increases the confidentiality and integrity of services running inside them by making use of Intel-\gls{sgx}.
-
-SCONE increases the security of the system while trying to keep the performance levels reasonable. 
+SCONE increases the security of the system while keeping the performance levels reasonable. 
 It does it by: 
-(1) keeping the size of the container's \gls{tcb} as small as possible, by linking a (small) library inside the enclave to a standard C library interface exposed to container processes. The system calls are executed outside the enclave, and networking is protected by \gls{tls}. 
+
+(1) reducing as much as possible the container's \gls{tcb}, by linking a (small) library inside the enclave to a standard C library interface exposed to container processes. System calls are executed outside the enclave, and networking is protected by \gls{tls};
+
 (2) maximizes the time threads spend inside the enclave by supporting user-level threading and assynchronous system calls, thus allowing a thread outside the enclave to execute system calls without the need for enclave threads to exit.
 This increases the performance since major performance losses are caused by enclave threads entering/exiting, due to the costs of encrypting/decrypting the data.
 
@@ -260,14 +259,10 @@ This increases the performance since major performance losses are caused by encl
 \label{ssec:haven}
 
 Haven is the first system to achieve shielded execution of unmodified legacy applications for a commodity \gls{os} (Windows) and hardware, achieving mutual distrust with the host software.
-
 It leverages Intel-\gls{sgx} to protect against privileged code and physical attacks, but also against the challenge of executing unmodified legacy binaries while protecting them from an untrusted host.
-
 Instead of shielding only specific parts of applications and data by placing them inside enclaves, Haven aims to protect entire unmodified applications, written without any knowledge of \gls{sgx}. 
-
-However, executing entire chunks of legacy binary code inside a \gls{sgx} enclave pushes the limits of the \gls{sgx} itself, and while the code to be protected was written assuming that the \gls{os} executing the code would run it properly, this may not be the case, since the \gls{os} can be malicious. For this latest problem, the so called "Iago attack", Haven uses a library OS adapted from Drawbridge \cite{drawbridge}, running inside a \gls{sgx} enclave. 
+However, executing entire chunks of legacy binary code inside a \gls{sgx} enclave pushes the limits of the \gls{sgx} itself, and while the code to be protected was written assuming that the \gls{os} executing the code would run it properly, this may not be the case, since the \gls{os} can be malicious. For this latest problem, the so called Iago attack \cite{iagoAttacks}, Haven uses a library \gls{os} adapted from Drawbridge \cite{drawbridge}, running inside a \gls{sgx} enclave. 
 By combining it with a remote attestation mechanism, Haven is able to guarantee to the user end-to-end security without the need of trusting the provider.
-
 Although this approach may need a substantial \gls{tcb} size (LibOS quite large), all this code is inside the enclave, which makes it under users control. 
 
 That's the main goal of Haven: give the user trust by granting confidentiality and integrity of their data when moving an application from a private area to a public cloud. 
@@ -280,7 +275,14 @@ OpenSGX \cite{opensgx_paper} was developed as a way to help with the access to \
 It was made available as an open source platform, and by providing \gls{tee} and \gls{os} emulation, it contributed a lot for expanding the possibility of research in this area, as well as promoting the development of SGX applications. 
 
 OpenSGX emulates the hardware components of Intel-SGX and its ecosystem, including \gls{os} interfaces and user library, as a way to run enclave programs. To emulate Intel-\gls{sgx} at intruction-level, OpenSGX extended an open-source emulator, QEMU.
-Its pratical properties result of six components working together: (1) Hardware emulation module: \gls{sgx} emulation, by providing \gls{sgx} instructions, data structures, \gls{epc} and its access protection, as well as \gls{sgx}' processor key; (2) \gls{os} emulation: since some \gls{sgx} instructions are priviledged (should be executed by the kernel), OpenSGX defines new system calls to perform \gls{sgx} operations, such as dynamic memory allocation and enclave provisioning; (3) Enclave loader: enclave must be properly loaded to \gls{epc}; (4) User library: provides a library (sgxlib) with a useful set of functions to be used inside and outside the enclave; (5) Debugging support; (6) Performance monitoring: allow users to collect performance statistics about enclave programs.
+Its pratical properties result of six components working together: 
+
+(1) \textbf{Hardware emulation module}: \gls{sgx} emulation, by providing \gls{sgx} instructions, data structures, \gls{epc} and its access protection, as well as \gls{sgx}' processor key; 
+(2) \textbf{\gls{os} emulation}: since some \gls{sgx} instructions are priviledged (should be executed by the kernel), OpenSGX defines new system calls to perform \gls{sgx} operations, such as dynamic memory allocation and enclave provisioning; 
+(3) \textbf{Enclave loader}: enclave must be properly loaded to \gls{epc}; 
+(4) \textbf{User library}: provides a library (sgxlib) with a useful set of functions to be used inside and outside the enclave; 
+(5) \textbf{Debugging support}; 
+(6) \textbf{Performance monitoring}: allow users to collect performance statistics about enclave programs.
 
 \begin{figure}[htbp]
 	\centering
@@ -290,7 +292,6 @@ Its pratical properties result of six components working together: (1) Hardware 
 \end{figure}
 
 In Figure \ref{fig:openSGXDesign} we see an overall example of this framework, where a regular program (Wrapper) and a secured program (Enclave Program) both run as a single process in the same virtual address space. Due to the fact that Intel-\gls{sgx} uses privilege instructions to setup enclaves, the requests from the Wrapper program are handled by the OpenSGX set of system calls.
-
 OpenSGX was proven capable of running non-trivial applications, as well as promoting the implementation and evaluation of new ideas. By being the first open-source framework to emulate a \gls{sgx} environment, it was shown to be fundamental to the growth of the \gls{tee} field.
 
 
@@ -303,7 +304,6 @@ However, when microns communicate with each other, their communication goes thro
 
 Panoply's design consist on a set of runtime libraries (shim library included) and a build toolchain that helps developers to prepare microns.
 With this, a programmer can assign annotations to functions as a way to specify which micron should execute a specific function. If not assigned any annotation, a function will be designated to a default micron, who shall execute it. Inter-micron flow integrity is also provided during this stage. 
-
 Each micron is given a micron-id when it starts, which will be used for all further interactions with other microns. It will use this id as a way to assure that only authorized microns can send/receive messages.
 To extend this inter-micron interaction security, Panoply also provides authenticated encryption of every message, makes use of unique sequence numbers, and acknoledgement messages are sent for every inter-enclave communication, thus protecting the containers from silent aborts, replaying, or tampering attacks.
 
@@ -314,7 +314,7 @@ Unlike many other \gls{sgx}-based frameworks, Panoply supports unlimited multi-t
 \label{ssec:vc3_mapreduce}
 
 Verifiable Confidential Cloud Computing (VC3) \cite{vc3Paper} is a framework that achieves confidentiality and integrity of data, as well as verifiability of code execution with good performance through MapReduce \cite{mapReduce} techniques. It uses Intel SGX processors as a building block and runs on unmodified Hadoop \cite{hadoop}.
-In VC3 users implement MapReduce jobs, compile and encrypt them, thus obtaining a private enclave code, named E-. They then join it with a small portion of public code, called E+, that implements the protocols for key exchange and job execution.
+In VC3 users implement MapReduce jobs, compile and encrypt them, thus obtaining a private enclave code, named \textbf{E-}. They then join it with a small portion of public code called \textbf{E+}, that implements the protocols for key exchange and job execution.
 Users then upload the resulting binary code to the cloud, where enclaves containing both E- and E+ are initialized by an untrusted framework F. 
 
 \begin{figure}[htbp]
@@ -329,17 +329,16 @@ With VC3, both E- and the user data are always encrypted while in the cloud, exc
 \subsection{Trusted ZooKeeper Approach}
 \label{ssec:protected_zookeeper}
 
-ZooKeeper \cite{zookeeper} is a replicated synchronization service for distributed systems with eventual consistency. However, ZooKeeper does not guarantee privacy of data stored inside of it by default, hence the need to develop an approach capable to add to ZooKeeper this security factor.
+ZooKeeper \cite{zookeeper} is a replicated synchronization service for distributed systems with eventual consistency that does not guarantee privacy of stored data by default. 
 
-Trusted ZooKeeper \cite{protectedZooKeeper} is an approach that eliminates this privacy concerns, by placing an aditional layer between the client and the ZooKeeper, refered as ZooKeeper Privacy Proxy (ZPP). ZPP is the layer responsible for the encryption of all sensitive information, during a communication between a client and the ZooKeeper. 
+Trusted ZooKeeper was presented in \cite{protectedZooKeeper} as an approach that eliminates this privacy concerns, by placing an aditional layer between the client and the ZooKeeper, refered as ZooKeeper Privacy Proxy (ZPP). ZPP is the layer responsible for the encryption of all sensitive information, during a communication between a client and the ZooKeeper. 
 Clients communicate with the proxy via SSL, where the packets are encrypted by an individual session key. Here, ZPP acts like a normal ZooKeeper replica to the client. 
 After receiving the packets from the client, ZPP extracts the sensitive data, encrypts it with a mechanism that allows the data to be decrypted by the proxy later on, and forwards the encrypted packet to a ZooKeeper replica where it can be stored with integrity ensured.
-
 ZPP runs inside a \gls{tee}, located in the cloud, allowing it to store encryption keys and process data safely. As a result, even if the threat comes from the cloud provider itself, the integrity of the data will still be granted since the attacker won't be able to access or alter anything running inside the \gls{tee}.
-
 ZPP also retains all original ZooKeeper functionality, and does not affect ZooKeeper's internal behaviour. Therefore adapting existing ZooKeeper applications to this concept can be done with quite ease.
 
 This approach allows applications in the cloud to use ZooKeeper without privacy concerns at the cost of a small decrease of throughput.
+
 \subsection{Ryoan}
 \label{ssec:ryoan_sandboxing}
 
@@ -363,39 +362,35 @@ Opaque \cite{opaquePaper} is a distributed data analytics platform that guarante
 
 It is implemented with minimal modifications on Apache Spark \cite{apacheSparkPaper}, a framework for data processing and analytics, and leverages Intel-\gls{sgx} technology as a way to grant confidentiality and integrity of the data. 
 However, the use of enclaves can still be threatened by access pattern leakage that can occur at memory-level, when a malicious OS infers information about encrypted data just by monitoring memory page accesses, and also at network-level, when network traffic reveals information about encrypted data.
-
 Opaque hides access patterns in the system by using distributed oblivious relational operators and optimizes these by implementing new query planning techniques. It can be executed in three modes: 
-(1) Encryption mode - provides data encryption and authentication, while granting correct execution.
-(2) Oblivious mode - provides oblivious execution, protecting against access pattern leakage.
-(3) Oblivious pad mode - extends the oblivious mode by adding prevention of size leakage.
 
-Opaque is an approach that is able to grant oblivious execution 3x faster than other specialized oblivious protocols.
+(1) \textbf{Encryption mode} - provides data encryption and authentication, while granting correct execution;
+(2) \textbf{Oblivious mode} - provides oblivious execution, protecting against access pattern leakage;
+(3) \textbf{Oblivious pad mode} - extends the oblivious mode by adding prevention of size leakage.
+
 
 \subsection{Graphene-SGX}
 \label{ssec:grapheneSGX}
 
-The usage of Intel-\gls{sgx} and similar technologies, have proven to add a great sense of privacy to the storage and execution of data in applications. However this tecnologies impose restrictions (e.g., disallowing system calls inside the enclave) that require the applications to be changed and adapted to this technology, so they can benefit from this extra layer of security. 
+The usage of Intel-\gls{sgx} and similar technologies have proven to add a great sense of privacy to the storage and execution of data. However this tecnologies impose restrictions (e.g., disallowing system calls inside the enclave) that require the applications to be  adapted to this technology, so they can benefit from their properties. 
 
-Graphene-SGX \cite{graphenePaper} came to help circunvent these restrictions, while still assuring security to the data. It is a libraryOS that aims to reproduce system calls, respecting security concerns, so that unmodified applications can use them to keep executing normally without interacting directly with the OS or hypervisor. 
-
+Graphene-SGX \cite{graphenePaper} came to help circunvent these restrictions, while still assuring security to the data. It is a libraryOS that aims to reproduce system calls, so that unmodified applications can use them to keep executing normally without interacting directly with the OS or hypervisor. 
 By using a libraryOS, the system is expected to lose performance and, since a new layer of software was added, increase the size of the TCB. 
 Although these assumptions are true, they are quite often exagerated. Graphene-SGX's performance goes from matching a Linux process to less than 2x, in most executions of single-processes.
 Graphene-SGX has also shown some great results comparing it to other similar approaches that use shim layers, such as SCONE \cite{sconePaper} and Panoply \cite{panoplyPaper}, where it shows to be performance-wise similar to SCONE and faster 5-10 percent than Panoply, while adding 54k lines of code to the TCB compairing to SCONE's 97k and Panoply 20k.
 
 Graphene's main goal is to run unmodified applications on \gls{sgx} quickly. Thus, whilst the size of the \gls{tcb} is not the smallest compairing to the other approaches, developers can reduce the \gls{tcb} as needed, as a way to reach a more optimal solution. 
-
 Graphene-SGX also supports application partitioning, enabling it to run small pieces of one application in multiple enclaves. This can be useful, for instance, to applications with different privilege levels, while still increasing the security of the application.
 \subsection{Other approaches}
 \label{ssec:otherSGXFrameworks}
 
 
 
-Other approaches appeared as a way to deal with more specific problems, by making use of trusted computing. We'll go into topics like Networking, Administration of Cloud Systems, Virtualization, Containers, searchable Encryption as well as encrypted Databases, and how to take advantages of \gls{sgx} in these specific areas. 
+Other approaches appeared as a way to deal with more specific problems, by making use of trusted computing. We'll go into topics like Networking, Administration of Cloud Systems, Virtualization, Containers, searchable Encryption as well as encrypted Databases, and how to take advantages of \gls{sgx} in these specific areas. \newline
 
+%-----------------------------------------
 
-
-\subsubsection{SGX-Enabled Network Protocols and Services}
-\label{sssec:sgxNetworking}
+\underline{\textbf{SGX-Enabled Network Protocols and Services}}
 
 
 The increased need for security seen nowadays caused network related technologies to also become popular, from security protocols (TLS) to anonymous browsers (Tor), leading to a lot of effort by the community to make viable approaches to tackle network security problems. 
@@ -411,11 +406,11 @@ S-NFV divides the NFV application in two: S-NFV enclave and S-NFV host. The encl
 
 In \cite{sNFVPaper} by implementing the S-NFV approach with Snort \cite{snortPaper} on top of OpenSGX was
 concluded that this \gls{sgx}-enabled approach results in bigger overheads (aprox. 11x for
-gets and 9x for sets) than a \gls{sgx}-disabled Snort application, at the cost of extra security.
+gets and 9x for sets) than a \gls{sgx}-disabled Snort application, at the cost of extra security.\newline
 
+%-----------------------------------------
 
-\subsubsection{Trusted Cloud-Based System Administration}
-\label{sssec:sgxSysAdmin}
+\underline{\textbf{Trusted Cloud-Based System Administration}}
 
 The use of cloud platforms lead to a significant increase of security and privacy risks. Thus, cloud services are now higly dependent on trusting its administrators, as well as their good behaviour. Since this is not always the case, it has become a must to protect the users from potencial cloud system administration threats. 
 To tackle this problem, some solutions have been proposed with the help of trusted computing technology. However, their focus have been conducted on Infrastructure-as-a-Service (IaaS) environments, which are simpler to maintain than in PaaS and SaaS approaches.
@@ -426,11 +421,11 @@ The main idea behind this approach is to allow the administrative staff necessar
 
 The administrative roles for cloud nodes are divided into four or five independent roles, depending if it is a SaaS or PaaS environment, each with their own permissions. Each role works under supervision of internal or external auditors. The internal auditors being the ones hired by the provider, while the external are hired by customers, as a way to execute protocols decided by both in a trustable way. The solution enables both control of cloud trusted nodes operational states, designated to run customer's computations, as well as remote attestation of the boot sequence of PaaS or SaaS stacks. Finally, by including logging of changes in node's states, this solution is able to offer trustworthy execution of functions and protocols.
 
-This approach was shown in \cite{sgxCloudThesis} to have minimal performance impact, as well low storage overheads, while being a compelling approach to be used to increase detail of management protocols and tools in cloud environments and data-centers.
+This approach was shown in \cite{sgxCloudThesis} to have minimal performance impact, as well low storage overheads, while being a compelling approach to be used to increase detail of management protocols and tools in cloud environments and data-centers.\newline
 
+%-----------------------------------------
 
-\subsubsection{SGX-enabled Virtualization}
-\label{sssec:sgxVirt}
+\underline{\textbf{SGX-enabled Virtualization}}
 
 
 As we already pointed out previously, Intel-\gls{sgx} has drawn much attention from the community in the last few years, which also made cloud providers to start implementing \gls{sgx} into their cloud systems (Microsoft's Azure confidential computing or IBM Cloud are examples of that). Also, new cloud programming frameworks have already been created with the ability to support \gls{sgx}. 
@@ -439,28 +434,26 @@ However, while most of the research on Intel-\gls{sgx} have been concentrated on
 
 In \cite{sgxVirtualizationPaper} an exaustive evaluation about the performance of \gls{sgx} on a virtualized system concluded that:
 
-(1) Hypervisors don't need to intercept every \gls{sgx} instruction to enable \gls{sgx} to virtualization. It was concluded that there is only one indispensable \gls{sgx} function, ECREATE, which is responsable to virtualize \gls{sgx} launch control.
+\textbf{1)} Hypervisors don't need to intercept every \gls{sgx} instruction to enable \gls{sgx} to virtualization. It was concluded that there is only one indispensable \gls{sgx} function, ECREATE, which is responsable to virtualize \gls{sgx} launch control. As a result, gls{sgx} on \gls{vm}s is considered to have an acceptable overhead.
 
-As a result, gls{sgx} on \gls{vm}s is considered to have an acceptable overhead.
-
-(2)  \gls{sgx} overhead on \gls{vm}s when running memory-heavy benchmarks consists mainly of address translation when using nested paging. If it uses shadow paging instead, then the overhead becomes insignificant. 
+\textbf{2)} \gls{sgx} overhead on \gls{vm}s when running memory-heavy benchmarks consists mainly of address translation when using nested paging. If it uses shadow paging instead, then the overhead becomes insignificant. 
 \cite{sgxVirtualizationPaper} shows that this can be optimized by using shadow paging for \gls{epc} to reduce translation overhead, and nested paging for general usage.
 
-(3) On the contrary, when running benchmarks involving many context switches (e.g., HTTP benchmarks), shadow paging performs worse than nested paging.
+\textbf{3)} On the contrary, when running benchmarks involving many context switches (e.g., HTTP benchmarks), shadow paging performs worse than nested paging.
 
-(4) The use of \gls{sgx} causes a heavy drop in performance switching between application and enclave, whether it is using virtualization or not. This drop causes server applications using \gls{sgx} to be affected.
+\textbf{4)} The use of \gls{sgx} causes a heavy drop in performance switching between application and enclave, whether it is using virtualization or not. This drop causes server applications using \gls{sgx} to be affected.
 \cite{sgxVirtualizationPaper} specifies that this can be addressed by using mechanisms (e.g. HotCalls \cite{hotcallsPaper}) that work as a fast call interface between the aplication and enclave code. This interfaces reduce the overhead of ecalls and ocalls, helping the porting of applications to \gls{sgx}.
 
-(5) Swapping \gls{epc} pages is really expensive, and this also applies for all systems using \gls{sgx}. 
+\textbf{5)} Swapping \gls{epc} pages is really expensive, and this also applies for all systems using \gls{sgx}. 
 Upon the start, \gls{sgx} measures the contents of the enclave, thus triggering enclave swapping if enclave's memory size is larger than the available \gls{epc} size. 
 This was shown in \cite{sgxVirtualizationPaper} to be optimizable by minimizing enclave's size, thus reducing swapping and consequently increasing enclave performance.
 Virtualization causes an additional overhead, which increases based on the number of threads running inside the enclave.
 
-Finally, \cite{sgxVirtualizationPaper} proposes an automatic selection of an appropriate memory virtualization technique, by dynamically detecting the characteristics of a given workload to identify whether it is suitable with nested or shadow paging.
+Finally, \cite{sgxVirtualizationPaper} proposes an automatic selection of an appropriate memory virtualization technique, by dynamically detecting the characteristics of a given workload to identify whether it is suitable with nested or shadow paging.\newline
 
+%-----------------------------------------
+\underline{\textbf{SGX-Enabled Linux Containers}}
 
-\subsubsection{SGX-Enabled Linux Containers}
-\label{sssec:sgxLinuxContainers}
 
 Lately, container solutions such as Linux Containers (LXC) and Docker have proved to be compelling alternatives to virtualization in cloud computing systems, due to the fact that they need less computing resources, allowing more deployments per physical machine to take place, as well as reducing infrastructure costs. However, some concerns have been raised since containers share a common \gls{os} kernel, therefore any vulnerability of the kernel would put all the other containers on the system in danger.
 
@@ -470,11 +463,11 @@ This issues are the result of a still incomplete infrastructure, from the \gls{o
 In \cite{lxcsgxPaper} these exact concerns are addressed by introducing a platform for Linux Containers (LXC) that leverage Intel-\gls{sgx} in the cloud environment, called lxcsgx. 
 This lxcsgx platform offers an infrastructure that supports: (1) Remote attestation; (2) \gls{epc} memory control for containers to prevent malicious overuse of resources; (3) Software \gls{tpm} that can easily allow legacy applications to use \gls{sgx}; (4) GCC plugin to assist with the partitioning of applications, thus reducing the \gls{tcb}.
 
-Lxcsgx was proven in \cite{lxcsgxPaper} to offer the lowest overhead to the overall system when compared to the previously spoken solutions, while also addressing potential issues these could have. 
+Lxcsgx was proven in \cite{lxcsgxPaper} to offer the lowest overhead to the overall system when compared to the previously spoken solutions, while also addressing potential issues these could have.\newline
 
+%-----------------------------------------
 
-\subsubsection{SGX-Enabled Searchable Encryption}
-\label{sssec:sgxSearchEncrypt}
+\underline{\textbf{SGX-Enabled Searchable Encryption}}
 
 
 Processing and storing data in cloud environments is still considered too risky by many. To deal with this, systems started to support \gls{tee}s as a way to provide trust to their users, making sure all their data remains private. 
@@ -487,12 +480,11 @@ As a result, new approaches like HardIDX started to become more popular, for pro
 HardIDX \cite{hardIDXPaper} is a hardware approach that provides the possibility of searching over encrypted data, leveraging Intel-\gls{sgx}. It implements only a small core of operations, in particular searches (on a single value or value ranges), in the \gls{tee}.
 This approach uses B+-tree as the structure to organize all data, which is found in many \gls{dbms}s.
 
-Unlike previous hardware-based approaches, HardIDX implements a small size \gls{tcb} and memory footprint in the \gls{tee}, thus exposing a small attack surface, as well as granting good performance results while executing complex searches on large chunks of data, all this while being able to scale the system to large indexes, as proved in \cite{hardIDXPaper}. 
+Unlike previous hardware-based approaches, HardIDX implements a small size \gls{tcb} and memory footprint in the \gls{tee}, thus exposing a small attack surface, as well as granting good performance results while executing complex searches on large chunks of data, all this while being able to scale the system to large indexes, as proved in \cite{hardIDXPaper}.\newline
 
+%-----------------------------------------
 
-
-\subsubsection{ShieldStore}
-\label{sssec:sgxShieldStore}
+\underline{\textbf{ShieldStore}}
 
 The increasing research on trusted computation technologies, in particular \gls{tee}s like \gls{sgx} made possible for cloud users to run their applications safely in potentially malicious systems. One of the most used type of applications in these cloud systems are key-value stores, like Redis \cite{redisWebsite} and memcached \cite{memcachedWebsite}. These type of data stores are used in many systems nowadays due to their architecture offering fast access to data, by maintaining data in main memory, as well as granting durability by writing the data to persistent storage.  Due to the importance of these type of systems in todays systems stack, there is a special interest in allowing them to be protected by trusted technology. However, one of the critical limitations of \gls{sgx} is the size of the \gls{epc}, which represents its protected memory region. 
 
@@ -502,11 +494,12 @@ ShieldStore runs inside the enclave to protect encryption keys, remote attestati
 
 ShieldStore design starts by remote attesting the server-side, verifying \gls{sgx} support of the processor, the code and other critical memory state of an enclave. Then, using Intel-\gls{sgx} libraries, the client and the server exchange keys so that a secure channel between both parties is created. The client then sends a request, to which the server deciphers and verifies, and thus accessing the Key-Value Store for the desired data. To note that the client does not access the server's ciphertexts neither needs to know the key that the server used to encrypt the values. The server then decrypts the stored data, and encrypts it again with the session key previously decided when establishing the secure channel with the client, and a reply is sent to the client.    
 
-This is an approach capable of minimizing the unnecessary memory encryption overhead of paging, and also eliminate \gls{epc} page faults, which are the main factors impacting the performance of these kind of encrypted data storage systems. Also, ally to the optimization of the index structures, that enabled them for fast access and protection of keys and values, ShieldStore is proven to be an efficient, reliable Key-Value store capable of leveraging \gls{sgx} advantages.
+This is an approach capable of minimizing the unnecessary memory encryption overhead of paging, and also eliminate \gls{epc} page faults, which are the main factors impacting the performance of these kind of encrypted data storage systems. Also, ally to the optimization of the index structures, that enabled them for fast access and protection of keys and values, ShieldStore is proven to be an efficient, reliable Key-Value store capable of leveraging \gls{sgx} advantages.\newline
 
+%-----------------------------------------
 
-\subsubsection{EnclaveDB}
-\label{sssec:sgxEnclaveDB}
+\underline{\textbf{EnclaveDB}}
+
 EnclaveDB \cite{enclavedbPaper} is an approach to deal also with the need to protect data, both in the storage process and the processing of that data when accessing it. It offers confidentiality and integrity of queries and data, by working alongside Intel-\gls{sgx} in order to handle all the sensitive data (queries, tables, indexes) inside enclave memory, thus keeping the data safe in cases where the database administrator is malicious, when the \gls{os} or hypervisor is compromised, and even when running the database in an untrusted host. 
 
 EnclaveDB's design is divided in two modules: trusted, running inside the enclave, and untrusted. The trusted compartment hosts a query processing engine, a transaction manager, pre-compiled stored procedures and a trusted kernel responsible for sealing and remote attestation. As for the untrusted module, it is responsible to run all the other components of the database system. 
