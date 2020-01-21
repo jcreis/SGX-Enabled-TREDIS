@@ -14,13 +14,13 @@
 Cloud computing as emerged as an efficient way for modern systems to deal with modern problems, caused by the growth of internet users worldwide over the years \cite{growthInternetUsers}, where scalability became a must and the cloud's ability to offer storage and computing power on demand made it so usefull.
 With that said, users (including companies) started choosing cloud providers as a convinient way to store their data and services, trusting that data privacy would be assured. However that is not always the case in modern cloud providers. 
 
-In this chapter we address existing solutions that are able to grant some better level of privacy to data, by protecting applications from the \gls{os} or hypervisor, regardless the machine where they're running on, thus increasing the level of trust an user can deposit in a remote execution of an application.
+In this chapter we address existing solutions able to grant a better level of privacy to data, by protecting applications from the \gls{os}/hypervisor regardless the machine they're running on, increasing the level of trust of users in a remote execution of an application.
 
 These existing solutions are organized in different sections in the following way: 
 Section \ref{sec:protect_untrustOS} covers protection against untrusted \gls{os}es; 
 Section \ref{sec:tpm_hsm_tees} covers \gls{tee}s and hardware-enabled approaches;
-In Section \ref{sec:hardwareTEEs} we cover, in more detail, hardware-enabled \gls{tee} solutions used today.
-Section \ref{sec:sgxFrameworks} covers shielded applications and frameworks compatible with Intel-\gls{sgx}, which is the \gls{tee} technology we choose for our approach.
+In Section \ref{sec:hardwareTEEs} we cover, in more detail, hardware-enabled \gls{tee} solutions used today;
+Section \ref{sec:sgxFrameworks} covers shielded applications and frameworks compatible with Intel-\gls{sgx}, which is the \gls{tee} technology we choose for our approach;
 Finally, in Section \ref{sec:summary} we make a critical analysis on the topics previously discussed, while covering their main advantages and disadvantages.
 
 
@@ -59,12 +59,8 @@ Thus, with a small TCB and a good level of isolation during the execution fase, 
 \underline{\textbf{MUSHI}}
 
 MUSHI \cite{mushiPaper} is designed to deal mainly with multi-level security systems, and provides isolation to individual guest \gls{vm}s executing in a cloud infrastructure. MUSHI ensures that \gls{vm}s are instantiated securely and remain that way throughout their life cycle. 
-It is capable of offering: 
-\begin{enumerate}
-	\item \textbf{Trusted Execution}, where both the kernel and user image, as well as MUSHI itself, are attested upon a \gls{vm} start by using a \gls{tpm}, thus defining a trusted initial state;
-	\item \textbf{Isolation}, where each \gls{vm} executing on the same machine runs isolated, as a way to guarantee confidentiality and integrity;
-	\item \textbf{User Image Confidentiality}, by encrypting the user image with a cryptographic key provided by the user itself.
-\end{enumerate}
+It is capable of offering: (1) \textbf{Trusted Execution}, where both the kernel and user image, as well as MUSHI itself, are attested upon a \gls{vm} start by using a \gls{tpm}, thus defining a trusted initial state; (2) \textbf{Isolation}, where each \gls{vm} executing on the same machine runs isolated, as a way to guarantee confidentiality and integrity; (3) \textbf{User Image Confidentiality}, by encrypting the user image with a cryptographic key provided by the user itself.
+
 MUSHI guarantees confidentiality and integrity of a \gls{vm} even during malicious attacks from both inside and outside the cloud environment.
 It trusts a \gls{tcb} relatively small, including only the hardware, hardware virtualization, BIOS and System Management Mode, and can be implemented with quite ease using modern commodity hardware containing SMM memory (SMRAM), necessary for the isolation between the host and \gls{vm}.\newline
 
@@ -76,9 +72,9 @@ SeCage \cite{SeCagePaper} uses hardware virtualization to protect user-defined s
 It devides the system in compartments, where secret compartments have all the permissions to access and manipulate the user-defined secrets, and a main compartment responsable for handling the rest of the code.
 SeCage is designed to assure confidentiality of user-secrets, adding a small overhead while supporting large-scale software. To achieve this, it ensures:
 \begin{enumerate}
-	\item Hybrid analysis of secrets, where static and dynamic analysis are combined to define secret compartments to execute secrets, preventing them from being disclosed during runtime;
-	\item Hypervisor protection, by using hardware virtualization to isolate each compartment;
-	\item Separating control and data plane, where minimal hypervisor intervention is required to deal with communications between compartments. The hypervisor is limited to define policies on whether two compartments can communicate (control plane) for as long as they conform to those policies.
+	\item \textbf{Hybrid analysis of secrets}, where static and dynamic analysis are combined to define secret compartments to execute secrets, preventing them from being disclosed during runtime;
+	\item \textbf{Hypervisor protection}, using hardware virtualization to isolate each compartment;
+	\item \textbf{Separating control and data plane}, where minimal hypervisor intervention is required to deal with communications between compartments. The hypervisor is limited to define policies on whether two compartments can communicate (control plane) for as long as they conform to those policies.\newline
 \end{enumerate}
 
 
@@ -94,7 +90,7 @@ InkTag also isolates secure from unsafe data through hardware virtualization, an
 Other important aspect of InkTag is recoverability. InkTag hypervisor can protect the integrity of files even if the system crashes, by ensuring consistency between file data and metadata upon a crash.\newline
 
 %-----------------------------------------
-\pagebreak
+
 \underline{\textbf{Sego}}
 
 Similar to InkTag, Sego \cite{segoPaper} is also an hypervisor-based system that gives strong privacy and integrity guarantees to trusted applications. To protect applications from untrusted \gls{os}es, Sego removes the trust from the \gls{os}, relying only on a trusted hypervisor which is assumed to always execute correctly. It also enforces paraverification, where the \gls{os} communicates its intentions to the hypervisor, thus keeping track of its behavior.
@@ -113,9 +109,7 @@ the hypervisor of its intent, so that the hypervisor can verify the \gls{os}'s a
 small library called libsego as a way to handle system calls and get Sego services without having to change their code. Each \gls{hap} also contains an untrusted trampoline code, that
 uses to interact with the \gls{os}. This protects its control-flow, since it uses this trampoline as issuer for system calls, therefore never compromising the \gls{hap} itself. Figure \ref{fig:segoArchitecture} shows well enough Sego’s overall design without going into too much dept, indicating which components are included in the \gls{tcb} and which are not.
 Context switches are handled by the hypervisor, thus hiding any information about the \gls{hap} from the \gls{os}.
-Sego does not guarantee \gls{os} availability. A compromised \gls{os} can simply shut down or refuse to schedule processes. However this is easily detected.\newline
-
-
+Sego does not guarantee \gls{os} availability. A compromised \gls{os} can simply shut down or refuse to schedule processes. However this is easily detected.
 In conclusion, although all these approaches are prepared to isolate an application from untrusted hosts, they emphasize the use of software to do it, leaving behind the importance of hardware trustworthiness to the whole system.
 
 In the following sections we will take a look on existing solutions that are able to tackle also hardware related security problems.
@@ -126,19 +120,19 @@ In the following sections we will take a look on existing solutions that are abl
 \section{Hardware-Enabled TEE - Trusted Execution Environments}
 \label{sec:tpm_hsm_tees}
 
-A \gls{tee} is an abstraction provided by both software and hardware that guarantees isolated execution of specific programs in a machine, including the host \gls{os}, hypervisor or even system administrators, preventing them from leveraging their privileges. A \gls{tee} also provides integrity of applications running inside it, along with confidentiality of their assets.
-
+A \gls{tee} is an abstraction provided by both software and hardware that guarantees isolated execution of programs in a machine from the host \gls{os}, hypervisor or even system administrators, preventing them from leveraging their privileges. A \gls{tee} also provides integrity of applications running inside it, along with confidentiality of their assets.
 The first attempts to implement a \gls{tee} on a cloud system consisted of combining a hypervisor with isolation properties and a \gls{tpm}. 
+
 A \gls{tpm} \cite{tpmPaper} consists of a hardware chip, called microcontroller, that aims to create a trustable platform through encryption and authenticated boot, and make sure it remains trustworthy through remote attestation. 
 It provides cryptographic functions that can't be modified, and a private key (Endorsment Key) that is unique to every \gls{tpm} made, working as an identifier for the \gls{tpm} itself.
 However, \gls{tpm}s have several problems when applied to cloud systems, due to being designed with the intention to offer security to a single machine. It is not flexible enough to guarantee that anyone can get the encrypted data from a different node.
 Thus, a distributed environment would not be the best kind of environment for a \gls{tpm} to work on.
 
-The current best practice for protecting secrets in a cloud system uses \gls{hsm}s. 
-\gls{hsm} \cite{hsmPaper} are physical components whose main function is to provide and store cryptographic keys used to encrypt/decrypt data inside a system. \gls{hsm}s can also perform cryptographic operations (e.g. encryption, hashing, etc.) as well as authenticate through verification of digital signatures and accelerate \gls{ssl} connections \cite{hsmThesis}, by relieving the servers from some of the workload caused by operations envolving cryptography. 
-Thus, the system can protect critical secrets, such as cryptographic keys, and support a range of cryptographic functions.
+The current best practice for protecting secrets in  cloud systems uses \gls{hsm}s. 
+A \gls{hsm} \cite{hsmPaper} is a physical hardware component which provides and stores cryptographic keys used to encrypt/decrypt data inside a system. \gls{hsm}s also performs cryptographic operations (e.g. encryption, hashing, etc.) as well as authentication through verifying digital signatures and accelerating \gls{ssl} connections \cite{hsmThesis}, by relieving the servers from some of the workload caused by operations envolving cryptography. 
+Thus, the system can protect critical secrets (cryptographic keys) and support a range of cryptographic functions.
 
-With that in mind, new hardware-enabled solutions were developed to be more flexible and cloud friendly than the \gls{tpm}, or to incorporate the advantages of \gls{hsm} to the system. We'll dive into technologies like ARM TrustZone, Intel SGX, AMD-SEV, and others, in the following section.
+With that in mind, new hardware-enabled solutions were developed to be more flexible and cloud friendly than the \gls{tpm}, or to incorporate the advantages of \gls{hsm} to the system. We'll dive into technologies like ARM TrustZone, Intel SGX, AMD-SEV, and some other, in the following section.
 
 
 % =======================
@@ -149,11 +143,11 @@ With that in mind, new hardware-enabled solutions were developed to be more flex
 \section{Hardware-Enabled TEE Solutions}
 \label{sec:hardwareTEEs}
 
-The idea of using hardware to provide trusted execution environments appeared as a way to deal with piracy, with examples like TCPA \cite{tcpaPaper} and Microsoft's Palladium \cite{microsoftPalladium} being the most known ones. By providing protection during execution by using hardware, it started to be possible to encrypt data (DVD's, for example) that could only be decrypted by a specific hardware, making it almost impossible to copy. 
+The idea of using hardware to provide trusted execution environments to run code appeared as a way to deal with piracy, with examples like TCPA \cite{tcpaPaper} and Microsoft's Palladium \cite{microsoftPalladium} being the most popular at that time. By providing protection during execution through hardware, it became possible to encrypt data (e.g. DVD's) that could only be decrypted by a specific hardware, making it almost impossible to pirate. 
 Although this approaches were effective back in the day, both of them place their trust in the hardware, not trusting the \gls{os} entirely. 
-Thus, since any application does not trust the \gls{os}, it does not trust the application to properly use its resources either. Therefore, some of the protection aspects of the \gls{os} must be moved into the hardware, as well as changing the interface between the \gls{os} and the application so it supports the hardware security features. 
+Thus, since any application does not trust the \gls{os}, it does not trust the application to properly use its resources either. Therefore, some of the protection aspects of the \gls{os} should be moved into the hardware, while also changing the interface between the \gls{os} and the application so it supports hardware security features. 
 
-\gls{xom}, described in the next subsection, was developed as a way to deal with these changes that were required to use this idea of trusted computing in a better way.
+\gls{xom}, described in the next subsection, was one of the first approaches developed as a way to deal with these changes, and one of the stepping stones that lead us to the modern \gls{tee} technology we see nowadays, that we will also describe in this section.
 
 \subsection{XOM}
 \label{ssec:xom}
@@ -163,9 +157,7 @@ usefull for enabling code to run in untrusted platforms, deployment of trusted c
 
 The main idea is to only trust the processor to protect the code and data, thus not trusting the main memory nor any software, including the host \gls{os}.
 However, this idea of only trusting hardware has some implications for \gls{os}es design. This happens due to the fact that sharing hardware resources between multiple users is a hard job, specially without trusting any software. It is usually easier to have this policies performed by the \gls{os}. Therefore, not trusting the software entirely can sometimes be a drawback.  
-
 For \gls{xom} architecture to be used, it is required a specific \gls{os} (XOMOS). XOMOS runs on hardware that supports tamper-resistant software, and is adapted to manage hardware resources for applications that do not trust it.
-
 \gls{xom} offers protection against attackers who may have physical access to the hardware itself, as well as main memory protection, if compromised. For it, the XOM processor encrypts the values in memory and stores the hash of those values in memory as well. It then only accepts encrypted values from memory if followed by a valid respective hash. 
 
 
@@ -173,13 +165,12 @@ For \gls{xom} architecture to be used, it is required a specific \gls{os} (XOMOS
 \subsection{ARM TrustZone}
 \label{ssec:armtz}
 
-ARM TrustZone \cite{armTZPaper} are ARMs approach to offer a \gls{tee} where software can execute in a secured and trustable way, safe from the host machine, as well as its \gls{os} and/or hypervisor. 
+ARM TrustZone \cite{armTZPaper} is ARMs approach to offer a \gls{tee} where software can execute in a secured and trustable way, safe from the host machine, as well as its \gls{os} and/or hypervisor. 
 
-To accomplish this, ARM processors implement two virtual processors backed by hardware access control, where the software stack can switch between two states: secure world (SW) and normal world (NW). 
+To create this abstraction, ARM processors implement two virtual processors backed by hardware access control, where the software stack can switch between two states: secure world (SW) and normal world (NW). 
 The first one has higher priviledges than the second one, therefore it can access NWs copies of registers, but not the other way around. SW is also responsible of protecting running processes in the \gls{cpu}, while providing secured access to peripherals. 
 Each world acts like a runtime environment and has its own set of resources. This resources can be partioned between the two worlds or just assigned to one of them, depending on the ARM chip specs.
 For the context switch between worlds, ARM processors implement a secured mode called Secure Monitor, where there is a special register responsable of determine if the processor runs code in SW or NW. 
-
 Most ARM processors also offer memory curtaining. This consists on the Secure Monitor allocating physical addresses of memory specifically to the SW, making this region of memory unaccessible to the rest of the system.
 By default, the system boots always in SW so it can provision the runtime environment before any untrusted code start to run. It eventually transitions to NW where untrusted code can start to be executed. 
 
@@ -190,7 +181,7 @@ To achieve this, AMD grants encryption of memory through a technology called Sec
 After the data is encrypted, SEV integrates it with AMD virtualization architecture to support encrypted \gls{vm}s. By doing this, every \gls{vm} is protected from his own hypervisor (\gls{vmm}), unabling its access to the decrypted data. Although uncapable of accessing the \gls{vm}, the \gls{vmm} is still responsible of controlling each \gls{vm}'s resources. 
 Thus, AMD provides confidentiality of data by removing trust from the \gls{vmm}, creating an isolated environment for the \gls{vm} to run, where only the \gls{vm} and the processor can be trusted. 
 
-However, ADM-SEV does not provide integrity of data, allowing replaying attacks to take place, and has a considerably large \gls{tcb}, since the \gls{os} of each \gls{vm} is trusted. \cite{amdSEVPaper}
+However, ADM-SEV does not provide integrity of data, allowing replaying attacks to take place, and has a considerably large \gls{tcb}, since the \gls{os} of each \gls{vm} is trusted \cite{amdSEVPaper}. 
 
 \subsection{Sanctum}
 \label{ssec:sanctum}
@@ -286,13 +277,13 @@ Its pratical properties result of six components working together:
 
 \begin{figure}[htbp]
 	\centering
-	{\includegraphics[width=0.6\linewidth]{opensgx_design}}
+	{\includegraphics[width=0.4\linewidth]{opensgx_design}}
 	\caption{Overview design of OpenSGX framework and memory state of an active enclave program}
 	\label{fig:openSGXDesign}
 \end{figure}
 
-In Figure \ref{fig:openSGXDesign} we see an overall example of this framework, where a regular program (Wrapper) and a secured program (Enclave Program) both run as a single process in the same virtual address space. Due to the fact that Intel-\gls{sgx} uses privilege instructions to setup enclaves, the requests from the Wrapper program are handled by the OpenSGX set of system calls.
-OpenSGX was proven capable of running non-trivial applications, as well as promoting the implementation and evaluation of new ideas. By being the first open-source framework to emulate a \gls{sgx} environment, it was shown to be fundamental to the growth of the \gls{tee} field.
+In Figure \ref{fig:openSGXDesign} we see an ilustration of this framework, where a regular program (Wrapper) and a secured program (Enclave Program) both run as a single process in the same virtual address space. Since Intel-\gls{sgx} uses privilege instructions to setup enclaves, the requests from the Wrapper program are handled by the OpenSGX set of system calls.
+OpenSGX was proven capable of running non-trivial applications, while promoting the implementation and evaluation of new ideas. By being the first open-source framework to emulate a \gls{sgx} environment, it was  fundamental to the growth of the \gls{tee} field.
 
 
 \subsection{Panoply}
@@ -317,14 +308,14 @@ Verifiable Confidential Cloud Computing (VC3) \cite{vc3Paper} is a framework tha
 In VC3 users implement MapReduce jobs, compile and encrypt them, thus obtaining a private enclave code, named \textbf{E-}. They then join it with a small portion of public code called \textbf{E+}, that implements the protocols for key exchange and job execution.
 Users then upload the resulting binary code to the cloud, where enclaves containing both E- and E+ are initialized by an untrusted framework F. 
 
-\begin{figure}[htbp]
+\begin{figure}[tbp]
 	\centering
 	{\includegraphics[width=50mm, scale=0.4]{vc3_design}}
 	\caption{VC3 memory design model on the left, component dependencies on the right}
 \end{figure}
 
-A MapReduce begins with a key exchange between the user and the E+ code running in the enclave. After this, E+ can proceed to decrypt E- and process the encrypted data. VC3 isolates this processing from the \gls{os} by keeping an interface between the E+ layer and the outside of the enclave. This interface consists of basically two functions: readKV() and writeKV(), for reading or writing a key-value pair on Hadoop, respectively. Also, the data inside the enclave is passed to the outside, more specifically from E+ to the untrusted F, by using a virtual address space shared by both.
-With VC3, both E- and the user data are always encrypted while in the cloud, except when processed by the trusted processor, while allowing Hadoop to manage the execution of VC3 jobs. Map and reduce nodes are seen as regular worker nodes to Hadoop, therefore Hadoop can keep providing its normal scheduling and fault-tolerance mechanisms, as well as load balancing. VC3 considers Hadoop, as well as both the \gls{os} and the hypervisor as untrusted, thus keeping the \gls{tcb} size as small as possible.
+A MapReduce begins with a key exchange between the user and the \textbf{E+} code running in the enclave. After this, \textbf{E+} can proceed to decrypt \textbf{E-} and process the encrypted data. VC3 isolates this processing from the \gls{os} by keeping an interface between the E+ layer and the outside of the enclave. This interface consists of basically two functions: \textbf{readKV()} and \textbf{writeKV()}, for reading or writing a key-value pair on Hadoop, respectively. Also, the data inside the enclave is passed to the outside, more specifically from \textbf{E+} to the untrusted F, by using a virtual address space shared by both.
+With VC3, both \textbf{E-} and the user data are always encrypted while in the cloud, except when processed by the trusted processor, while allowing Hadoop to manage the execution of VC3 jobs. Map and reduce nodes are seen as regular worker nodes to Hadoop, therefore Hadoop can keep providing its normal scheduling and fault-tolerance mechanisms, as well as load balancing. VC3 considers Hadoop, as well as both the \gls{os} and the hypervisor as untrusted, thus keeping the \gls{tcb} size as small as possible.
 
 \subsection{Trusted ZooKeeper Approach}
 \label{ssec:protected_zookeeper}
@@ -345,15 +336,7 @@ This approach allows applications in the cloud to use ZooKeeper without privacy 
 Ryoan \cite{ryoanPaper} consists on a distributed sandbox approach that allows users to protect the execution of their data. This is achieved with the help of Intel-\gls{sgx} \cite{intelSGX} \cite{sgxPaper} technology, by running NaCl (Google Native Client) sandbox instances inside enclaves, protecting the data from untrusted software while also preventing leaks of data, which is a weakness of enclaves caused by side channel attacks.
 Ryoan does not include any priviledged software (e.g. OS and hypervisor) in its \gls{tcb}. It trusts only the hardware (\gls{sgx} enclaves) to assure secrecy and integrity of the data.
 
-Its main goal is to prevent leakage of secret data. This is done by keeping the modules from sending sensitive data over communications outside the system boundaries, but also by eliminating the possibility to store data into unprotected memory regions, as well as crossing off the possibility to make most system calls, granted by the use of NaCl instances. 
-
-
-\begin{figure}[htbp]
-	\centering
-	{\includegraphics[width=50mm, scale=0.5]{ryoan_design}}
-	\caption{Instance of Ryoan running on a single machine}
-\end{figure}
-
+Its main goal is to prevent leakage of secret data. This is done by keeping the modules from sending sensitive data over communications outside the system boundaries, but also by eliminating the possibility to store data into unprotected memory regions, as well as crossing off the possibility to make most system calls, granted by using NaCl instances. 
 Ryoan's approach consists on confining the untrusted application in a NaCl instance, responsable of controlling system calls, I/O channels and data sizes. This NaCl sandbox is running inside enclaves' memory region, and can communicate with other NaCl instances, forming a distributed sandbox between users and different service providers. Inside the sandbox, the untrusted application can execute safely on secret data. The NaCl sandbox uses a load time code to ensure that the module cannot do anything it shouldn't, thus preventing it from violating the sandbox. To handle faults, exceptions or errors inside the NaCl sandbox, Ryoan uses an unprotected trampoline code, that can enter the enclave and read the information about the fault, so it can handle it.
 \subsection{Opaque}
 \label{ssec:opaque}
@@ -363,7 +346,6 @@ Opaque \cite{opaquePaper} is a distributed data analytics platform that guarante
 It is implemented with minimal modifications on Apache Spark \cite{apacheSparkPaper}, a framework for data processing and analytics, and leverages Intel-\gls{sgx} technology as a way to grant confidentiality and integrity of the data. 
 However, the use of enclaves can still be threatened by access pattern leakage that can occur at memory-level, when a malicious OS infers information about encrypted data just by monitoring memory page accesses, and also at network-level, when network traffic reveals information about encrypted data.
 Opaque hides access patterns in the system by using distributed oblivious relational operators and optimizes these by implementing new query planning techniques. It can be executed in three modes: 
-
 (1) \textbf{Encryption mode} - provides data encryption and authentication, while granting correct execution;
 (2) \textbf{Oblivious mode} - provides oblivious execution, protecting against access pattern leakage;
 (3) \textbf{Oblivious pad mode} - extends the oblivious mode by adding prevention of size leakage.
