@@ -22,16 +22,13 @@ Data has more value than ever before.
 The adoption of mobile devices as an almost indispensable thing in people's lives led to an imense amount of information produced each second, by everyone, at a global scale \cite{dataAnalysis1}\cite{dataAnalysis2}.
 To deal with this, numerous fields of computer science were born, and new technologies more adapted to deal with huge amounts of data were designed. 
 A major one was Cloud Computing, which appeared as a way to remotely provide computing and storage capabilities to systems like we never saw before, as well as fault tolerance and scalability (as well as many other properties) for a reduced cost to their users \cite{cloudOrigins}. 
-
 Thus, the tendency to move data to these cloud providers emerged as an efficient and convinient way to store and compute it, making users free of worries regarding physical resources in their own machines. Both users and companies could now choose to rely on a cloud provider, who are usually hosted by huge corporations, to run their services.
-
 However, the complexity behind cloud systems made them major attack targets \cite{cloudAttacksReport} and security problems, more specifically the ones regarding privacy and security of personal information, were found to be very concerning \cite{playstationAttack}. 
 Since data is stored in the provider's system, the information is dependent on the provider's security, as well as the behaviour of its staff, which have physical access to the system and can act maliciously. All this brings insecurity to the data and raises privacy concerns.
 Also, after the data reached the cloud provider, privacy is not assured during execution phase, even if it stored safely (encrypted) in disk, since to be executed it has to be fully decrypted in volatile memory. The data is then vulnerable during memory attacks, which lead to many efforts to be put into solving this particular problem.  
 
 A few solutions were thought to be effective, either by using some kind of virtualization or containerization, or even by relying on the hardware itself on a special way. 
 Some \cite{virtGhostPaper}\cite{flickerPaper}\cite{mushiPaper}\cite{SeCagePaper}\cite{inkTagPaper}\cite{segoPaper} offer the possibility to isolate the execution of data from the host \gls{os}, making system calls ineffective and blocking typical permissions these might have over the whole system, while others, particularly the more recent ones regarding Trusted Execution Environments \cite{armTZPaper}\cite{amdPaper}\cite{sanctumPaper}\cite{intelSGX}, focused on creating a trusted memory region where data could execute fully encrypted from the outside. 
-
 However, while offering confiability and integrity to the data, \gls{tee}s have been proven to have some performance issues, since they depend a lot on encryption and decryption (usually big performance droppers). Unfortunately, the performance loss really impacted their adoption in modern systems, which lead to figuring out a way to make this kind of technology more viable. 
 More recently, a few different approaches to place on top of \gls{tee}s have proven to soften the performance issues, creating the impression that we are in the right path to take the most advantage of \gls{tee}s. 
 
@@ -47,17 +44,14 @@ In this dissertation we will study how unmodified applications can be deployed w
 \label{sec:disclaimer}
 Our main objective with this thesis is to implement a secure system based on Intel-SGX
 where it is possible to deploy unmodified applications without any major performance
-drop, by adopting the usage of Graphene-SGX to be ported on top of SGX, much like \cite{graphenePaper} presented. For this, we will deploy an unmodified image of Redis \cite{redis} on top of SGX, providing privacy guarantees and isolation of sensitive data, while evaluating if the usage of Graphene-SGX in the system does indeed have a positive impact in the overall performance level.
-
+drop, by adopting the usage of Graphene-SGX to be ported on top of SGX, much like \cite{graphenePaper} presented. Keeping that in mind, we will deploy an unmodified image of Redis \cite{redis} on top of SGX, providing privacy guarantees and isolation of sensitive data, while evaluating if the usage of Graphene-SGX in the system does indeed have a positive impact in the overall performance level.
 With that said, we expect our solution to deliver the following contributions:
 \begin{itemize}
-	\item Possibility to deploy with ease any unmodified application to a TEE based system: 
-	the usage of a fully-featured library OS named Graphene-SGX will make this possible \cite{graphenePaper};
-	\item Minimize TCB size with usage of TEE isolation technology: by adopting TEE technology
-	and promoting isolation of data, we intend to reduce as much as possible the TCB size,
-	ensuring that sensitive data is managed in a controlled way and exposing it to the least possible number of vulnerabilities;
-	\item Keep a system capable of assuring privacy to sensitive data with usable levels of performance:
-	again, the adoption of Graphene-SGX is expected to help deliver a better level of performance, as it has proven to be the case in \cite{graphenePaper} (...).
+	\item \textbf{Minimize \gls{tcb} size by using \gls{tee} isolation technology}: by adopting \gls{tee} technology into our design, and thus promoting isolation of data, we intend to reduce the \gls{tcb} size as much as possible, ensuring that sensitive data is managed in a controlled way while exposing it to the least possible number of vulnerabilities;
+	\item \textbf{Deploy with ease any unmodified application to a \gls{tee} based system}: 
+	the usage of a fully-featured library \gls{os} named Graphene-SGX is thought to be able of making this possible \cite{graphenePaper};
+	\item \textbf{Assuring privacy to sensitive data with usable levels of performance}:
+	again, the adoption of Graphene-SGX is expected to help deliver a better level of performance, as it has proven to be the case in \cite{graphenePaper}. By working as a library \gls{os}, it offers the possibility to run applications with minimal host requirements, making the application safer from its host \gls{os} while still taking advantage of system calls.
 \end{itemize}
 
 
