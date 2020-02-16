@@ -8,25 +8,41 @@
 \chapter{Approach of Elaboration Phase}
 \label{cha:approach_of_elaboration_phase}
 
+In this chapter we present an initial overview of the system model, as well as some inicial guidelines planned to be implemented to our solution during the elaboration phase, while reinforcing the main objectives of this thesis.
 
 \section{Addressing the objectives and contributions} % (fold)
 \label{sec:document_structure}
 
+The solution we are going to implement and study in this thesis has the purpose of allowing unmodified applications to run in trustable commodity hardware without any major performance overheads, comparing it to applications running without this extra sense of security. To implement this, we are focusing on tree fulcral points:
+\begin{itemize}
+	\item \textbf{Descentralization:}  Adding redundancy to the storage and processing of the data, increasing the system availability and reliability;
+	\item \textbf{Redution of TCB size:}  Making each node of the system only trust what is essencial to its normal execution, leaving the rest out of the TCB will increase the overall security of the system;
+	\item \textbf{Data privacy:}  Assuring that data remains private while stored and processed, by finding a way to keep the data encrypted, keeping it protected from entities that are not supposed to access it.
+\end{itemize}
+By achieving this, we hope to deliver a full-fledged solution, capable of granting privacy and security to data inside dependable systems.
 
-fulcral points: 1) descentralization of the processing and storage of data (increase availability)
-2) reduce TCB size as much as possible on each node
-3) privacy of data (on storing and processing)
+
 
 
 \section{System Model Overview} % (fold)
 \label{sec:dealing_with_bibliogrpahy}
 
-model composed in four main components:
+Our system model is composed in tree main components: a client, a key-value store that will be responsible of storing and processing data at runtime, and a storage layer. For a better grasp of the system as a whole, we can analyse the Figure \ref{fig:systemModel}.
 
-1- Client (app)
-2- Processing layer (redis)
-3- Memory layer (ram)
-4- Storage layer (RAID of disks) - increased redundancy
+\begin{figure}[htbp]
+	\centering
+	{\includegraphics[width=0.4\linewidth]{SystemModelFinal}}
+	\caption{Overview of the System Model}
+	\label{fig:systemModel}
+\end{figure}
+
+The client layer is going to consist of a benchmark application that is responsable of making requests to the key-value store, while evaluating certain defined metrics that we will use for our experimental analysis.
+
+The key-value store layer, as mentioned before, will be accountable of the storage and processing of data while executing, making use of volatile memory that should be protected during this phase.
+
+As for the storage layer, we will use a \gls{raid} based persistent storage system as a way to increase redundancy, thus adding fault-tolerance and enabling faster operations over this layer.
+
+
 
 
 \section{Adversary Model} % (fold)
@@ -60,48 +76,74 @@ them, with fully execution isolation. Current cryptographic protocols and standa
 \section{Isolation and Containerization} % (fold)
 \label{sec:importing_images}
 
+Since our objectives are pointed towards an isolated system capable of offering security and privacy properties, we depend a lot on isolation techniques to make this possible, provided by hardware or software (containers). 
+
+As for hardware isolation, we need to look at approaches capable of assuring both computation and storage security of our systems data during runtime. There are several technologies that implement \gls{tee}s that were proven to be capable of doing just that.
+To add to that, by using a container we will grant an extra layer of isolation to the system, as well as ease in the deployment of software running inside the container, whether it is an \gls{os}, a library \gls{os} or even entire applications.
+
 % section importing_images (end)
 
 \section{System Generalization} % (fold)
 
+Looking at our system model introduced in \ref{fig:systemModel}, there are some potencial threats that need to be taken care of. 
+First, the connection between the client and the key-value store need to be secured. Secondly, the data being stored in the storage layer need to be encrypted, otherwise it can be accessed and read or even stolen. Lastly, by only considering one key-value store will induce into single point of failure. Also the data stored and running inside this layer and its memory needs to be secured.
 
+This can be achieved by using \gls{tls} over the \gls{http} protocol, securing the communication between the client and key-value store layer, using \gls{fde} to encrypt the data to be stored in the storage layer, and for the key-value store layer, we will use a cluster of key-value stores, thus adding redundancy and load balancing. As for the security and privacy concerns on this layer, by isolating each cluster replica inside individual \gls{tee}s we achieve confidentiality and privacy of the data during runtime. The figure \ref{fig:systemModelCluster} shows an overall idea of this proposed solutions.
+
+\begin{figure}[htbp]
+	\centering
+	{\includegraphics[width=0.4\linewidth]{SystemModelWithCluster}}
+	\caption{System Model with a Key-Value Store Cluster}
+	\label{fig:systemModelCluster}
+\end{figure}
+
+As a way to scale the overall system to modern requirements, we opted to divide it into two parts, one being the client layer and the other being both the key-value store and the storage layer, which we will implement inside a cloud system. With this approach (figure \ref{fig:systemModelCloud}) we will guarantee scalability of the resources for the solution.
+
+\begin{figure}[htbp]
+	\centering
+	{\includegraphics[width=0.4\linewidth]{SystemModelCloud}}
+	\caption{System Model running inside a Cloud System}
+	\label{fig:systemModelCloud}
+\end{figure}
 
 \section{Implementation Guidelines} % (fold)
 
-KeyValue Store technology (Redis)
+For the development phase of this dissertation, and as we mentioned before in \ref{sec:objectiveAndContibutions}, we considered the following guidelines:
 
-Intel SGX
+\textbf{Key-Value Store}: we opted for Redis due to being the most popular Key-Value store at the moment, as we can see in \cite{rankingKVStores}, and by adding this to the fact that it fits our system needs, we thought that an exhaustive study over this technology running in a dependable system would be a good contribution.
 
-Cloud Infrastructure (OVH)
+\textbf{Trusted Execution Environment}: as mentioned before, we choose to go with Intel-\gls{sgx} (\ref{ssec:intelsgx}), since it offers the possibility to isolate code inside multiple enclaves, while running on commodity hardware. Thus, we can run each node of our Key-Value store cluster inside of an individual enclave, assuring confidentiality and privacy of the data during runtime.
 
-OS library virtualization (Graphene SGX)
+\textbf{OS library}: to run unmodified applications on top of Intel-\gls{sgx}, we picked Graphene-SGX (\ref{ssec:grapheneSGX}) as it was proven to be able to keep decent levels of performance in a system.
 
-Containerized OS virtualization (Graphene Secured Container - GSC)
+\textbf{Containerized OS Virtualization}: we choosed Graphene-SGX Secure Container (GSC) due to being an open-source container system where an application can be protected by Intel-\gls{sgx} while running inside a container. We thought to be a good way to add an extra layer of isolation to the execution of each Key-Value store instance, while still running with the benefits of Graphene-SGX and Intel-\gls{sgx}.
 
-Miscellaneous: - Java
-			   - Jedis (Redis client)
-			   - Benchmarks: 1) redisbenchmark
-			   				 2) Yahoo! Cloud Serving Benchmark (YCSB)
+\textbf{Cloud Infrastructure}: OVH \cite{ovhCloud} was the cloud provider chosen, mainly due to the fact that it supports \gls{sgx} in its dedicated servers.
+
+As for other technologies, the system will be written in Java. The client layer will consist of a benchmark application provided by both \textbf{Redis Benchmark} and \textbf{Yahoo! Cloud Serving Benchmark} (YCSB). Finally, Jedis (Redis java client) will also be used in the Key-Value store layer.
 
 \section{Validation and Experimental Analysis} % (fold)
 \label{sec:floats_figures_and_captions}
 
-Validation of the implemented solution torwards a full-fledgeness solution
+To validate and evaluate our solution, a set of tests will be created for each metric we choose to evaluate, comparing it to the regular, already existing, version of the system. 
 
-Performance: Throughput and Latency
+First of all, we will be validating if the implemented solution does indeed result in a full-fledged solution for a dependable system, if it does guarantee the desired confidentiality and privacy properties to the data.
 
-Attestation latency (between cliend and Redis)
+Then, we will be comparing the following metrics:
 
-Resource allocation
+\begin{itemize}
+	\item \textbf{Attestation latency:} time of the attestation between the client and Redis;
+	\item \textbf{Performance:} throughput and latency of the Redis Key-Value Store;
+	\item \textbf{Resource allocation:} use of resources during runtime.
+\end{itemize}
 
+In order to evaluate the metrics, we will compare scenarios where:
 
-Also: Redis(base) vs T-Redis
-	  
-	  Datasets (Dimension, extension) -> to explore with benchmark tools
-	  
-	  Typology of operations -> ratio read/write
-	  							time of searches (by attributes)
-	  							time of upload code
+\textbf{1)} a system runs with a regular Redis system model (system model \ref{fig:systemModel}) and other system implements the TREDIS approach (system model \ref{fig:systemModelCloud});
+
+\textbf{2)} the size of the datasets used in the benchmark tools are distinct (e.g: 1000 entries and 100000 entries);
+
+\textbf{3)} the typology of operations made over the Key-Value store varies: \textbf{(3.1)} ratio of read/write operations (e.g: 20/80, 50/50, 80/20); \textbf{(3.2)} time of search; \textbf{(3.3)} time to upload code;
 
 
 % \subsection{Inserting Figures Wrapped with text} % (fold)
