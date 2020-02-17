@@ -233,7 +233,7 @@ Assuring a shielded execution of an application fundamentally means that both co
 \label{ssec:scone}
 
 Container-based virtualization has become quite popular for offering better performance properties than the use of \gls{vm}s, however it offers weaker isolation guarantees, therefore less security. 
-That is why we observe that containers usually execute network services (i.e. Redis). These are systems that don't need as much system calls as the other services, since they can do a lot via networking, thus keeping a small TCB for increased security.
+That is why we observe that containers usually execute network services (i.e. REDIS). These are systems that don't need as much system calls as the other services, since they can do a lot via networking, thus keeping a small TCB for increased security.
 
 SCONE \cite{sconePaper} is a mechanism for Linux containers that increases the confidentiality and integrity of services running inside them by making use of Intel-\gls{sgx}.
 SCONE increases the security of the system while keeping the performance levels reasonable. 
@@ -264,10 +264,9 @@ That's the main goal of Haven: give the user trust by granting confidentiality a
 
 OpenSGX \cite{opensgx_paper} was developed as a way to help with the access to \gls{tee} software technologies, since these type of technologies were only available for a selected group of researchers. 
 It was made available as an open source platform, and by providing \gls{tee} and \gls{os} emulation, it contributed a lot for expanding the possibility of research in this area, as well as promoting the development of SGX applications. 
-
 OpenSGX emulates the hardware components of Intel-SGX and its ecosystem, including \gls{os} interfaces and user library, as a way to run enclave programs. To emulate Intel-\gls{sgx} at intruction-level, OpenSGX extended an open-source emulator, QEMU.
-Its pratical properties result of six components working together: 
 
+Its pratical properties result of six components working together: 
 (1) \textbf{Hardware emulation module}: \gls{sgx} emulation, by providing \gls{sgx} instructions, data structures, \gls{epc} and its access protection, as well as \gls{sgx}' processor key; 
 (2) \textbf{\gls{os} emulation}: since some \gls{sgx} instructions are priviledged (should be executed by the kernel), OpenSGX defines new system calls to perform \gls{sgx} operations, such as dynamic memory allocation and enclave provisioning; 
 (3) \textbf{Enclave loader}: enclave must be properly loaded to \gls{epc}; 
@@ -311,7 +310,7 @@ Users then upload the resulting binary code to the cloud, where enclaves contain
 \begin{figure}[tbp]
 	\centering
 	{\includegraphics[width=50mm, scale=0.4]{vc3_design}}
-	\caption{VC3 memory design model on the left, component dependencies on the right}
+	\caption{VC3 memory design model and component dependencies}
 \end{figure}
 
 A MapReduce begins with a key exchange between the user and the \textbf{E+} code running in the enclave. After this, \textbf{E+} can proceed to decrypt \textbf{E-} and process the encrypted data. VC3 isolates this processing from the \gls{os} by keeping an interface between the E+ layer and the outside of the enclave. This interface consists of basically two functions: \textbf{readKV()} and \textbf{writeKV()}, for reading or writing a key-value pair on Hadoop, respectively. Also, the data inside the enclave is passed to the outside, more specifically from \textbf{E+} to the untrusted F, by using a virtual address space shared by both.
@@ -459,7 +458,7 @@ Unlike previous hardware-based approaches, HardIDX implements a small size \gls{
 
 \underline{\textbf{ShieldStore}}
 
-The increasing research on trusted computation technologies, in particular \gls{tee}s like \gls{sgx} made possible for cloud users to run their applications safely in potentially malicious systems. One of the most used type of applications in these cloud systems are key-value stores, like \textbf{Redis} \cite{redisWebsite} and \textbf{memcached} \cite{memcachedWebsite}. These type of data stores are used in many systems nowadays due to their architecture offering fast access to data by maintaining data in main memory, as well as granting durability by writing the data to persistent storage.  Due to the importance of these type of systems in todays systems stack, it is important to figure out how to protect data inside of these systems by leveraging trusted technology (in our case, Intel-\gls{sgx}). However, one of the critical limitations of \gls{sgx} is the size of the \gls{epc}, which represents its protected memory region. 
+The increasing research on trusted computation technologies, in particular \gls{tee}s like \gls{sgx} made possible for cloud users to run their applications safely in potentially malicious systems. One of the most used type of applications in these cloud systems are key-value stores, like \textbf{REDIS} \cite{redisWebsite} and \textbf{memcached} \cite{memcachedWebsite}. These type of data stores are used in many systems nowadays due to their architecture offering fast access to data by maintaining data in main memory, as well as granting durability by writing the data to persistent storage.  Due to the importance of these type of systems in todays systems stack, it is important to figure out how to protect data inside of these systems by leveraging trusted technology (in our case, Intel-\gls{sgx}). However, one of the critical limitations of \gls{sgx} is the size of the \gls{epc}, which represents its protected memory region. 
 To circumvent this memory restriction, a in-memory key-value store was designed, ShieldStore \cite{shieldStorePaper}. It provides fast execution of queries over large data, by maintaining the majority of the data structures outside enclave memory region, hence contributing to overcome \gls{sgx} memory limitations.
 ShieldStore runs inside the enclave to protect encryption keys, remote attestation, and to perform all the logic necessary to the Key-Value Store execution.
 
