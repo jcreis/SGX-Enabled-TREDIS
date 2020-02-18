@@ -5,25 +5,16 @@
 %%
 %% Abstract in Portuguese
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-Atualmente, a transição da capacidade de armazenamento e processamento para servidores \textit{cloud} é uma tendência que tem vindo a aumentar entre serviços web que gerem grandes conjuntos de dados. 
-Isto deve-se ao elevado custo pago tanto por altas capacidades de armazenamento de dados, bem como por processadores potentes, enquanto que serviços \textit{cloud} são capazes de oferecer soluções mais baratas, contínuas, elásticas e confiáveis. 
+Atualmente, a transição da capacidade de armazenamento e processamento para servidores \textit{cloud} é uma tendência que tem vindo a aumentar entre serviços web que gerem grandes conjuntos de dados. Isto deve-se ao elevado custo pago tanto por altas capacidades de armazenamento de dados, bem como por processadores potentes, enquanto que serviços \textit{cloud} são capazes de oferecer soluções mais baratas, contínuas, elásticas e confiáveis.
+O problema com estas soluções em \textit{cloud} fornecidas por terceiros deve-se a estes serem facilmente acessíveis através da Internet, o que é bom, mas que por isso ficam consideravelmente expostos a ataques, fora do controle dos seus utilizadores. Ao explorar subtilmente vulnerabilidades presentes em aplicações a correr em \textit{cloud}, funções de gerenciamento, sistemas operativos e hipervisores, um atacante pode comprometer os sistemas que são suportados, comprometendo assim a privacidade de dados delicados do utilizador que estão presentes nos mesmos.
+Estes ataques podem ser motivados por fins maliciosos como espionagem, chantagem, roubo de identidade ou assédio. Uma solução para este problema passa por processar a informação sem a expôr a componentes não confiáveis, como componentes vulneráveis de Sistemas Operativos, que podem ser comprometidas por um atacante.
 
-O problema com estas soluções em \textit{cloud} fornecidas por terceiros deve-se a estes serem facilmente acessíveis através da Internet, o que é bom, mas que por isso ficam consideravelmente expostos a ataques, fora do controle dos seus utilizadores. Ao explorar subtilmente vulnerabilidades presentes em aplicações a correr em \textit{cloud}, funções de gerenciamento, sistemas operativos e hiper visores, um atacante pode comprometer os sistemas que são suportados, comprometendo assim a privacidade de informação delicada do utilizador que está presente no mesmo.
-
-These attacks can be motivated by malicious purposes such as espionage, blackmail, identity theft or harassment. A solution to this problem is processing data without exposing it to untrusted components, such as vulnerable OS components, which might be compromised by an attacker.
-
-In this thesis we intend to study existent library OSes and conduct an experimental evaluation to adopt such solutions as OS library emulations to be ported as trusted and isolated solutions running in Intel-SGX, as fully-featured libraries that can eventually be adopted to rapidly deploy existent applications, with overheads comparable to applications modified to use other trustable “shim” layers. Our targeted evaluation will be conducted in designing TREDIS - a Trusted Full-Fledged REDIS Key-Value Store solution, redesigning and implementing it as a full-fledged solution to be offered as a Trusted Cloud-enabled Platform as a Service. This includes the possibility to support a secure REDIS-cluster architecture supported by docker-virtualized services running in independent SGX-enabled instances, with operations running on always-encrypted in-memory datasets. 
-
-
-% Palavras-chave do resumo em Inglês
-\begin{keywords}
-	Intel SGX, REDIS, Trusted Computing, Trusted Execution Environments, Data Protection, Privacy-Preservation, Dependable In-Memory Key-Value Stores
-\end{keywords} 
-
+Nesta tese pretendemos estudar \textit{library OSes} já existentes e realizar uma avaliação experimental para as virmos a adoptar como emulações de \textit{library OSes} para que sejam executadas como soluções confiáveis e isoladas em cima do Intel-SGX, como bibliotecas completas que poderão eventualmente ser adoptadas para fazer rapidamente \textit{deploy} de aplicações existentes, com perdas comparáveis a aplicações modificadas para utilizar camadas \textit{“shim”} confiáveis.
+A nossa avaliação vai estar focada no desenho da solução TREDIS - REDIS  \textit{Key-Value Store} confiável e estável, redesenhando e implementando-a como uma solução completa para ser usada como uma Plataforma como Serviço confiável em \textit{cloud}. Isto inclui a possibilidade de suportar uma arquitetura segura em \textit{cluster} de REDIS suportada por serviços docker virtualizados a correr em instâncias SGX independentes, com operações a correr em conjuntos de dados sempre encriptados em memória. 
 	
 % Palavras-chave do resumo em Português
 \begin{keywords}
-Intel SGX, REDIS, Ambiente de Execução Confiável, Proteção de Dados, Privacidade, Confiabilidade \ldots
+ Intel SGX, REDIS, Computação Confiável, Ambientes de Execução Confiáveis, Proteção de Dados, Preservação de Privacidade, \textit{Key-Value Stores} Confiáveis em Memória
 \end{keywords}
 
 

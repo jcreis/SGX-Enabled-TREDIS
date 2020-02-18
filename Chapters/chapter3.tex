@@ -99,17 +99,17 @@ For the development phase of this dissertation, and as we mentioned before in \r
 
 \textbf{OS library}: to run unmodified applications on top of Intel-\gls{sgx}, we picked Graphene-SGX (\ref{ssec:grapheneSGX}) as it was proven to be able to keep decent levels of performance in a system.
 
-\textbf{Containerized OS Virtualization}: we choose Graphene-SGX Secure Container (GSC) due to being an open-source container system where an application can be protected by Intel-\gls{sgx} while running inside a container. We thought it to be a good way of adding an extra layer of isolation to the execution of each \gls{kvs} instance, while still running with the benefits of Graphene-SGX and Intel-\gls{sgx}.
+\textbf{Containerized OS Virtualization}: we choose Graphene-SGX Secure Container (GSC) \cite{gsc} due to being an open-source container system where an application can be protected by Intel-\gls{sgx} while running inside a docker \cite{} container. We thought it to be a good way of adding an extra layer of isolation to the execution of each \gls{kvs} instance, while still running with the benefits of Graphene-SGX and Intel-\gls{sgx}.
 
 \textbf{Cloud Infrastructure}: OVH \cite{ovhCloud} was the cloud provider chosen, mainly due to the fact that it supports \gls{sgx} in its dedicated servers.
 
-As for other technologies, the system will be written in Java. The client layer will consist of a benchmark application provided by both \textbf{REDIS Benchmark} and \textbf{Yahoo! Cloud Serving Benchmark} (YCSB). Finally, Jedis (REDIS java client) will also be used in the processing layer, as the client to our \gls{kvs} instances.
+As for other technologies, the system will be written in Java. 
+The client layer will consist of a benchmark application provided by both REDIS Benchmark and Yahoo! Cloud Serving Benchmark (YCSB) \cite{ycsb}. 
+Jedis (REDIS java client) \cite{jedis} will also be used in the processing layer, as the client to our \gls{kvs} instances, along with Lettuce \cite{lettuce} for thread-safe operations when working with a \gls{kvs} cluster.
+
 
 \section{Validation and Experimental Analysis} % (fold)
 \label{sec:floats_figures_and_captions}
-
-
-
 
 To validate and evaluate our solution, we created a set of tests for each metric we choose to evaluate. The analysis will be done between two scenarios, one being a regular, already existing, version of REDIS \gls{kvs}, while the other being a version of our TREDIS solution.
 
@@ -126,7 +126,23 @@ In order to evaluate these metrics, we will analyse scenarios where:
 
 \textbf{1)} the size of the datasets used in the benchmark tools scale up (e.g: 1,000 entries and 100,000 entries);
 
-\textbf{2)} the typology of operations made over the \gls{kvs} varies: ratio of read/write operations (e.g: 20R/80W, 50R/50W, 80R/20W);
+\textbf{2)} the typology of operations made over the \gls{kvs} varies: ratio of read/write operations (e.g: 20R/80W, 50R/50W, 80R/20W).
+
+
+For the TREDIS solution running in a OVH cloud, our experimental evaluation will be conducted in development and deployment nodes with the following aspect:
+
+\textbf{Processor:} Intel 2x Xeon Silver 4214 - 24 c / 48 t - 2.2 GHz / 3.2 GHz
+
+\textbf{Memory:} 192 GB
+
+\textbf{Storage:} NVMe, SATA disponível
+
+\textbf{Public Network:} more than 1Gb/s
+
+\textbf{Private Network:} more than 2Gb/s
+
+\textbf{OS:} CentOS 7.4.1708 64 bits or Ubuntu 18.4 LTS Server 64 bits
+
 
 
 % \subsection{Inserting Figures Wrapped with text} % (fold)
