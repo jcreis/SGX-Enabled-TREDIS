@@ -8,18 +8,19 @@
 \chapter{Approach of Elaboration Phase}
 \label{cha:approach_of_elaboration_phase}
 
-In this chapter we present an initial overview of the system model, as well as some inicial guidelines planned to be implemented to our solution during the elaboration phase, while reinforcing the main objectives of this thesis.
+In this chapter we present an initial overview of the system model, as well as some initial guidelines planned to be implemented to our solution during the elaboration phase while reinforcing the main objectives of this thesis.
 
 \section{Addressing the objectives and contributions} % (fold)
 \label{sec:document_structure}
 
-The solution we are going to implement and study in this thesis has the purpose of allowing unmodified applications to run in trustable commodity hardware without any major performance overheads, comparing it to applications running without this extra sense of security. To implement this, we are focusing on three fulcral points:
+The solution we are going to implement and study in this thesis follows a methodology with the purpose of allowing unmodified applications to run in trustable commodity servers and related hardware solutions, as solutions supported by different Cloud-Providers. For this purpose, the trust-ability and privacy enhancements must be supported without major performance overheads, comparing with applications running without the extra security and privacy conditions. The targeted applications are particularly centered in key-value-store solutions, particularly those behind the more popular and large used technologies. Among these solutions we selected REDIS, as a particular interesting case study. To implement this, we are focusing on four crucial points addressing requirements that must be conjugated: 
+
 \begin{itemize}
-	\item \textbf{Descentralization:}  Adding redundancy to the storage and processing of data, increasing the system availability and reliability;
-	\item \textbf{Reduction of TCB size:}  Making each node of the system only trust what is essencial to its normal execution, leaving the rest out of the \gls{tcb} will increase the overall security of the system;
-	\item \textbf{Data privacy:}  Assuring that data remains private while stored and processed, by finding a way to keep the data encrypted, protecting it from entities that are not supposed to access it.
+	\item \textbf{Decentralization:}  adding storage redundancy by data replication and processing, increasing the system availability and reliability; 
+	\item \textbf{Trusted operation:}  reducing the trust computing base (TCB) of each decentralized storage instance and “shielding” the TCB to an hardware-based trusted execution environment provided by the Intel-SGX technology;
+	\item \textbf{Data privacy:} assuring that data remains private while stored and processed “in memory” or “in disk”, by finding a way to keep the data encrypted, never exposed decrypted, and protecting it from entities that are not authorized to access it. 
+	\item \textbf{Full-fledged operation:} warranting the same operational support as provided by the APIs and operations available in conventional and reference key-value-store technologies and supporting the same architectural deployments. In this particular concern, the comparison of our system, leveraged by the REDIS base support, with the original REDIS operations and clustered architectures will be considered.
 \end{itemize}
-By achieving this, we hope to deliver a full-fledged solution, capable of granting privacy and security to data inside dependable systems.
 
 
 
@@ -27,7 +28,7 @@ By achieving this, we hope to deliver a full-fledged solution, capable of granti
 \section{System Model Overview} % (fold)
 \label{sec:dealing_with_bibliogrpahy}
 
-Our system model is composed in three main components: a client, a processing layer made of a \gls{kvs} running in memory that will be responsible of managing data at runtime, and a storage layer. For a better grasp of the system as a whole, we can analyse the figure \ref{fig:systemModel}.
+Our system model is composed of three main components: a client, a processing layer made of a \gls{kvs} running in memory that will be responsible for managing data at runtime, and a storage layer. For a better grasp of the system as a whole, we can analyze the figure \ref{fig:systemModel}.
 
 \begin{figure}[htbp]
 	\centering
@@ -36,7 +37,9 @@ Our system model is composed in three main components: a client, a processing la
 	\label{fig:systemModel}
 \end{figure}
 
-The client layer is going to consist of a benchmark application responsible of making requests to the \gls{kvs}, while evaluating certain defined metrics that will be used on our experimental analysis. The processing layer, as mentioned before, will be accountable of storing and processing the data while executing, making use of volatile memory that should be protected during this phase. As for the storage layer, we will use a \gls{raid} based persistent storage system as a way to increase redundancy, thus adding fault-tolerance and enabling faster operations over this third layer.
+The client layer is going to consist of a benchmark application responsible for making requests to the \gls{kvs}, while evaluating certain defined metrics that will be used on our experimental analysis. The processing layer, as mentioned before, will be accountable for storing and processing the data while executing, making use of volatile memory that should be protected during this phase. As for the storage layer, we will use a \gls{raid}-based persistent storage system as a way to increase redundancy, thus adding fault-tolerance and enabling faster operations over this third layer.
+
+This model represents a single instance model, which is the base of  our development process towards a full-fledged solution. Since the model is using conventional software, the data here is exposed both in memory and storage, not protecting the system from data leakage threats.
 
 
 
@@ -52,7 +55,7 @@ This will be provided because we will support the full-fledged use of the redund
 
 We will not include in our adversary model the possibility for an adversary to attack instances by inducing byzantine faults to provoke fail stops in all the REDIS instances. 
 
-Then, we consider that each instance of the cluster runs independently on a server that cannot be affected by any system administrator and we will also consider that there is no collusion of malicious actions involving all the system administrators involved. In fact, our solution will be targeted in such a way that the different instances of the REDIS \gls{kvs} can be supported in different dedicated servers out of the domain of a single system administrator. The solution can also be supported in multiple instances from multiple cloud-providers, benefiting from the diversity of the computation support that run the different instances of a REDIS cluster.
+Then, we consider that each instance of the cluster runs independently on a server that cannot be affected by any system administrator and we will also consider that there is no collusion of malicious actions involving all the system administrators involved. In fact, our solution will be targeted in such a way that the different instances of the REDIS \gls{kvs} can be supported in different dedicated servers out of the domain of a single system administrator. The solution can also be supported in multiple instances from multiple cloud-providers, benefiting from the diversity of the computation support that runs the different instances of a REDIS cluster.
 
 
 
@@ -62,8 +65,9 @@ Then, we consider that each instance of the cluster runs independently on a serv
 Since our objectives are pointed towards an isolated system capable of offering security and privacy properties, we depend a lot on isolation techniques to make this possible, provided by hardware or software (containers). 
 
 As for hardware isolation, we need to look at approaches capable of assuring both computation and storage security to our system's data during runtime. There are several technologies that implement \gls{tee}s that were proven to be capable of doing just that.
-Also, adding to that, by using a container we will grant an extra layer of isolation to the system, as well as ease in the deployment of software running inside the container, whether it is an \gls{os}, a library \gls{os} or even entire applications.
+Also, by using a container we will grant an extra layer of isolation to the system, as well as ease in the deployment of software running inside the container, whether it is an \gls{os}, a library \gls{os} or even entire applications.
 
+We will focus our design assumptions on containerized solutions designed and implemented as Docker containers ready to run on SGX-enabled execution environments (or SGX-enclaves), and potentially composed or orchestrated in the context of solutions managed as Kubernetes of trusted Docker containers. This means that we intend to follow an approach to abstract away details such as distribution, separation, and instantiation of nodes while automating things like rolling upgrades, failover, and scaling of the \gls{kvs} service as a scalable, trusted and privacy-enhanced cloud-enabled storage solution. Another idea is that we should be able to deploy the same solution, in a very similar way, whether running locally (on a dedicated or private datacenter) or in the cloud (outsourced data-center supported solution).
 
 % section importing_images (end)
 
@@ -71,7 +75,7 @@ Also, adding to that, by using a container we will grant an extra layer of isola
 
 Looking at our system model introduced in \ref{fig:systemModel}, there are some potential threats that need to be taken care of. First, the connection between the client and the \gls{kvs} needs to be secured. Secondly, the data being stored at the storage layer needs to be encrypted, otherwise it can be accessed and read, or even stolen. Considering only one \gls{kvs} will induce into a single point of failure on the processing layer. Finally, the data stored and running inside this layer along with its memory need to be secured. 
 
-This can be achieved by using \gls{tls} over the \gls{http} protocol, securing the communication between the client and the \gls{kvs} layer.  Existing \gls{fde} technology can be used to encrypt the data to be stored in the storage layer. Finally for the processing layer, we will use a cluster of \gls{kvs}, thus adding redundancy and load balancing. As for the security and privacy concerns, by isolating each cluster replica inside individual \gls{tee}s, we achieve confidentiality and privacy of the data during runtime. The figure \ref{fig:systemModelCluster} shows an overall idea of this proposed solutions.
+This can be achieved by using \gls{tls} over the \gls{http} protocol, securing the communication between the client and the \gls{kvs} layer.  Existing \gls{fde} technology can be used to encrypt the data to be stored in the storage layer. Finally, for the processing layer, we will use a cluster of \gls{kvs}, thus adding redundancy and load balancing. As for the security and privacy concerns, by isolating each cluster replica inside individual \gls{tee}s, we achieve confidentiality and privacy of the data during runtime. Figure \ref{fig:systemModelCluster} shows an overall idea of this proposed solution.
 
 \begin{figure}[htbp]
 	\centering
@@ -89,19 +93,23 @@ As a way to scale the overall system to modern requirements, we opted to divide 
 	\label{fig:systemModelCloud}
 \end{figure}
 
+The primary vision and goal of the generic architecture, as explained, is the support for a replicated storage service encompassing independent REDIS \gls{kvs} base instances running in independent SGX-enabled servers, running as replicated containers. However, other specialized containers (such as containers implementing a trusted OAUth authentication service, a trusted reference monitor implementing access-control enforcement and a trusted \gls{raid}-drive component to access \gls{raid} disks) can be considered as candidates to be composed in a final distributed architecture, possibly orchestrated in a Cloud Kubernetes deployment and management environment.
+
 \section{Implementation Guidelines} % (fold)
 
 For the development phase of this dissertation, and as we mentioned before in \ref{sec:objectiveAndContibutions}, we considered the following guidelines:
 
-\textbf{Key-Value Store}: we opted for REDIS due to being the most popular \gls{kvs} at the moment, as we can see in \cite{rankingKVStores}. Adding this to the fact that it fits our system needs, we thought that an exhaustive study over this technology running in a dependable system would be an interesting contribution.
+\textbf{Key-Value Store}: we opted for REDIS (v5.0.7) due to being the most popular \gls{kvs} at the moment, as we can see in \cite{rankingKVStores}. Adding this to the fact that it fits our system needs, we thought that an exhaustive study over this technology running in a dependable system would be an interesting contribution.
 
-\textbf{Trusted Execution Environment}: as mentioned before, we choose to go with Intel-\gls{sgx} (\ref{ssec:intelsgx}), since it offers the possibility to isolate code inside multiple enclaves, while executing on commodity hardware. Thus, we can run each node of our \gls{kvs} cluster inside of an individual enclave, assuring confidentiality and privacy of the data during runtime.
+\textbf{Trusted Execution Environment}: as mentioned before, we choose to go with Intel-\gls{sgx} (\ref{ssec:intelsgx}), since it offers the possibility to isolate code inside multiple enclaves while executing on commodity hardware. Thus, we can run each node of our \gls{kvs} cluster inside of an individual enclave, assuring confidentiality and privacy of the data during runtime.
 
 \textbf{OS library}: to run unmodified applications on top of Intel-\gls{sgx}, we picked Graphene-SGX (\ref{ssec:grapheneSGX}) as it was proven to be able to keep decent levels of performance in a system.
 
-\textbf{Containerized OS Virtualization}: we choose Graphene-SGX Secure Container (GSC) \cite{gsc} due to being an open-source container system where an application can be protected by Intel-\gls{sgx} while running inside a docker \cite{} container. We thought it to be a good way of adding an extra layer of isolation to the execution of each \gls{kvs} instance, while still running with the benefits of Graphene-SGX and Intel-\gls{sgx}.
+\textbf{Containerized OS Virtualization}: we choose Graphene-SGX Secure Container (GSC) \cite{gsc} due to being an open-source container system where an application can be protected by Intel-\gls{sgx} while running inside a Docker \cite{docker} container. We thought it to be a good way of adding an extra layer of isolation to the execution of each \gls{kvs} instance, while still running with the benefits of Graphene-SGX and Intel-\gls{sgx}.
 
 \textbf{Cloud Infrastructure}: OVH \cite{ovhCloud} was the cloud provider chosen, mainly due to the fact that it supports \gls{sgx} in its dedicated servers.
+
+\textbf{Operating System}: as for the \gls{os}, we are going to work with Ubuntu Linux, with the support of Linux-SGX \cite{linuxSGXwebsite} to run it on top of Intel-SGX technology. The use of Intel-SGX SDK \cite{linuxSgxSDK} for Linux makes it possible for us to manipulate the enclaves. Finally, we will use Linux SGX Driver \cite{linuxSGXDrivers}, which will manage the drivers of Linux-SGX already mentioned.
 
 As for other technologies, the system will be written in Java. 
 The client layer will consist of a benchmark application provided by both REDIS Benchmark and Yahoo! Cloud Serving Benchmark (YCSB) \cite{ycsb}. 
@@ -122,14 +130,14 @@ For this purpose we will be comparing the following metrics:
 	\item \textbf{Resource allocation:} use of resources during runtime, including memory, CPU usage, I/O and energy.
 \end{itemize}
 
-In order to evaluate these metrics, we will analyse scenarios where:
+In order to evaluate these metrics, we will analyze scenarios where:
 
 \textbf{1)} the size of the datasets used in the benchmark tools scale up (e.g: 1,000 entries and 100,000 entries);
 
 \textbf{2)} the typology of operations made over the \gls{kvs} varies: ratio of read/write operations (e.g: 20R/80W, 50R/50W, 80R/20W).
 
 
-For the TREDIS solution running in a OVH cloud, our experimental evaluation will be conducted in development and deployment nodes with the following aspect:
+For the TREDIS solution running in an OVH cloud, our experimental evaluation will be conducted in development and deployment nodes with the following aspect:
 
 \textbf{Processor:} Intel 2x Xeon Silver 4214 - 24 c / 48 t - 2.2 GHz / 3.2 GHz
 

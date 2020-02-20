@@ -27,15 +27,15 @@ However, the fact that these cloud systems are highly accessible over the Intern
 Since data is stored in the provider's system, the information depends on the provider's security, as well as the behaviour of its staff, which have physical access to the system and can act maliciously. All this brings insecurity to the data and raises privacy concerns.
 Also, after the data reached the cloud provider, privacy is not assured during execution phase, even if it stored safely (encrypted) in disk, since to be executed it has to be fully decrypted in volatile memory. The data is then vulnerable during memory attacks, which lead to many efforts to be put into solving this particular problem.  
 
-A few solutions were thought to be effective, either by using some kind of virtualization or containerization, or even by relying on the hardware itself on a special way. 
+A few solutions were thought to be effective, either by using some kind of virtualization or containerization, or even by relying on the hardware itself in a special way. 
 Some \cite{virtGhostPaper}\cite{flickerPaper}\cite{mushiPaper}\cite{SeCagePaper}\cite{inkTagPaper}\cite{segoPaper} offer the possibility to isolate the execution of data from the host \gls{os}, making system calls ineffective and blocking typical permissions these might have over the whole system, while others, particularly the more recent ones regarding Trusted Execution Environments \cite{armTZPaper}\cite{amdPaper}\cite{sanctumPaper}\cite{intelSGX}, focused on creating a trusted memory region where data could execute fully encrypted from the outside. 
-However, while offering confiability and integrity to the data, \gls{tee}s have been proven to have some performance issues, since they depend a lot on encryption and decryption (usually big performance droppers). Unfortunately, the performance loss really impacted their adoption in modern systems, which lead to figuring out a way to make this kind of technology more viable. 
-More recently, a few different approaches to place on top of \gls{tee}s have proven to soften the performance issues, creating the impression that we are in the right path to take the most advantage of \gls{tee}s. 
+However, while offering trust and integrity to the data, \gls{tee}s have been proven to have some performance issues, since they depend a lot on encryption and decryption (usually big performance droppers). Unfortunately, the performance loss really impacted their adoption in modern systems, which lead to figuring out a way to make this kind of technology more viable. 
+More recently, a few different approaches to place on top of \gls{tee}s have proven to soften the performance issues, creating the impression that we are on the right path to take the most advantage of \gls{tee}s. 
 
 
 \section{Problem Statement}
 
-In this dissertation we will study how unmodified applications can be deployed with ease on top of trusted hardware (\gls{tee}), and still offer comparable performance overheads relatively to other applications running without this extra layer of security. To achieve this, we will look into existent library \gls{os} approaches and conduct an evaluation by adopting one of them to be ported on top of trusted hardware (\gls{sgx}). 
+In this dissertation we will study how unmodified applications can be deployed with ease on top of trusted hardware (\gls{tee}), and still offer comparable performance overheads relatively to other applications running without this extra layer of security. To achieve this, we will look into existing library \gls{os} approaches and conduct an evaluation by adopting one of them to be ported on top of trusted hardware (\gls{sgx}). 
 
 
 
@@ -44,14 +44,14 @@ In this dissertation we will study how unmodified applications can be deployed w
 \label{sec:objectiveAndContibutions}
 Our main objective with this thesis is to implement a secure system based on Intel-SGX
 where it is possible to deploy unmodified applications without any major performance
-drop, by adopting the usage of a libraryOS to be ported on top of \gls{sgx}. Keeping that in mind, our focus will be on analysing the behaviour of an unmodified application (REDIS \gls{kvs}) executing on top of \gls{sgx}, benefiting from privacy and isolation properties of its data.
+drop, by adopting the usage of a libraryOS to be ported on top of \gls{sgx}. Keeping that in mind, our focus will be on analyzing the behavior of an unmodified application (REDIS \gls{kvs}) executing on top of \gls{sgx}, benefiting from privacy and isolation properties of its data.
 
 With that said, we expect our solution to deliver the following contributions:
 \begin{itemize}
 	\item The design of TREDIS, a full-fledged REDIS solution leveraging Intel-SGX and supported by a trusted virtual OS runtime library, running with isolation guarantees provided by hardware-shielded capabilities, to be supported as a service in the cloud;
-	\item Implementation of the TREDIS prototype as a cloud-enabled platform as a service, using real Intel-SGX-enabled hardware on commodity servers of a Cloud-Provider (as a solution designed as a candidate for a OVH product offer);
+	\item Implementation of the TREDIS prototype as a cloud-enabled platform as a service, using real Intel-SGX-enabled hardware on commodity servers of a Cloud-Provider (as a solution designed as a candidate for an OVH product offer);
 	\item Implementation of client-side test and benchmark applications, to validate the full-fledged conditions in supporting the original REDIS, as currently offered;
-	\item Experimental evaluation of the prototype, to study the overheads of TRDIS against a no trusted REDIS solution. For this purpose we will analyze: (1) Performance conditions observed by latency and throughput measurements; (2) Adequacy to manage operations on privacy-enhanced big-datasets; (3) Scalability conditions under different client-workloads; (4) Analysis of required resources, including memory, CPU, I/O and energy.
+	\item Experimental evaluation of the prototype, to study the overheads of TREDIS against a no trusted REDIS solution. For this purpose we will analyze: (1) Performance conditions observed by latency and throughput measurements; (2) Adequacy to manage operations on privacy-enhanced big-datasets; (3) Scalability conditions under different client-workloads; (4) Analysis of required resources, including memory, CPU, I/O and energy.
 	
 \end{itemize}
 
