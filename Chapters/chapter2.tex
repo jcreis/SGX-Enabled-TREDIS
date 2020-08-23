@@ -62,7 +62,7 @@ MUSHI \cite{mushiPaper} is designed to deal mainly with multi-level security sys
 It is capable of offering: (1) \textbf{Trusted Execution}, where both the kernel and user image, as well as MUSHI itself, are attested upon a \gls{vm} start by using a \gls{tpm}, thus defining a trusted initial state; (2) \textbf{Isolation}, where each \gls{vm} executing on the same machine runs isolated, as a way to guarantee confidentiality and integrity; (3) \textbf{User Image Confidentiality}, by encrypting the user image with a cryptographic key provided by the user itself.
 
 MUSHI guarantees confidentiality and integrity of a \gls{vm} even during malicious attacks from both inside and outside the cloud environment.
-It trusts a \gls{tcb} relatively small, including only the hardware, hardware virtualization, BIOS and System Management Mode, and can be implemented with quite ease using modern commodity hardware containing SMM memory (SMRAM), necessary for the isolation between the host and \gls{vm}.\newline
+It trusts a relatively small \gls{tcb}, that includes only the hardware, hardware virtualization, BIOS and System Management Mode, and can be implemented with quite ease using modern commodity hardware containing SMM memory (SMRAM), necessary for the isolation between the host and \gls{vm}.\newline
 
 %-----------------------------------------
 
@@ -83,8 +83,8 @@ SeCage is designed to assure the confidentiality of user-secrets, adding a small
 \underline{\textbf{InkTag}}
 
 InkTag \cite{inkTagPaper} also uses a virtualization-based approach in order to grant applications protection from untrusted \gls{os}es.
-Unlike SeCage, InkTag admits trust in the hypervisor. The hypervisor is responsible to protect the application
-code, data, and control flow from the OS, allowing applications to execute in isolation, in high-assurance processes (HAP). Trusted applications can communicate directly with the InkTag hypervisor via hypercalls, as a way to detect \gls{os} misbehavior.
+But unlike SeCage, InkTag admits trust in the hypervisor. The hypervisor is responsible to protect the application
+code, data, and control flow from the \gls{os}, allowing applications to execute in isolation, in high-assurance processes (HAP). Trusted applications can communicate directly with the InkTag hypervisor via hypercalls, as a way to detect \gls{os} misbehavior.
 It introduces a concept called paraverification, which simplifies the hypervisor by forcing the untrusted \gls{os} to participate in its own verification. As a result, the \gls{os} notifies the InkTag hypervisor upon any update to be made to the state, which the hypervisor can check for correctness. 
 InkTag also isolates secure from unsafe data through hardware virtualization and allows each application to specify their own access control policies, managing their data privacy and integrity through encryption and hashing.
 Another important aspect of InkTag is recoverability. InkTag hypervisor can protect the integrity of files even if the system crashes, by ensuring consistency between file data and metadata upon a crash.\newline
@@ -110,6 +110,7 @@ small library called libsego as a way to handle system calls and get Sego servic
 uses to interact with the \gls{os}. This protects its control-flow, since it uses this trampoline as the issuer for system calls, therefore never compromising the \gls{hap} itself. Figure \ref{fig:segoArchitecture} shows well enough Sego’s overall design without going into too much dept, indicating which components are included in the \gls{tcb} and which are not.
 Context switches are handled by the hypervisor, thus hiding any information about the \gls{hap} from the \gls{os}.
 Sego does not guarantee \gls{os} availability. A compromised \gls{os} can simply shut down or refuse to schedule processes. However, this is easily detected.
+
 In conclusion, although all these approaches are prepared to isolate an application from untrusted hosts, they emphasize the use of software to do it, leaving behind the importance of hardware trustworthiness to the whole system.
 
 In the following sections, we will take a look at existing solutions that are able to tackle also hardware related security problems.
@@ -132,7 +133,7 @@ The current best practice for protecting secrets in  cloud systems uses \gls{hsm
 An \gls{hsm} \cite{hsmPaper} is a physical hardware component that provides and stores cryptographic keys used to encrypt/decrypt data inside a system. \gls{hsm}s also perform cryptographic operations (e.g. encryption, hashing, etc.) as well as authentication through verifying digital signatures and accelerating \gls{ssl} connections \cite{hsmThesis}, by relieving the servers from some of the workload caused by operations involving cryptography. 
 Thus, the system can protect critical secrets (cryptographic keys) and support a range of cryptographic functions.
 
-With that in mind, new hardware-enabled solutions were developed to be more flexible and cloud-friendly than the \gls{tpm} or to incorporate the advantages of \gls{hsm} to the system. We'll dive into technologies like ARM TrustZone, Intel SGX, AMD-SEV, and some other, in the following section.
+With that in mind, new hardware-enabled solutions were developed to be more flexible and cloud-friendly than the \gls{tpm} or to incorporate the advantages of \gls{hsm} to the system. We'll dive into technologies like ARM TrustZone, Intel SGX, AMD-SEV, and some others, in the following section.
 
 
 % =======================
@@ -185,19 +186,27 @@ However, ADM-SEV does not provide integrity of data, allowing replaying attacks 
 
 \subsection{Sanctum}
 \label{ssec:sanctum}
-The main purpose of Sanctum \cite{sanctumPaper} is to offer strong isolation of software modules, although following a different approach focused on avoiding unnecessary complexity, thus granting a simple security analysis.
+Sanctum \cite{sanctumPaper} offers strong isolation of software modules, although following a different approach focused on avoiding unnecessary complexity.
 To make this possible, Sanctum, which typically runs in a RISC-V processor, combines minimal invasive hardware modifications with a trusted software security monitor that is receptive to analysis and does not perform cryptographic operations using keys. 
-This minimality idea consists on reusing and slightly modifying existing well-understood mechanisms, while not modifiying \gls{cpu} building blocks, only adding hardware to the interfaces between blocks, causing Sanctum to be adaptable to many other processors besides RISC-V. 
+This minimality idea consists on reusing and slightly modifying existing well-understood mechanisms, while not modifiying \gls{cpu} building blocks, only adding hardware to the interfaces between blocks. This causes Sanctum to be adaptable to many other processors besides RISC-V.
 
 Sanctum is a practical approach that shows that strong software isolation is achievable with a small set of minimally invasive hardware changes, causing reasonably low overhead. 
 This approach provides strong security guarantees dealing with side-channel attacks, such as cache timing and passive address translation attacks.
 
 \subsection{Intel-SGX}
 \label{ssec:intelsgx}
+
 Intel Software Security Guard Extensions (SGX) \cite{intelSGX} are a set of instructions built-in Intel \gls{cpu}s, that allows programmers to create \gls{tee}s, by using enclaves. Enclaves are isolation containers that create a trusted environment where sensitive code can be stored and executed inside, ensuring integrity and confidentiality to it. By doing so, it reduces the \gls{tcb} in a way that most of the system software, apart from the enclaves and the \gls{cpu}, is considered not trusted.
 Enclaves are mapped into private regions of memory, where only the \gls{cpu} has access to. Due to these restrictions, not even the most common system libraries can be accessed inside the enclave, since even the \gls{os} is not considered trusted. 
 
 A system that incorporates \gls{sgx} under its architecture is divided into two: a trusted component being the enclave, and an untrusted component being the rest of the system. The untrusted one requests the launch of the enclave, where the \gls{cpu} then manages to allocate the enclave in a private region of memory, made available only to that particular enclave. This portion of memory is kept encrypted in volatile memory, being only decrypted by the \gls{cpu} if the responsible enclave requests it \cite{guiBorgesThesis}.
+
+\begin{figure}[htbp]
+	\centering
+	{\includegraphics[width=80mm, scale=0.8]{intelsgx_enclave2}}
+	\caption{Intel-SGX Enclave execution flow}
+	\label{fig:sgxEnclave}
+\end{figure}
 
 Although isolation is the main objective of \gls{sgx}, it still allows a way for both  untrusted and trusted parties to communicate. This is made possible by the functions ECALL and OCALL. ECALLs are used for an untrusted component to call for trusted code in a secure way - the enclave copies the pointers to that specific code into a buffer, which is then made visible for the untrusted component, ensuring that the untrusted party can't know the real memory address inside the enclave. To communicate the other way around, the enclave calls for an OCALL, where the enclave is temporarily exited, executing then the untrusted function needed. After that, the enclave is re-entered. OCALLS are mainly used by the enclave to access the network or to deal with I/O disk access.
 
@@ -231,6 +240,7 @@ Assuring a shielded execution of an application fundamentally means that both co
 
 \subsection{SCONE}
 \label{ssec:scone}
+--- ADD IMAGE ---
 
 Container-based virtualization has become quite popular for offering better performance properties than the use of \gls{vm}s, although it offers weaker isolation guarantees, therefore less security. 
 That is why we observe that containers usually execute network services (i.e. REDIS). These are systems that don't need as many system calls as the other services since they can do a lot via networking, thus keeping a small TCB for increased security.

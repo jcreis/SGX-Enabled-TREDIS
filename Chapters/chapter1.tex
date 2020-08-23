@@ -35,7 +35,7 @@ More recently, a few different approaches to place on top of \gls{tee}s have pro
 
 \section{Problem Statement}
 
-In this dissertation we will study how unmodified applications can be deployed with ease on top of trusted hardware (\gls{tee}), and still offer comparable performance overheads relatively to other applications running without this extra layer of security. To achieve this, we will look into existing library \gls{os} approaches and conduct an evaluation by adopting one of them to be ported on top of trusted hardware (\gls{sgx}). 
+In this dissertation we studied how unmodified applications can be deployed with ease on top of trusted hardware (\gls{tee}), and still offer comparable performance overheads relatively to other applications running without this extra layer of security. To achieve this, we took a deep look into existing library \gls{os} approaches and conducted an evaluation by adopting one of them to be ported on top of trusted hardware (\gls{sgx}). 
 
 
 
@@ -44,9 +44,9 @@ In this dissertation we will study how unmodified applications can be deployed w
 \label{sec:objectiveAndContibutions}
 Our main objective with this thesis is to implement a secure system based on Intel-SGX
 where it is possible to deploy unmodified applications without any major performance
-drop, by adopting the usage of a libraryOS to be ported on top of \gls{sgx}. Keeping that in mind, our focus will be on analyzing the behavior of an unmodified application (REDIS \gls{kvs}) executing on top of \gls{sgx}, benefiting from privacy and isolation properties of its data.
+drop, by adopting the usage of a libraryOS to be ported on top of \gls{sgx}. Keeping that in mind, our focus laid on analyzing the behavior of an unmodified application (REDIS \gls{kvs}) executing on top of \gls{sgx}, benefiting from privacy and isolation properties of its data.
 
-With that said, we expect our solution to deliver the following contributions:
+With that said, our solution must be able to deliver the following contributions:
 \begin{itemize}
 	\item The design of TREDIS, a full-fledged REDIS solution leveraging Intel-SGX and supported by a trusted virtual OS runtime library, running with isolation guarantees provided by hardware-shielded capabilities, to be supported as a service in the cloud;
 	\item Implementation of the TREDIS prototype as a cloud-enabled platform as a service, using real Intel-SGX-enabled hardware on commodity servers of a Cloud-Provider (as a solution designed as a candidate for an OVH product offer);
