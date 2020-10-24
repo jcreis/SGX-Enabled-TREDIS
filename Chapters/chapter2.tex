@@ -98,7 +98,7 @@ Similar to InkTag, Sego \cite{segoPaper} is also a hypervisor-based system that 
 \begin{figure}[htbp]
 	\centering
 	{\includegraphics[width=50mm, scale=0.5]{sego_architecture}}
-	\caption{Sego Architecture Overview}
+	\caption{Sego Architecture Overview. Image from \cite{segoPaper}}
 	\label{fig:segoArchitecture}
 \end{figure}
 
@@ -197,9 +197,10 @@ This approach provides strong security guarantees dealing with side-channel atta
 \label{ssec:intelsgx}
 
 Intel Software Security Guard Extensions (SGX) \cite{intelSGX} are a set of instructions built-in Intel \gls{cpu}s, that allows programmers to create \gls{tee}s, by using enclaves. Enclaves are isolation containers that create a trusted environment where sensitive code can be stored and executed inside, ensuring integrity and confidentiality to it. By doing so, it reduces the \gls{tcb} in a way that most of the system software, apart from the enclaves and the \gls{cpu}, is considered not trusted.
-Enclaves are mapped into private regions of memory, where only the \gls{cpu} has access to. Due to these restrictions, not even the most common system libraries can be accessed inside the enclave, since even the \gls{os} is not considered trusted. 
 
-A system that incorporates \gls{sgx} under its architecture is divided into two: a trusted component being the enclave, and an untrusted component being the rest of the system. The untrusted one requests the launch of the enclave, where the \gls{cpu} then manages to allocate the enclave in a private region of memory, made available only to that particular enclave. This portion of memory is kept encrypted in volatile memory, being only decrypted by the \gls{cpu} if the responsible enclave requests it \cite{guiBorgesThesis}.
+A system that incorporates \gls{sgx} under its architecture is divided into two: a trusted component being the enclave, and an untrusted component being the rest of the system.
+Enclaves are mapped into private regions of memory - called the enclave page cache (EPC) - where only the \gls{cpu} has access to, where code running outside the enclave cannot access the enclave memory region, but code running inside can access untrusted memory. This is made possible by a list of functions incorporated.
+Enclaves are initiated by untrusted code, using the ECREATE function, which initializes the EPC in memory. One of the downsides of SGX consists on the fact that the size of EPCs depend on the hardware used in the system, and it's usually quite limited. This can imply that a larger application can't fit entirely into the EPC. To deal with this, SGX provides a mechanism for swapping pages between the EPC and the untrusted memory. But since this process envolves a lot of encryption and decryption operations to keep the integrity of data, it can be a problem performance-wise. 
 
 \begin{figure}[htbp]
 	\centering
@@ -208,7 +209,10 @@ A system that incorporates \gls{sgx} under its architecture is divided into two:
 	\label{fig:sgxEnclave}
 \end{figure}
 
-Although isolation is the main objective of \gls{sgx}, it still allows a way for both  untrusted and trusted parties to communicate. This is made possible by the functions ECALL and OCALL. ECALLs are used for an untrusted component to call for trusted code in a secure way - the enclave copies the pointers to that specific code into a buffer, which is then made visible for the untrusted component, ensuring that the untrusted party can't know the real memory address inside the enclave. To communicate the other way around, the enclave calls for an OCALL, where the enclave is temporarily exited, executing then the untrusted function needed. After that, the enclave is re-entered. OCALLS are mainly used by the enclave to access the network or to deal with I/O disk access.
+Although the main purpose of SGX is to isolate the application, even from the host \gls{os}, there are other instructions to interact with the flow of the enclave, that an application can use to deal with the lack of utility libraries, that are often offered by the \gls{os} itself.
+EENTER and EEXIT are examples used for a thread to enter and leave the enclave, by switching the CPU enclave mode. This allows a thread, for example, to make calls for privileged instructions, which isn't possible while inside the enclave, and re-enter it after, with safety measures assured by the SGX. The fact that when executing enclave code the system can't run privileged instructions, makes that the threads need to exit and re-enter the enclave to execute them. Such transitions come at a cost, since a lot of security measures take place (checks and updates) to ensure that the integrity of the code running inside the enclave is kept intact. This may envolve a lot of page swapping between the EPC and untrusted memory which, as we stated before, takes a lot of effort from the system.
+ECALLS and OCALLS are another example of instructions, that are used as a way to securely communicate between trusted and untrusted parties. 
+
 
 % =======================
 %  N E W   S E C T I O N        (2.4)
@@ -240,10 +244,9 @@ Assuring a shielded execution of an application fundamentally means that both co
 
 \subsection{SCONE}
 \label{ssec:scone}
---- ADD IMAGE ---
 
-Container-based virtualization has become quite popular for offering better performance properties than the use of \gls{vm}s, although it offers weaker isolation guarantees, therefore less security. 
-That is why we observe that containers usually execute network services (i.e. REDIS). These are systems that don't need as many system calls as the other services since they can do a lot via networking, thus keeping a small TCB for increased security.
+Container-based virtualization has become quite popular for offering better performance properties than the use of \gls{vm}s, although it offers weaker isolation guarantees, and therefore less security. 
+That's why we observe that containers usually execute network services (i.e. REDIS). These are systems that don't need as many system calls as others since they can do a lot via networking, thus keeping a small \gls{tcb} for increased security.
 
 SCONE \cite{sconePaper} is a mechanism for Linux containers that increases the confidentiality and integrity of services running inside them by making use of Intel-\gls{sgx}.
 SCONE increases the security of the system while keeping the performance levels reasonable. 
@@ -262,8 +265,8 @@ This increases the performance since major performance losses are caused by encl
 Haven is the first system to achieve shielded execution of unmodified legacy applications for a commodity \gls{os} (Windows) and hardware, achieving mutual distrust with the host software.
 It leverages Intel-\gls{sgx} to protect against privileged code and physical attacks, but also against the challenge of executing unmodified legacy binaries while protecting them from an untrusted host.
 Instead of shielding only specific parts of applications and data by placing them inside enclaves, Haven aims to protect entire unmodified applications, written without any knowledge of \gls{sgx}. 
-However, executing entire chunks of legacy binary code inside an \gls{sgx} enclave pushes the limits of the \gls{sgx} itself, and while the code to be protected was written assuming that the \gls{os} executing the code would run it properly, this may not be the case since the \gls{os} can be malicious. For this latest problem, the so-called Iago attack \cite{iagoAttacks}, Haven uses a library \gls{os} adapted from Drawbridge \cite{drawbridge}, running inside an \gls{sgx} enclave. 
-By combining it with a remote attestation mechanism, Haven is able to guarantee to the user end-to-end secu	rity without the need of trusting the provider.
+However, executing entire chunks of legacy binary code inside an \gls{sgx} enclave pushes the limits of the \gls{sgx} itself, and while the code to be protected was written assuming that the \gls{os} executing the code would run it properly, this may not be the case since the \gls{os} can be malicious. For this latest problem, the so-called Iago attack \cite{iagoAttacks}, Haven uses a library \gls{os} adapted from Drawbridge \cite{drawbridge} running inside an \gls{sgx} enclave. 
+By combining it with a remote attestation mechanism, Haven is able to guarantee to the user end-to-end security without the need of trusting the provider.
 Although this approach may need a substantial \gls{tcb} size (LibOS quite large), all this code is inside the enclave, which makes it under users control. 
 
 That's the main goal of Haven: give the user trust by granting confidentiality and integrity of their data when moving an application from a private area to a public cloud. 
@@ -286,8 +289,8 @@ Its practical properties result of six components working together:
 
 \begin{figure}[htbp]
 	\centering
-	{\includegraphics[width=0.4\linewidth]{opensgx_design}}
-	\caption{Overview design of OpenSGX framework and memory state of an active enclave program}
+	{\includegraphics[width=0.6\linewidth]{opensgx_design}}
+	\caption{Overview design of OpenSGX framework and memory state of an active enclave program. Image from \cite{opensgx_paper}}
 	\label{fig:openSGXDesign}
 \end{figure}
 
@@ -320,7 +323,7 @@ Users then upload the resulting binary code to the cloud, where enclaves contain
 \begin{figure}[tbp]
 	\centering
 	{\includegraphics[width=50mm, scale=0.4]{vc3_design}}
-	\caption{VC3 memory design model and component dependencies}
+	\caption{VC3 memory design model and component dependencies. Image from \cite{vc3Paper}}
 \end{figure}
 
 A MapReduce begins with a key exchange between the user and the \textbf{E+} code running in the enclave. After this, \textbf{E+} can proceed to decrypt \textbf{E-} and process the encrypted data. VC3 isolates this processing from the \gls{os} by keeping an interface between the E+ layer and the outside of the enclave. This interface consists of basically two functions: \textbf{readKV()} and \textbf{writeKV()}, for reading or writing a key-value pair on Hadoop, respectively. Also, the data inside the enclave is passed to the outside, more specifically from \textbf{E+} to the untrusted F, by using a virtual address space shared by both.
@@ -378,6 +381,7 @@ Graphene-SGX also supports application partitioning, enabling it to run small pi
 
 
 Other approaches appeared as a way to deal with more specific problems, by making use of trusted computing. We'll go into topics like SGX-Enabled Networking, Administration of Cloud Systems, Virtualization, Containers, searchable Encryption as well as encrypted Databases, and how to take the best advantages of \gls{sgx} in these specific areas. \newline
+
 
 %-----------------------------------------
 
@@ -471,14 +475,30 @@ Unlike previous hardware-based approaches, HardIDX implements a small size \gls{
 The increasing research on trusted computation technologies, in particular \gls{tee}s like \gls{sgx}, made possible for cloud users to run their applications safely in potentially malicious systems. One of the most used types of applications in these cloud systems are key-value stores, like REDIS \cite{redisWebsite} and memcached \cite{memcachedWebsite}. This type of data stores is used in many systems nowadays due to their architecture offering fast access to data by maintaining data in main memory, as well as granting durability by writing the data to persistent storage.  Due to the importance of these types of systems in today's systems stack, it is important to figure out how to protect data inside of these systems by leveraging trusted technology (in our case, Intel-\gls{sgx}). However, one of the critical limitations of \gls{sgx} is the size of the \gls{epc}, which represents its protected memory region. 
 
 To circumvent this memory restriction, an in-memory key-value store was designed, ShieldStore \cite{shieldStorePaper}. It provides fast execution of queries over large data, by maintaining the majority of the data structures outside the enclave memory region, hence contributing to overcome \gls{sgx} memory limitations.
+
 ShieldStore runs inside the enclave to protect encryption keys, remote attestation, and to perform all the logic necessary to the Key-Value Store execution.
-Its design starts by remote attesting the server-side, verifying \gls{sgx} support of the processor, the code and other critical memory states of an enclave. By using Intel-\gls{sgx} libraries, the client and the server exchange keys so that a secure channel between both parties is created. The client then sends a request, to which the server deciphers and verifies, accessing the Key-Value Store for the desired data. To note that the client does not access the server's ciphertexts or knows the key that the server used to encrypt the values. The server decrypts the stored data and encrypts it again with the session key previously decided when establishing the secure channel with the client. Finally, a reply is sent to the client.    
-This design minimizes the unnecessary memory encryption overhead of paging, and also eliminates \gls{epc} page faults, which are the main factors impacting the performance \gls{sgx}-enabled systems. Adding to the optimization of the index structures, that enabled them for fast access and protection of keys and values, ShieldStore proved to be an efficient and reliable Key-Value store capable of taking the best advantages of \gls{sgx}.\newline
+\begin{figure}[htbp]
+	\centering
+	{\includegraphics[width=0.6\linewidth]{shieldStoreArchitecture}}
+	\caption{Design of ShieldStore}
+	\label{fig:shieldStoreArchitecture}
+\end{figure}
+
+Its design starts by remote attesting the server-side, verifying \gls{sgx} support of the processor, the code and other critical memory states of an enclave. By using Intel-\gls{sgx} libraries, the client and the server exchange keys so that a secure channel between both parties is created. The client then sends a request, to which the server deciphers and verifies, accessing the Key-Value Store for the desired data. The server decrypts the stored data and encrypts it again with the session key previously decided when establishing the secure channel with the client. Finally, a reply is sent to the client.    
+This design shown in Figure \ref{fig:shieldStoreArchitecture} minimizes the unnecessary memory encryption overhead of paging, and also eliminates \gls{epc} page faults, which are the main factors impacting the performance \gls{sgx}-enabled systems. Adding to the optimization of the index structures, that enabled them for fast access and protection of keys and values, ShieldStore proved to be an efficient and reliable Key-Value store capable of taking the best advantages of \gls{sgx}.\newline
 
 %-----------------------------------------
 
-EnclaveDB \cite{enclavedbPaper} is also an SGX-enabled approach designed to deal also with the protection of data, both when stored and queried. It offers confidentiality and integrity by working alongside Intel-\gls{sgx} in order to handle all the sensitive data (queries, tables, indexes) inside enclave memory, thus keeping the data safe in cases  where the database administrator is malicious, when the \gls{os} or hypervisor is compromised, or even when running the database in an untrusted host. 
-EnclaveDB is divided into two modules: trusted, running inside the enclave, and untrusted, outside the enclave. The trusted compartment hosts a query processing engine, a transaction manager, pre-compiled stored procedures and a trusted kernel responsible for sealing and remote attestation. As for the untrusted module, it is responsible to run all the other components of the database system. 
+EnclaveDB \cite{enclavedbPaper} is also an SGX-enabled approach designed to deal also with the protection of data, both when stored and queried. It offers confidentiality and integrity by working alongside Intel-\gls{sgx} in order to handle all the sensitive data (queries, tables, indexes) inside enclave memory, thus keeping the data safe in cases  where the database administrator is malicious, when the \gls{os} or hypervisor is compromised, or even when running the database in an untrusted host.
+
+\begin{figure}[htbp]
+	\centering
+	{\includegraphics[width=0.3\linewidth]{enclaveDB}}
+	\caption{Overview of EnclaveDB compartments}
+	\label{fig:enclaveDB}
+\end{figure}
+ 
+EnclaveDB is divided into two modules (Figure \ref{fig:enclaveDB}): trusted, running inside the enclave, and untrusted, outside the enclave. The trusted compartment hosts a query processing engine, a transaction manager, pre-compiled stored procedures and a trusted kernel responsible for sealing and remote attestation. As for the untrusted module, it is responsible to run all the other components of the database system. 
 This approach fundamentally provides a database system with a SQL interface capable of ensuring security guarantees, while dealing with low overheads. Also, by depending on a smaller \gls{tcb} than any other conventional database server, the security provided increases considerably, making EnclaveDB a valid approach to work as a trusted database system.
 
 VeritasDB \cite{veritasDB} is a \gls{kvs} that guarantees integrity to the client in the presence of exploits or implementation bugs in the database server. In this approach the protection enabled by \gls{sgx} is not focused on the \gls{kvs} service itself, but in the protection of the intermediation between clients and \gls{kvs} operations. VeritasDB is implemented as a network proxy that mediates communication between the unmodified clients and the unmodified database server, which can be any off-the-shelf database engine (e.g. Redis, RocksDB or other solutions). Since the proxy is trusted, the solution addresses security primitives supported in Intel-SGX enclaves, to protect the proxy’s code and state, thus completely eliminating trust on the cloud provider. To perform integrity checks in the proxy, the VeritasDB includes an authenticated Merkle B-tree that leverages features of \gls{sgx} (protected memory, direct access to unprotected memory from enclave code, and \gls{cpu} parallelism) to implement several novel optimizations based on caching, concurrency, and compression.
@@ -499,7 +519,7 @@ Starting with \gls{os} isolation systems discussed in \ref{sec:protect_untrustOS
 With that in mind, opting for a \gls{tee} approach made more sense for offering a more complete sense of security.
 While \gls{tpm}s have proven to have problems adapting to the Cloud, modern \gls{tee} technology, on the other hand, has proven to be the way to go, by combining hardware solutions with specific software.
 
-Going deeper into these modern technologies in section \ref{sec:hardwareTEEs}, we knew beforehand that our focus would be in Intel-\gls{sgx}. However, we picked it from the two most used (along with ARM TrustZone) mainly due to the fact that ARM TZ supports only one secured zone, which led it to be more adopted by the phone industry, and it is not what we are focusing in this dissertation. On the other hand, Intel-\gls{sgx} is able to support multiple secured zones (called enclaves) for each processor, which is really relevant in cloud systems due to the need to managing data from multiple users at once.
+Going deeper into these modern technologies in section \ref{sec:hardwareTEEs}, we knew beforehand that our focus would be in Intel-\gls{sgx}. However, we picked it from the two most used (along with ARM TrustZone) mainly due to the fact that ARM TZ supports only one secured zone, which led it to be more adopted by the phone industry, and it is not what we are focusing in this dissertation. On the other hand, Intel-\gls{sgx} is able to support multiple secured zones (enclaves) for each processor, which is really relevant in cloud systems due to the need to manage data from multiple users at once.
 Also by not requiring additional code to grant hardware attestation, since its design supports it, Intel-\gls{sgx} is able to keep a smaller \gls{tcb} than ARM TrustZone.
 
 Since the adoption of \gls{tee} technologies was found to drop significantly the overall performance of systems when used by itself, in \ref{sec:sgxFrameworks} we go into detail on how different existent technologies can positively impact the work of \gls{sgx}. Since our focus resides on running an unmodified application in this kind of security environment, we opted for Graphene-SGX [\ref{ssec:grapheneSGX}]. Graphene proved to be capable of porting unmodified applications on top of \gls{sgx} without any huge drop of performance, simply by working as a libraryOS that grants access to some restricted and secured system calls.

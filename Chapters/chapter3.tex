@@ -5,31 +5,52 @@
 %%
 %% Chapter with a short laext tutorial and examples
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Approach of Elaboration Phase}
-\label{cha:approach_of_elaboration_phase}
+\chapter{System model and design options}
+\label{cha:systemModel_and_designOptions}
 
-In this chapter we present an initial overview of the system model, as well as some initial guidelines planned to be implemented to our solution during the elaboration phase while reinforcing the main objectives of this thesis.
+In this chapter we present the architecture overview of the system model for our solution. We introduce an architecture model that is able to assure confidentiallity and integrity, according to our adversary model, to the execution of unmodified applications that run sensitive data on cloud computing servers, by leveraging trusted computing tecniques provided by both software and hardware, inside \gls{tee}s. All this without crippling too much the performance levels of the overall system.
 
-\section{Addressing the objectives and contributions} % (fold)
-\label{sec:document_structure}
+The system model defined in the next chapter is later described in the thesis with greater detail, as an implementation prototype capable of applying this theoretical concepts described before.
 
-The solution we are going to implement and study in this thesis follows a methodology with the purpose of allowing unmodified applications to run in trustable commodity servers and related hardware solutions, as solutions supported by different Cloud-Providers. For this purpose, the trust-ability and privacy enhancements must be supported without major performance overheads, comparing with applications running without the extra security and privacy conditions. The targeted applications are particularly centered in key-value-store solutions, particularly those behind the more popular and large used technologies. Among these solutions we selected REDIS, as a particular interesting case study. To implement this, we are focusing on four crucial points addressing requirements that must be conjugated: 
+In Section \cite{sec:systemModel_overview} we describe a general overview of the system as a whole, 
 
-\begin{itemize}
-	\item \textbf{Decentralization:}  adding storage redundancy by data replication and processing, increasing the system availability and reliability; 
-	\item \textbf{Trusted operation:}  reducing the trust computing base (TCB) of each decentralized storage instance and “shielding” the TCB to an hardware-based trusted execution environment provided by the Intel-SGX technology;
-	\item \textbf{Data privacy:} assuring that data remains private while stored and processed “in memory” or “in disk”, by finding a way to keep the data encrypted, never exposed decrypted, and protecting it from entities that are not authorized to access it. 
-	\item \textbf{Full-fledged operation:} warranting the same operational support as provided by the APIs and operations available in conventional and reference key-value-store technologies and supporting the same architectural deployments. In this particular concern, the comparison of our system, leveraged by the REDIS base support, with the original REDIS operations and clustered architectures will be considered.
-\end{itemize}
+TODO
 
 
+-----
+In Section
+4.1 and Section 4.2 we describe the bigger picture and what are the assumptions that
+we based ourselves on the creation the system. After, we will look into more detail on
+the components and operations that our system works with in Sections 4.3, 4.4 and 4.5.
+We will also look onto the Protocols and Processes necessary to start and maintain our
+solution in Sections 4.6 and 4.7. At last, we finish with a Summary in Section 4.8.
 
 
-\section{System Model Overview} % (fold)
-\label{sec:dealing_with_bibliogrpahy}
 
-Our system model is composed of three main components: a client, a processing layer made of a \gls{kvs} running in memory that will be responsible for managing data at runtime, and a storage layer. For a better grasp of the system as a whole, we can analyze the figure \ref{fig:systemModel}.
+\section{System model overview} % (fold)
+\label{sec:systemModel_overview}
 
+Our solution can be seen in figure (?), which is a macro overview of the system. As we can see in the figure, the solution we focused on implementing can be divided in two sides, client side and server side, where clients interact with an in-memory \gls{kvs} running inside a cloud provider, protected inside a \gls{tee}. 
+We consider clients to be benchmark applications only, responsible of evaluating certain defined metrics for our experimental analysis shown later on this dissertation.
+
+To make that interaction, a client first interacts with a proxy, which works as an intermediator. It acts as a single point of access and is responsible of authenticating everyone that wants to interact with the system. It is also in charge of the attestation process of the instances running inside the server, to check if they are trustable and going to execute as they are expected to. 
+
+TODO - 
+
+1)talk more about attestation
+
+2)create a nice image of the overview:
+
+Client -> Cloud [ 	  (Proxy)		]
+				    (Attestation)
+				   (Authentication)
+					     |
+					     v
+				[	(KVS in-memory)	]
+				
+(ver figura do hj no desktop)
+
+example of image from preparation
 \begin{figure}[htbp]
 	\centering
 	{\includegraphics[width=0.4\linewidth]{SystemModelFinal}}
@@ -37,41 +58,78 @@ Our system model is composed of three main components: a client, a processing la
 	\label{fig:systemModel}
 \end{figure}
 
-The client layer is going to consist of a benchmark application responsible for making requests to the \gls{kvs}, while evaluating certain defined metrics that will be used on our experimental analysis. The processing layer, as mentioned before, will be accountable for storing and processing the data while executing, making use of volatile memory that should be protected during this phase. As for the storage layer, we will use a \gls{raid}-based persistent storage system as a way to increase redundancy, thus adding fault-tolerance and enabling faster operations over this third layer.
+\section{Threat model and security properties} % (fold)
+\label{sec:threatModel_and_securityProperties}
 
-This model represents a single instance model, which is the base of  our development process towards a full-fledged solution. Since the model is using conventional software, the data here is exposed both in memory and storage, not protecting the system from data leakage threats.
-
-
-
+Our solution is designed to offer privacy-enhanced guarantees in protecting data confidentiality, while also ensuring integrity and completeness of results returned to the clients, and we do it by ensuring that the sensitive data never runs in plaintext. By doing so, our system model protects from attackers with intentions of accessing sensitive data and taking advantage and value from it, regardless if the attack is coming from the inside or the outside the cloud system.
 
 
-\section{Adversary Model} % (fold)
-\label{sec:inserting_tables}
+\subsection{Adversarial model definition}
+
+We focused on two types of malefic users: 1- Users that attack the system and find a way of getting access to high privileges, such as capacity to manipulate the host \gls{os} and other low level components, through which he can get access to data running, and 2-  Honest-but-curious users, which already have higher privileges and can snoop on private data so they can learn and take advantage of it.
+
+TODO - what is out of scope
+1- client
+2- proxy
+3- storage
+write something like: it is important to refer that with this prototype we dont offer storage confidentiality, because we only considered in-memory KVSs, although this is easily added to the system because redis can be configurated to work with persistent memory bla bla bla
+
+\subsection{Countermeasures for privacy-preservation}
+
+Since our objectives are pointed towards an isolated system capable of offering security
+and privacy properties, we depend a lot on isolation techniques to make this possible,
+provided by both hardware and software (containers).
+
+As for hardware isolation, we looked at \gls{tee} technologies capable of assuring computation and storage security to our system's data during runtime.
+
+Also, to grant an extra layer of isolation and to ensure privacy to the data in each element of our model we opted to use containerization, as a way to keep them independent and the system modular and scalable, enabling ease in the deployment of software running inside the containers, whether it is an OS, a library
+OS or even entire applications. Running our system inside containers allows it to be deployed, in a very similar way, whether running locally or in the cloud, which came to be very handy in the implementation process. 
+
+We didn't recurr to persisting data in storage to relieve some of the complexity that can arise due to the use of containers.
 
 
-Our solution will be designed to offer privacy-enhanced guarantees in protecting data confidentiality, while also ensuring integrity, freshness, and completeness of results returned to the clients. 
 
-This will be provided because we will support the full-fledged use of the redundancy models provided by REDIS, particularly with the use of REDIS Cluster mode. By doing that, the adversary that compromises a single REDIS instance can only attack data stored in one. 
-
-We will not include in our adversary model the possibility for an adversary to attack instances by inducing byzantine faults to provoke fail stops in all the REDIS instances. 
-
-Then, we consider that each instance of the cluster runs independently on a server that cannot be affected by any system administrator and we will also consider that there is no collusion of malicious actions involving all the system administrators involved. In fact, our solution will be targeted in such a way that the different instances of the REDIS \gls{kvs} can be supported in different dedicated servers out of the domain of a single system administrator. The solution can also be supported in multiple instances from multiple cloud-providers, benefiting from the diversity of the computation support that runs the different instances of a REDIS cluster.
+TODO - Put some figure of the containers for the proxy + authServer + attestationServer + KVS talking to each other or something that shows how modular/independent they are
 
 
 
-\section{Isolation and Containerization} % (fold)
-\label{sec:importing_images}
 
-Since our objectives are pointed towards an isolated system capable of offering security and privacy properties, we depend a lot on isolation techniques to make this possible, provided by hardware or software (containers). 
 
-As for hardware isolation, we need to look at approaches capable of assuring both computation and storage security to our system's data during runtime. There are several technologies that implement \gls{tee}s that were proven to be capable of doing just that.
-Also, by using a container we will grant an extra layer of isolation to the system, as well as ease in the deployment of software running inside the container, whether it is an \gls{os}, a library \gls{os} or even entire applications.
+\section{SGX Enabled REDIS solution} % (fold)
+\label{sec:sgx_redis_solution}
 
-We will focus our design assumptions on containerized solutions designed and implemented as Docker containers ready to run on SGX-enabled execution environments (or SGX-enclaves), and potentially composed or orchestrated in the context of solutions managed as Kubernetes of trusted Docker containers. This means that we intend to follow an approach to abstract away details such as distribution, separation, and instantiation of nodes while automating things like rolling upgrades, failover, and scaling of the \gls{kvs} service as a scalable, trusted and privacy-enhanced cloud-enabled storage solution. Another idea is that we should be able to deploy the same solution, in a very similar way, whether running locally (on a dedicated or private datacenter) or in the cloud (outsourced data-center supported solution).
+Our solution, which is based on the system model introduced in Section \cite{sec:systemModel_overview}, can be divided in two pieces. One being the Client-side, responsable for making requests to the system, and other being the system itself, or the server. 
+
+The system, which we run in a Cloud server, can be composed in two subdivisions: a Proxy server, and a \gls{kvs} server, all running inside containers on top of a \gls{tee}. 
+
+As for the Client-side, we only considered them to be benchmark applications, and not entire web applications, with only the intent to evaluate the system.
+
+TODO - say if the client are considered trusted or not
+
+
+\subsection{System Architecture and Components}
+
+The system itself runs on top of a \gls{tee}, that being Intel-\gls{sgx}. As we studied, applications can't simply be placed on top of a \gls{tee}, in this case \gls{sgx}, and expect them to perform the same way as they do without this extra layer of security. 
+Hence, we opted to use SCONE \cite{ssec:scone} as a way to run our system. It allowed us to run the server components on containers capable of running with effectiveness on top of \gls{sgx}, with properties that ease the downsides of \gls{tee}s. 
+
+For the KVS server, we used the Redis \gls{kvs} that can be used with different configurations, offering multiple strenghts to the execution and storage of data, especially if run in Cluster mode, offering scalability, fault-tolerance and even increase of performance if each replica of the cluster is set in independent machines.
+ 
+In our solution we deployed Redis instances configurated in Standalone mode, Master-Slave mode and Cluster mode, as a way to test the behavior of the system. It's also important to note that each Redis replica had their own container, regardless which configuration it was set to execute. The test consisting on running each replica in independent machines was not possible, due to lack of resources.   
+
+As for the proxy, it was implemented to have multiple purposes. First of all, it is used as a gateway for the system to communicate with the outside components.  It acts as a single point of access, enabling the rest of the system to scale, adding no extra complexity to the client-side. Thus, all the client has to do is to reach the proxy endpoint, while the redirection logic to the server instance that will manage the request will be done by the proxy itself. It is also the responsible of authenticating anyone from outside that want to interact with the system. Finally, we implemented the proxy to be in charge of attestating the components running in the rest of the server. 
+
+All the communications between the components that compose the server-side are secured by TLS over HTTP, as a way to keep confidentiality of the data during communications all over the system.
+
+\subsection{Client-Side Operations}
+
+For the client-side, as mentioned in the beginning of this section, we only considered benchmarks. We use these benchmark clients with the single purpose of evaluating the system by making simple requests to the API (the Proxy), and calculate metrics that we found interesting to use in our pratical evaluation of the solution. 
+
+They communicate with the Server-side also through TLS over HTTP.
 
 % section importing_images (end)
+\section{Open Design Issues} % (fold)
 
-\section{System Generalization} % (fold)
+\section{Summary} % (fold)
 
 Looking at our system model introduced in \ref{fig:systemModel}, there are some potential threats that need to be taken care of. First, the connection between the client and the \gls{kvs} needs to be secured. Secondly, the data being stored at the storage layer needs to be encrypted, otherwise it can be accessed and read, or even stolen. Considering only one \gls{kvs} will induce into a single point of failure on the processing layer. Finally, the data stored and running inside this layer along with its memory need to be secured. 
 
