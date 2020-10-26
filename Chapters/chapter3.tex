@@ -30,33 +30,23 @@ solution in Sections 4.6 and 4.7. At last, we finish with a Summary in Section 4
 \section{System model overview} % (fold)
 \label{sec:systemModel_overview}
 
-Our solution can be seen in figure (?), which is a macro overview of the system. As we can see in the figure, the solution we focused on implementing can be divided in two sides, client side and server side, where clients interact with an in-memory \gls{kvs} running inside a cloud provider, protected inside a \gls{tee}. 
-We consider clients to be benchmark applications only, responsible of evaluating certain defined metrics for our experimental analysis shown later on this dissertation.
+Our solution can be seen in figure \cite{fig:systemModel}, which is a macro overview of the system. As we can see in the figure, the solution we focused on implementing can be divided in two sides, client side and server side, where clients interact with the system, where an in-memory \gls{kvs} is running inside a cloud provider, protected inside a \gls{tee}. 
 
-To make that interaction, a client first interacts with a proxy, which works as an intermediator. It acts as a single point of access and is responsible of authenticating everyone that wants to interact with the system. It is also in charge of the attestation process of the instances running inside the server, to check if they are trustable and going to execute as they are expected to. 
+To make that interaction, a client first interacts with a proxy that works as an intermediator, which is also running on top of trusted hardware. It acts as a single point of access and is responsible of authenticating everyone that wants to interact with the system. It is also in charge of the attestation process of the instances running inside the server, to check if they are trustable and going to execute as they are expected to. 
+
+
+\begin{figure}[htbp]
+	\centering
+	{\includegraphics[width=0.7\linewidth]{systemModel}}
+	\caption{Overview of the System Model}
+	\label{fig:systemModel}
+\end{figure}
 
 TODO - 
 
 1)talk more about attestation
 
-2)create a nice image of the overview:
 
-Client -> Cloud [ 	  (Proxy)		]
-				    (Attestation)
-				   (Authentication)
-					     |
-					     v
-				[	(KVS in-memory)	]
-				
-(ver figura do hj no desktop)
-
-example of image from preparation
-\begin{figure}[htbp]
-	\centering
-	{\includegraphics[width=0.4\linewidth]{SystemModelFinal}}
-	\caption{Overview of the System Model}
-	\label{fig:systemModel}
-\end{figure}
 
 \section{Threat model and security properties} % (fold)
 \label{sec:threatModel_and_securityProperties}
@@ -72,7 +62,7 @@ TODO - what is out of scope
 1- client
 2- proxy
 3- storage
-write something like: it is important to refer that with this prototype we dont offer storage confidentiality, because we only considered in-memory KVSs, although this is easily added to the system because redis can be configurated to work with persistent memory bla bla bla
+write something like: it is important to refer that with this prototype we dont offer storage confidentiality, because we only considered in-memory \gls{kvs}s, although this is easily added to the system because redis can be configurated to work with persistent memory bla bla bla
 
 \subsection{Countermeasures for privacy-preservation}
 
@@ -82,14 +72,10 @@ provided by both hardware and software (containers).
 
 As for hardware isolation, we looked at \gls{tee} technologies capable of assuring computation and storage security to our system's data during runtime.
 
-Also, to grant an extra layer of isolation and to ensure privacy to the data in each element of our model we opted to use containerization, as a way to keep them independent and the system modular and scalable, enabling ease in the deployment of software running inside the containers, whether it is an OS, a library
-OS or even entire applications. Running our system inside containers allows it to be deployed, in a very similar way, whether running locally or in the cloud, which came to be very handy in the implementation process. 
+Also, to grant an extra layer of isolation and to ensure privacy to the data in each element of our model we opted to use containerization, as a way to keep them independent and the system modular and scalable, enabling ease in the deployment of software running inside the containers, whether it is an \gls{os}, a library
+\gls{os} or even entire applications. Running our system inside containers allows it to be deployed, in a very similar way, whether running locally or in the cloud, which came to be very handy in the implementation process. 
 
 We didn't recurr to persisting data in storage to relieve some of the complexity that can arise due to the use of containers.
-
-
-
-TODO - Put some figure of the containers for the proxy + authServer + attestationServer + KVS talking to each other or something that shows how modular/independent they are
 
 
 
@@ -102,7 +88,7 @@ Our solution, which is based on the system model introduced in Section \cite{sec
 
 The system, which we run in a Cloud server, can be composed in two subdivisions: a Proxy server, and a \gls{kvs} server, all running inside containers on top of a \gls{tee}. 
 
-As for the Client-side, we only considered them to be benchmark applications, and not entire web applications, with only the intent to evaluate the system.
+As for the Client-side, we only considered them to be benchmark applications, and not entire web applications, with only the intent to evaluate the system for our experimental analysis shown later on this dissertation.
 
 TODO - say if the client are considered trusted or not
 
@@ -114,44 +100,56 @@ Hence, we opted to use SCONE \cite{ssec:scone} as a way to run our system. It al
 
 For the KVS server, we used the Redis \gls{kvs} that can be used with different configurations, offering multiple strenghts to the execution and storage of data, especially if run in Cluster mode, offering scalability, fault-tolerance and even increase of performance if each replica of the cluster is set in independent machines.
  
-In our solution we deployed Redis instances configurated in Standalone mode, Master-Slave mode and Cluster mode, as a way to test the behavior of the system. It's also important to note that each Redis replica had their own container, regardless which configuration it was set to execute. The test consisting on running each replica in independent machines was not possible, due to lack of resources.   
+In our solution we deployed Redis instances configurated in Standalone mode, Master-Slave mode and Cluster mode, as a way to test the behavior of the system. It's also important to note that each Redis replica had their own container, regardless which configuration it was set to execute. 
 
-As for the proxy, it was implemented to have multiple purposes. First of all, it is used as a gateway for the system to communicate with the outside components.  It acts as a single point of access, enabling the rest of the system to scale, adding no extra complexity to the client-side. Thus, all the client has to do is to reach the proxy endpoint, while the redirection logic to the server instance that will manage the request will be done by the proxy itself. It is also the responsible of authenticating anyone from outside that want to interact with the system. Finally, we implemented the proxy to be in charge of attestating the components running in the rest of the server. 
+The Standalone version of Redis is the simplest configuration that a Redis instance can run. It offers the properties of a single Redis database. It is very simple, very stable and easy to maintain, and it serves as the reference point of the evaluation of the system.
+
+The Master-Slave configuration offers replication and eventual consistency of data, with writes only possible in the Master node, and read-only Slave nodes.
+
+As for the Cluster, although it is the most complex configuration, beyond replication and consistency, it also adds huge scalability possibilities to the system.
+
+
+As for the proxy, although it is an extra layer of overhead, we thought it is worth the "investiment" for the fact that it can serve multiple purposes. 
+First of all, it is used as a gateway for the system to communicate with the outside components.  It acts as a single point of access, enabling the rest of the system to scale, adding no extra complexity to the client-side. Thus, all the client has to do is reach the proxy endpoint, while the redirection logic to the server instance that will manage the request will be done by the proxy itself. Adding to that, it allows the system to only have a single firewall, instead of configuring one for each KVS instance.
+
+The proxy is also the responsible of authenticating anyone from outside that wants to interact with the system. Redis itself also has the possibility to configure authentication for each replica, but that option would add an extreme layer of complexity that we do not want, due to the fact each replica needs to be configured individually. Therefore, if we start to scale the number of Redis instances, the complexity of that task everytime a new user is being granted permission to access the system will be extreme. Thus, this problem is solved by having an authentication server that communicates with the proxy, since the configuration only needs to happen once for the proxy to know which users are allowed to access the system.
+
+Finally, we implemented the proxy to be in charge of attestating the components running in the rest of the server. 
 
 All the communications between the components that compose the server-side are secured by TLS over HTTP, as a way to keep confidentiality of the data during communications all over the system.
 
+\begin{figure}[htbp]
+	\centering
+	{\includegraphics[width=0.7\linewidth]{systemWithMoreContext}}
+	\caption{Overviewing the server-side of the solution}
+	\label{fig:serverside_systemModel}
+\end{figure}
+
+  
 \subsection{Client-Side Operations}
 
-For the client-side, as mentioned in the beginning of this section, we only considered benchmarks. We use these benchmark clients with the single purpose of evaluating the system by making simple requests to the API (the Proxy), and calculate metrics that we found interesting to use in our pratical evaluation of the solution. 
+For the client-side, as mentioned in the beginning of this section, we only considered benchmarks. We use these benchmark clients with the single purpose of evaluating the system by making simple requests to the API (the Proxy), while calculating metrics that we found essential to use in our pratical evaluation of the solution. 
 
-They communicate with the Server-side also through TLS over HTTP.
+The communication process with the Server-side of the solution is also made through TLS over HTTP.
+
+\begin{figure}[htbp]
+	\centering
+	{\includegraphics[width=0.4\linewidth]{client_serverside}}
+	\caption{Communication between client and server}
+	\label{fig:client_serverModel}
+\end{figure}
 
 % section importing_images (end)
 \section{Open Design Issues} % (fold)
 
+Looking back at our model, we can think that the whole availability of the system depends highly on the single proxy instance working as entry-point for the whole system, and so all can be compromised if it fails to work, or just stops working for some reason. And this assumption is true. 
+Replication of the proxy instance can be seen as a measure to mitigate this problem, and although this is doable, we considered it to be out of scope for what we choose to evaluate in this thesis. 
+
+
+
 \section{Summary} % (fold)
 
-Looking at our system model introduced in \ref{fig:systemModel}, there are some potential threats that need to be taken care of. First, the connection between the client and the \gls{kvs} needs to be secured. Secondly, the data being stored at the storage layer needs to be encrypted, otherwise it can be accessed and read, or even stolen. Considering only one \gls{kvs} will induce into a single point of failure on the processing layer. Finally, the data stored and running inside this layer along with its memory need to be secured. 
 
-This can be achieved by using \gls{tls} over the \gls{http} protocol, securing the communication between the client and the \gls{kvs} layer.  Existing \gls{fde} technology can be used to encrypt the data to be stored in the storage layer. Finally, for the processing layer, we will use a cluster of \gls{kvs}, thus adding redundancy and load balancing. As for the security and privacy concerns, by isolating each cluster replica inside individual \gls{tee}s, we achieve confidentiality and privacy of the data during runtime. Figure \ref{fig:systemModelCluster} shows an overall idea of this proposed solution.
-
-\begin{figure}[htbp]
-	\centering
-	{\includegraphics[width=0.4\linewidth]{SystemModelWithCluster}}
-	\caption{System Model with a Key-Value Store Cluster}
-	\label{fig:systemModelCluster}
-\end{figure}
-
-As a way to scale the overall system to modern requirements, we opted to divide it into two parts, one being the client layer and the other being both the processing and storage layers, which will both be implemented inside a cloud system. With this approach (figure \ref{fig:systemModelCloud}) we will guarantee scalability of the resources for the solution. 
-
-\begin{figure}[htbp]
-	\centering
-	{\includegraphics[width=0.4\linewidth]{SystemModelCloud}}
-	\caption{System Model running inside a Cloud System}
-	\label{fig:systemModelCloud}
-\end{figure}
-
-The primary vision and goal of the generic architecture, as explained, is the support for a replicated storage service encompassing independent REDIS \gls{kvs} base instances running in independent SGX-enabled servers, running as replicated containers. However, other specialized containers (such as containers implementing a trusted OAUth authentication service, a trusted reference monitor implementing access-control enforcement and a trusted \gls{raid}-drive component to access \gls{raid} disks) can be considered as candidates to be composed in a final distributed architecture, possibly orchestrated in a Cloud Kubernetes deployment and management environment.
 
 \section{Implementation Guidelines} % (fold)
 

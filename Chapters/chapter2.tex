@@ -39,8 +39,7 @@ Typically, the host \gls{os} is considered safe and trustworthy, although that i
 Approaches like Virtual Ghost, Flicker, MUSHI, SeCage, InkTag, Sego, all grant security by isolating the sensitive data from the untrusted \gls{os} either by monitoring the application while it runs or by enforcing memory isolation by using virtualization.\newline
 
 %-----------------------------------------
-
-\underline{\textbf{Virtual Ghost}}  
+\subsection{Virtual Ghost} 
 
 Virtual Ghost \cite{virtGhostPaper} provides application security against untrusted \gls{os}es by implementing the idea of ghost memory, which is inaccessible for the \gls{os} to read or write, as well as providing trusted services like ghost memory management, key management, and encryption and signing services. 
 It relies on sandboxing to protect the system from the \gls{os}, where a thin layer of abstraction is interposed between the kernel and the hardware. This layer works as a library of functions that the kernel can call directly, without needing higher privileges. 
@@ -48,7 +47,7 @@ Thus, Virtual Ghost protects the system against a direct threat from the \gls{os
 
 %-----------------------------------------
 
-\underline{\textbf{Flicker}}
+\subsection{Flicker} 
 
 Flicker \cite{flickerPaper} provides secured isolated execution of sensitive code by relying on commodity hardware, such as AMD and Intel processors, to run certain pieces of code in a confined environment while reducing the \gls{tcb} to, as few as, 250 additional lines of code. 
 When Flicker starts, none of the software already executing can monitor or interfere with its execution and all its traces can be eliminated before non-Flicker execution resumes. 
@@ -56,7 +55,7 @@ Thus, with a small TCB and a good level of isolation during the execution phase,
 
 %-----------------------------------------
 
-\underline{\textbf{MUSHI}}
+\subsection{MUSHI} 
 
 MUSHI \cite{mushiPaper} is designed to deal mainly with multi-level security systems and provides isolation to individual guest \gls{vm}s executing in a cloud infrastructure. MUSHI ensures that \gls{vm}s are instantiated securely and remain that way throughout their life cycle. 
 It is capable of offering: (1) \textbf{Trusted Execution}, where both the kernel and user image, as well as MUSHI itself, are attested upon a \gls{vm} start by using a \gls{tpm}, thus defining a trusted initial state; (2) \textbf{Isolation}, where each \gls{vm} executing on the same machine runs isolated, as a way to guarantee confidentiality and integrity; (3) \textbf{User Image Confidentiality}, by encrypting the user image with a cryptographic key provided by the user itself.
@@ -66,7 +65,7 @@ It trusts a relatively small \gls{tcb}, that includes only the hardware, hardwar
 
 %-----------------------------------------
 
-\underline{\textbf{SeCage}}
+\subsection{SeCage} 
 
 SeCage \cite{SeCagePaper} uses hardware virtualization to protect user-defined secrets from potential threats and malicious \gls{os}es, by isolating sensitive code and critical secrets while denying the hypervisor any possibility of intervention during runtime.
 It divides the system in compartments, where secret compartments have all the permissions to access and manipulate the user-defined secrets, and a main compartment responsible for handling the rest of the code.
@@ -80,7 +79,7 @@ SeCage is designed to assure the confidentiality of user-secrets, adding a small
 
 %-----------------------------------------
 
-\underline{\textbf{InkTag}}
+\subsection{InkTag} 
 
 InkTag \cite{inkTagPaper} also uses a virtualization-based approach in order to grant applications protection from untrusted \gls{os}es.
 But unlike SeCage, InkTag admits trust in the hypervisor. The hypervisor is responsible to protect the application
@@ -91,7 +90,7 @@ Another important aspect of InkTag is recoverability. InkTag hypervisor can prot
 
 %-----------------------------------------
 
-\underline{\textbf{Sego}}
+\subsection{Sego} 
 
 Similar to InkTag, Sego \cite{segoPaper} is also a hypervisor-based system that gives strong privacy and integrity guarantees to trusted applications. To protect applications from untrusted \gls{os}es, Sego removes the trust from the \gls{os}, relying only on a trusted hypervisor which is assumed to always execute correctly. It also enforces paraverification, where the \gls{os} communicates its intentions to the hypervisor, thus keeping track of its behavior.
 
@@ -384,8 +383,7 @@ Other approaches appeared as a way to deal with more specific problems, by makin
 
 
 %-----------------------------------------
-
-\underline{\textbf{SGX-Enabled Network Protocols and Services}}
+\subsubsection{SGX-Enabled Network Protocols and Services} 
 
 
 The increased need for security seen nowadays caused network-related technologies to become popular, from security protocols (\gls{tls}) to anonymous browsers (Tor), leading to a lot of effort by the community to make viable approaches to tackle network security problems. 
@@ -401,8 +399,7 @@ concluded that this \gls{sgx}-enabled approach results in bigger overheads (appr
 gets and 9x for sets) than an \gls{sgx}-disabled Snort application, at the cost of extra security.\newline
 
 %-----------------------------------------
-
-\underline{\textbf{Trusted Cloud-Based System Administration}}
+\subsubsection{Trusted Cloud-Based System Administration}
 
 The usage of cloud platforms lead to a significant increase in security and privacy risks. Thus, cloud services are now highly dependent on trusting their administrators, as well as their good behavior. Since this is not always the case, it has become a must to protect the users from potential cloud system administration threats. 
 To tackle this problem, some solutions have been proposed with the help of trusted computing technology. However, their focus has been conducted on Infrastructure-as-a-Service (IaaS) environments, which are simpler to maintain than in PaaS and SaaS approaches.
@@ -413,8 +410,8 @@ The administrative roles for cloud nodes are divided into four or five independe
 The approach was shown in \cite{sgxCloudThesis} to have a minimal performance impact, as well low storage overheads while proving to be a compelling approach that can be used to increase the detail of management protocols and tools in cloud environments and data-centers.\newline
 
 %-----------------------------------------
+\subsubsection{SGX-enabled Virtualization}
 
-\underline{\textbf{SGX-enabled Virtualization}}
 
 
 As we already pointed out previously, Intel-\gls{sgx} has drawn much attention from the community in the last few years, which also made cloud providers start adopting \gls{sgx} into their cloud systems (Microsoft's Azure confidential computing or IBM Cloud are examples of that). This lead to an increase of interest in developing new cloud programming frameworks capable of supporting \gls{sgx}.
@@ -440,8 +437,7 @@ Virtualization causes an additional overhead, which increases based on the numbe
 Finally, \cite{sgxVirtualizationPaper} proposes an automatic selection of an appropriate memory virtualization technique, by dynamically detecting the characteristics of a given workload to identify whether it is suitable with nested or shadow paging.\newline
 
 %-----------------------------------------
-\underline{\textbf{SGX-Enabled Linux Containers}}
-
+\subsubsection{SGX-Enabled Linux Containers}
 
 Lately, container solutions such as Linux Containers (LXC) and Docker have proved to be compelling alternatives to virtualization in cloud computing systems, due to the fact that they need less computing resources, allowing more deployments per physical machine to take place, as well as reducing infrastructure costs. However, some concerns have been raised since containers share a common \gls{os} kernel, causing any vulnerability of the kernel to be a danger to all the other containers on the system.
 While various solutions like Haven [\ref{ssec:haven}], Graphene-SGX [\ref{ssec:grapheneSGX}], SCONE [\ref{ssec:scone}], Panoply [\ref{ssec:panoply}] have been proposed to protect applications and containers in cloud environments by leveraging Intel-\gls{sgx}, these approaches still generate some concerns, since they lead to a growth of the \gls{tcb} and enclave size, offer limited support for key features (e.g. remote attestation) and ignore hardware constraints on \gls{epc} size (instead of relying on \gls{epc} page swapping which, on the other hand, leads to serious performance losses). 
@@ -452,8 +448,8 @@ This \textbf{lxcsgx} platform offers an infrastructure that supports: (1) Remote
 In the same paper, \textbf{Lxcsgx} was proven in \cite{lxcsgxPaper} to offer the lowest overhead to the overall system when compared to the previously spoken solutions, while also addressing potential issues these could have.\newline
 
 %-----------------------------------------
+\subsubsection{Databases with Encrypted Query Processing and SGX-Enabled Searchable Encryption}
 
-\underline{\textbf{\gls{db}s with Encrypted Query Processing and SGX-Enabled Searchable Encryption}}
 
 
 Processing and storing data in cloud environments is still not considered trustworthy enough. Thus, systems started to look at \gls{tee}s as a way to change this popular prespective, providing privacy to their users' data. 
@@ -468,8 +464,8 @@ HardIDX came after, as a hardware approach that provides the possibility of sear
 This approach uses B+-tree as a structure to organize all data, which is found in many \gls{dbms}s.
 Unlike previous hardware-based approaches, HardIDX implements a small size \gls{tcb} and memory footprint in the \gls{tee}, exposing a small attack surface as well as granting good performance results while executing complex searches on large chunks of data. It also offers scalability properties, since it can scale the system list of indexes \cite{hardIDXPaper}.\newline
 
+\subsubsection{SGX-Protection for Key-Value Store Solutions}
 
-\underline{\textbf{SGX-Protection for Key-Value Store Solutions}}
 %-----------------------------------------
 
 The increasing research on trusted computation technologies, in particular \gls{tee}s like \gls{sgx}, made possible for cloud users to run their applications safely in potentially malicious systems. One of the most used types of applications in these cloud systems are key-value stores, like REDIS \cite{redisWebsite} and memcached \cite{memcachedWebsite}. This type of data stores is used in many systems nowadays due to their architecture offering fast access to data by maintaining data in main memory, as well as granting durability by writing the data to persistent storage.  Due to the importance of these types of systems in today's systems stack, it is important to figure out how to protect data inside of these systems by leveraging trusted technology (in our case, Intel-\gls{sgx}). However, one of the critical limitations of \gls{sgx} is the size of the \gls{epc}, which represents its protected memory region. 
