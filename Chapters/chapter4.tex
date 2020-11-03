@@ -5,9 +5,23 @@
 %%
 %% Chapter with lots of dummy text
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Workplan for the Elaboration Phase}
+\chapter{Implementation prototype}
 \label{cha:workplan}
 
+\section{Architecture and implemented components}
+Rebobinar o boneco da arquitetura
+Dizer que tecnologias são responsaveis por o que. ex: redis 6.0.2 é a KVS, Cloud OVH, o Intel Modelo X é o processador, oferece X Mbs de page cache, tem esta RAM, etc etc...
+
+\section{Implementation options}
+\subsection{TEE-REDIS solution}
+Descrever a solucao com detalhes de tecnologias
+\subsection{Client-based benchmarks}
+
+
+Experimental evaluation of the prototype, to study the overheads of TREDIS against a no trusted REDIS solution. For this purpose we will analyze: (1) Performance conditions observed by latency and throughput measurements; (2) Adequacy to manage operations on privacy-enhanced big-datasets; (3) Scalability conditions under different client-workloads; (4) Analysis of required resources, including memory, CPU, I/O and energy.
+\section{Tradeoffs on the implementation options}
+Discutir overheads daquilo que usámos (openSSL issue, redis monolitico ou não, etc)
+\section{Summary}
 
 
 In this chapter, we present our work plan for the elaboration phase of the dissertation. The plan is represented in figure \ref{fig:ganttPlannedTasks}. This plan was designed to meet the calendar of the second semester in FCT-UNL, while also taking into account personal vacation dates. As represented in the plan, the main activities related to developments and experimental evaluations of prototypes will be conducted until the second week of August. 

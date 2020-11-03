@@ -8,61 +8,57 @@
 \chapter{System model and design options}
 \label{cha:systemModel_and_designOptions}
 
-In this chapter we present the architecture overview of the system model for our solution. We introduce an architecture model that is able to assure confidentiallity and integrity, according to our adversary model, to the execution of unmodified applications that run sensitive data on cloud computing servers, by leveraging trusted computing tecniques provided by both software and hardware, inside \gls{tee}s. All this without crippling too much the performance levels of the overall system.
+In this chapter we present the architecture overview of the system model for our solution. We introduce an architecture model that is able to assure confidentiallity and integrity to the execution of unmodified applications that run sensitive data on cloud computing servers, by leveraging trusted computing tecniques provided by both software and hardware, all according to our adversary model which focus fundamentally on dealing with attackers that can access and read the data during runtime, while taking value from it. All this without crippling too much the performance levels of the overall system.
 
-The system model defined in the next chapter is later described in the thesis with greater detail, as an implementation prototype capable of applying this theoretical concepts described before.
-
-In Section \cite{sec:systemModel_overview} we describe a general overview of the system as a whole, 
-
-TODO
+In Section \ref{sec:systemModel_overview} we describe a general overview of the system as a whole, introducing the components that make the system. In Section \ref{sec:threatModel_and_securityProperties} we talk about the assumptions kept in mind while creating our solution, as well as defining what is out of the scope and what is not.
+After that, in Section \ref{sec:systemArchitecture} we go into more details about the components that make part of the whole solution, explaining in a more fine-grained view how each component of the system works, and what is their purpose in the solution. 
+In Section \ref{sec:design_openIssues} we take a look into potential problems that we aknowledged our solution might have, and lastly we end with a summary in Section \ref{sec:sysModel_summary}.
 
 
------
-In Section
-4.1 and Section 4.2 we describe the bigger picture and what are the assumptions that
-we based ourselves on the creation the system. After, we will look into more detail on
-the components and operations that our system works with in Sections 4.3, 4.4 and 4.5.
-We will also look onto the Protocols and Processes necessary to start and maintain our
-solution in Sections 4.6 and 4.7. At last, we finish with a Summary in Section 4.8.
 
 
 
 \section{System model overview} % (fold)
 \label{sec:systemModel_overview}
 
-Our solution can be seen in figure \cite{fig:systemModel}, which is a macro overview of the system. As we can see in the figure, the solution we focused on implementing can be divided in two sides, client side and server side, where clients interact with the system, where an in-memory \gls{kvs} is running inside a cloud provider, protected inside a \gls{tee}. 
+Our solution can be seen in figure \ref{fig:systemModel}, which is a macro overview of the system. 
 
-To make that interaction, a client first interacts with a proxy that works as an intermediator, which is also running on top of trusted hardware. It acts as a single point of access and is responsible of authenticating everyone that wants to interact with the system. It is also in charge of the attestation process of the instances running inside the server, to check if they are trustable and going to execute as they are expected to. 
+As we can see in the figure, the solution we implemented can be divided in two parts - client side and server side - in which the clients interact with the server, which is protected inside a \gls{tee}. Although the \textbf{Client} and its purpose is easy to understand - make requests to the server via the network - the server and the components that make part of it are more complex. Hereupon, the server is composed by: 
+\begin{itemize}
+	\item \textbf{Proxy:} Works as an entry point to the whole server-side. It's the component responsible of handling the communication with the Client;
+	\item \textbf{Authentication Server:} Authenticates the clients so they can only access the system if they are authorized;
+	\item \textbf{Attestation Server:} Allows the components of the system to prove their identity, thus allowing the rest of the components to treat them as trustworthy;
+	\item \textbf{Key-Value Store:} Stores data in-memory. This is the main component we intend to protect, since it is where the data is stored in-memory.
+\end{itemize} 
 
+
+All the server components itemized above run on top of trusted hardware (\gls{tee}), inside a cloud server.
 
 \begin{figure}[htbp]
 	\centering
 	{\includegraphics[width=0.7\linewidth]{systemModel}}
-	\caption{Overview of the System Model}
+	\caption{General overview of the System Model}
 	\label{fig:systemModel}
 \end{figure}
-
-TODO - 
-
-1)talk more about attestation
-
 
 
 \section{Threat model and security properties} % (fold)
 \label{sec:threatModel_and_securityProperties}
 
-Our solution is designed to offer privacy-enhanced guarantees in protecting data confidentiality, while also ensuring integrity and completeness of results returned to the clients, and we do it by ensuring that the sensitive data never runs in plaintext. By doing so, our system model protects from attackers with intentions of accessing sensitive data and taking advantage and value from it, regardless if the attack is coming from the inside or the outside the cloud system.
+Our solution is designed to offer privacy-enhanced guarantees in protecting data confidentiality, while also ensuring integrity and completeness of results returned to the clients, and we do it by ensuring that sensitive data never runs in plaintext. 
+By doing so, our system model protects from attackers with intentions of accessing sensitive data and taking advantage and value from it, regardless if the attack is coming from the inside or the outside the cloud system.
 
 
 \subsection{Adversarial model definition}
 
-We focused on two types of malefic users: 1- Users that attack the system and find a way of getting access to high privileges, such as capacity to manipulate the host \gls{os} and other low level components, through which he can get access to data running, and 2-  Honest-but-curious users, which already have higher privileges and can snoop on private data so they can learn and take advantage of it.
+Since the main objective of the solution is to protect data privacy during its execution, we specifically focused on two types of potencial threats: 
 
-TODO - what is out of scope
-1- client
-2- proxy
-3- storage
-write something like: it is important to refer that with this prototype we dont offer storage confidentiality, because we only considered in-memory \gls{kvs}s, although this is easily added to the system because redis can be configurated to work with persistent memory bla bla bla
+\textbf{1-} Users that attack the system and find a way of getting access to high privileges. This is a type of user that can control the system as he pleases, with superuser access, meaning that he will be capable of manipulating the host \gls{os} and other low level privileged components, through which he will manage to access the data running in memory;
+
+\textbf{2-}  Honest-but-curious users, which are users that already have higher privileges, and may or may not have direct access to the hardware. They can snoop easily on private data, since they are considered trusted, so they can read it, learn it and take advantage of it.
+
+We consider to be out of scope denial-of-service attacks, side-channel attacks that exploit timing and page faults.
+It is important to refer that with this solution, since we are focusing on using in-memory \gls{kvs}s, our target will not include ensuring confidentiality and integrity to data stored in disk, since we do not resort on persisting the data.
 
 \subsection{Countermeasures for privacy-preservation}
 
@@ -70,53 +66,110 @@ Since our objectives are pointed towards an isolated system capable of offering 
 and privacy properties, we depend a lot on isolation techniques to make this possible,
 provided by both hardware and software (containers).
 
-As for hardware isolation, we looked at \gls{tee} technologies capable of assuring computation and storage security to our system's data during runtime.
+We mainly looked at \gls{tee} technologies capable of assuring computation and storage security to our system's data during runtime. 
 
-Also, to grant an extra layer of isolation and to ensure privacy to the data in each element of our model we opted to use containerization, as a way to keep them independent and the system modular and scalable, enabling ease in the deployment of software running inside the containers, whether it is an \gls{os}, a library
-\gls{os} or even entire applications. Running our system inside containers allows it to be deployed, in a very similar way, whether running locally or in the cloud, which came to be very handy in the implementation process. 
-
-We didn't recurr to persisting data in storage to relieve some of the complexity that can arise due to the use of containers.
+Also, to grant an extra layer of isolation and to ensure privacy to the data in each element of our model, we opted to use containerization as a way to keep them independent and the system modular and scalable, enabling ease in the deployment of software running inside the containers, whether it is an \gls{os}, a library
+\gls{os} or even entire applications. Running our system inside containers allows it to be deployed in a very similar way, whether running locally or in the cloud, which came to be very handy in the implementation process. 
 
 
 
 
 
-\section{SGX Enabled REDIS solution} % (fold)
-\label{sec:sgx_redis_solution}
+\section{System Architecture}
+\label{sec:systemArchitecture}
+In this section, we dive into more detail about the components that make part of the system and what purpose they have in the solution.  
 
-Our solution, which is based on the system model introduced in Section \cite{sec:systemModel_overview}, can be divided in two pieces. One being the Client-side, responsable for making requests to the system, and other being the system itself, or the server. 
+Our solution, which is based on the system model introduced in Section \ref{sec:systemModel_overview}, can be divided in two pieces. One being the Client-side, responsible for making requests to the system, and other being the server, that deals with the execution and storage of the data.
 
-The system, which we run in a Cloud server, can be composed in two subdivisions: a Proxy server, and a \gls{kvs} server, all running inside containers on top of a \gls{tee}. 
+For the Client-side, we only considered them to be benchmark applications, and not entire web applications, with only the intent to evaluate the system for our experimental analysis shown later on this dissertation. Thus, we assume that the client is trusted, as long as he can authenticate himself in the system.
 
-As for the Client-side, we only considered them to be benchmark applications, and not entire web applications, with only the intent to evaluate the system for our experimental analysis shown later on this dissertation.
+As for the server, as we mentioned before, our goal is to provide privacy to sensitive data running on top of trusted technology, \gls{tee}s, without crippling too much the performance levels of the application running. 
+Hereupon, our server-side, which we run inside a Cloud server, can be devided in multiple components: a Proxy, an Authentication Server, an Attestation Server and a \gls{kvs} component. All these are running inside containers on top of a \gls{tee}, more specifically Intel-\gls{sgx}.
 
-TODO - say if the client are considered trusted or not
+According to what we have already studied, to run applications on top a \gls{tee} usually implies the system to take a performance penalty. To mitigate those penalties, we included additional layers of technology, frameworks specifically designed to work with these trusted technologies and to soften the performance impact \gls{tee}s have on applications that leverage their properties. 
+
+\subsection{Client-Side Operations}
+
+For the client-side, as mentioned in the beginning of this section, we only considered benchmark clients. We use these benchmarks to evaluate the system by making simple requests to the Proxy, while calculating metrics that we found essential to use in our pratical evaluation of the solution in order to validate the full-fledged conditions in supporting the \gls{kvs} REDIS. And as long as the user is configurated in the authentication server, it is considered trusted.
+
+To start a communication with the server, a client: 
+
+\textbf{1.} Reaches the authentication server to authenticate itself;
+
+\textbf{2.} Interacts with the proxy after being granted authorization to do so, as long as the authorization is valid, as we can observe in the figure \ref{fig:client_serverModel}. 
+
+All this communication process is secured through TLS over HTTP.
+
+\begin{figure}[htbp]
+	\centering
+	{\includegraphics[width=0.5\linewidth]{comm_client_server}}
+	\caption{Communication between client and server}
+	\label{fig:client_serverModel}
+\end{figure}
 
 
-\subsection{System Architecture and Components}
 
-The system itself runs on top of a \gls{tee}, that being Intel-\gls{sgx}. As we studied, applications can't simply be placed on top of a \gls{tee}, in this case \gls{sgx}, and expect them to perform the same way as they do without this extra layer of security. 
-Hence, we opted to use SCONE \cite{ssec:scone} as a way to run our system. It allowed us to run the server components on containers capable of running with effectiveness on top of \gls{sgx}, with properties that ease the downsides of \gls{tee}s. 
+\subsection{SGX-Enabled REDIS solution} % (fold)
 
-For the KVS server, we used the Redis \gls{kvs} that can be used with different configurations, offering multiple strenghts to the execution and storage of data, especially if run in Cluster mode, offering scalability, fault-tolerance and even increase of performance if each replica of the cluster is set in independent machines.
+The server runs on top of a \gls{tee}, that being Intel-\gls{sgx}. As we studied, applications can't simply be placed on top of a \gls{tee}, in this case \gls{sgx}, and expect them to perform the same way as they do without this extra layer of security. 
+Since \gls{sgx} completely isolate what is running inside its enclaves from the rest, even from the \gls{os}, it cripples the performance of the system by multiple reasons. Everytime a system-call needs to be performed by running code, the thread of execution needs to leave the enclave to execute it. Only after it has complete executing the system-call, the thread can come back inside the enclave. This process takes a lot of effort for the system, since it envolves a lot of encryption functions to take place. 
+Also, since enclaves are small in-memory regions (size depends on the hardware used), when running a normal or large sized application on top of \gls{sgx} usually means that the code does not fit all at once inside the \gls{epc}. 
+Thus, parts of the application need to leave the enclave in order to fit the other parts that are needed at that time, resulting in a lot of encryption and decryption taking place due to page swapping between the \gls{epc} and the rest of the memory, in order to keep the integrity of the data.  
+
+Hence, we opted to use SCONE, which we covered in Section  \ref{ssec:scone}, as a way to leverage \gls{sgx}. It allows us to run the server components mentioned before on containers capable of running with effectiveness on top of \gls{sgx}. This happens mainly because SCONE containers include a small library of system-calls that can be accessed statically inside the enclave. Also it supports asynchronous system-calls, meaning that when dealing with the need for a system-call outside the enclave, SCONE switches the execution thread to one running outside the enclave, avoiding the performance penalty caused by the thread leaving the enclave. 
+
+Thus, we mitigated some of the downsides of the usage of \gls{sgx}, so that the following components that are part of the system can leverage \gls{sgx}s security properties:
+
+\vspace{5mm} 
+
+\textbf{1) Proxy -}
+Although it is an extra layer of overhead, we thought the addition of a Proxy component to be a worthy investiment because it is designed to serve multiple purposes. 
+First of all, we use it as a gateway for the system to communicate with the outside. It acts as a single point of access, enabling the rest of the system to scale, adding no extra complexity to the client-side. Therefore, everything the client has to do is to reach the proxy itself, while the logic regarding the redirection to the correct server instance that will manage the request will be done by the proxy itself. Adding to that, it allows the system to only have a single firewall, instead of configuring one for each KVS instance.
+
+The proxy is also the responsible to only allow authenticated clients to access the system, by interacting with an authentication server. 
+
+\vspace{5mm} 
+
+\textbf{2) Authentication Server -}
+We added an authentication component responsible of authenticating every client that wants to interact with the system, by assigning tokens to the allowed clients, that are validated afterwards by the Proxy, when trying to communicate with the rest of the system.
  
-In our solution we deployed Redis instances configurated in Standalone mode, Master-Slave mode and Cluster mode, as a way to test the behavior of the system. It's also important to note that each Redis replica had their own container, regardless which configuration it was set to execute. 
+Although some \gls{kvs}s (i.e., Redis) have the possibility to configure authentication for each replica, we believe that option would add an extreme layer of complexity that we do not want, due to the fact that each replica needs to be configured individually. Therefore, if we use a cluster of \gls{kvs} instances and begin to scale their number, the complexity of that task everytime a new user is being granted permission to access the system will be huge. Thus, by including a server designed only to deal with the authentication process, the configuration only needs to happen once for the system to know which users are allowed.
 
-The Standalone version of Redis is the simplest configuration that a Redis instance can run. It offers the properties of a single Redis database. It is very simple, very stable and easy to maintain, and it serves as the reference point of the evaluation of the system.
+\vspace{3mm}
 
-The Master-Slave configuration offers replication and eventual consistency of data, with writes only possible in the Master node, and read-only Slave nodes.
+\begin{figure}[htbp]
+	\centering
+	{\includegraphics[width=0.9\linewidth]{authSeqDiagram}}
+	\caption{Authentication Process}
+	\label{fig:authProcess}
+\end{figure}
 
-As for the Cluster, although it is the most complex configuration, beyond replication and consistency, it also adds huge scalability possibilities to the system.
+In figure \ref{fig:authProcess} we see that in the first interaction with the server, the Client reaches the Authentication Server in order to get an access token to use as proof of authentication in its future requests. This token is valid only for a certain period of time. After it has expired, the Client needs to reach the Authentication Server again, in order to get a new valid token. While the token is valid, the Client can make requests to the server by interacting with the Proxy. The Proxy then validates the token and only if it's valid will the Proxy process the Client request.
+
+\vspace{5mm} 
+
+\textbf{3) Attestation Server -}
+We implemented an attestation server that allows the components of the system to prove their identity, while running inside the system. This allows all the other components to treat them as trustworthy.
+
+TODO - sequence diagram a explicar a attestaçao (tipo o de cima)
 
 
-As for the proxy, although it is an extra layer of overhead, we thought it is worth the "investiment" for the fact that it can serve multiple purposes. 
-First of all, it is used as a gateway for the system to communicate with the outside components.  It acts as a single point of access, enabling the rest of the system to scale, adding no extra complexity to the client-side. Thus, all the client has to do is reach the proxy endpoint, while the redirection logic to the server instance that will manage the request will be done by the proxy itself. Adding to that, it allows the system to only have a single firewall, instead of configuring one for each KVS instance.
+\vspace{5mm} 
 
-The proxy is also the responsible of authenticating anyone from outside that wants to interact with the system. Redis itself also has the possibility to configure authentication for each replica, but that option would add an extreme layer of complexity that we do not want, due to the fact each replica needs to be configured individually. Therefore, if we start to scale the number of Redis instances, the complexity of that task everytime a new user is being granted permission to access the system will be extreme. Thus, this problem is solved by having an authentication server that communicates with the proxy, since the configuration only needs to happen once for the proxy to know which users are allowed to access the system.
+\textbf{4) Key-Value Store -}
+For the \gls{kvs} component, we used the Redis \gls{kvs} that can be used with different configurations, offering multiple strenghts to the execution and storage of data, especially if run in Cluster mode, offering scalability, fault-tolerance and eventual consistency of data, in some cases without even resulting in any overhead. 
+Specifically, if each replica of the cluster runs in independent machines, the majority of the complexity is handled by the network, allowing the performance levels to match the values obtained by a single instance Redis, while still offering all the properties mentioned above. 
+Redis supports: 
 
-Finally, we implemented the proxy to be in charge of attestating the components running in the rest of the server. 
+\textbf{Standalone.} The simplest configuration that a Redis instance can run in. It offers the properties of a single Redis database. It is very simple, very stable and easy to maintain, and it serves as the reference point for the evaluation of the system.
 
-All the communications between the components that compose the server-side are secured by TLS over HTTP, as a way to keep confidentiality of the data during communications all over the system.
+\textbf{Master-Slave.} Offers replication and eventual consistency of data, with writes only possible in the Master node, and read-only Slave nodes.
+
+\textbf{Cluster.} Although it is the most complex configuration, beyond replication and consistency, it also adds huge scalability possibilities to the system.
+
+In our solution we deployed Redis instances configurated in all the configurations mentioned above, Standalone mode, Master-Slave and Cluster, as a way to test the behavior of the system. It's also important to note that each Redis replica had their own container, regardless which configuration it was set to execute. 
+
+
 
 \begin{figure}[htbp]
 	\centering
@@ -125,89 +178,47 @@ All the communications between the components that compose the server-side are s
 	\label{fig:serverside_systemModel}
 \end{figure}
 
+All the communications between the components that compose the server-side are secured by TLS over HTTP, as a way to keep confidentiality of the data during communications all over the system. The access to this TLS libraries inside the \gls{sgx} is possible due to the inclusion of openSSL on the static library that SCONE containers have. By having openSSL statically inside the enclave, no tangible overhead is added to the system, since the execution doesn't need to switch to a thread outside the enclave, in order to respond to the system call, thus establishing a HTTPS connection. 
+
   
-\subsection{Client-Side Operations}
+\section{System Model Design Tradeoffs}
 
-For the client-side, as mentioned in the beginning of this section, we only considered benchmarks. We use these benchmark clients with the single purpose of evaluating the system by making simple requests to the API (the Proxy), while calculating metrics that we found essential to use in our pratical evaluation of the solution. 
+Although our system model focus on assuring confidentiality and integrity to application data running inside a third party system, by leveraging trusted computation techniques, this comes at a cost. Tradeoffs have to take place, particularly between security and performance, where more security usually means less performance. 
+Thus, the usage of this trusted techniques are not always considered worthy, since greater levels of isolation usually means less fluidity for the system.  
 
-The communication process with the Server-side of the solution is also made through TLS over HTTP.
+\gls{tee}s give the system extra levels of security during the execution of data by isolating the code from the rest of the system, even the higher privileged components. This isolation is either given by encrypting a \gls{vm} in which the code is executing, or encrypting the region of memory dedicated to run the code. 
+In our system model, \gls{sgx} works alongside the second option, encrypting the enclave memory region dedicated to the application, while also trying to keep the \gls{tcb} as small as possible, by limiting the functions supported inside the enclave, as a way to increase the level of security. 
+This leads to a tradeoff, since less supported functions inside the enclave means that the thread of execution will more likely need to leave the enclave in order to execute system-calls, or other kind of fundamental operations, resulting in major overheads due to all the encryption involved. 
 
-\begin{figure}[htbp]
-	\centering
-	{\includegraphics[width=0.4\linewidth]{client_serverside}}
-	\caption{Communication between client and server}
-	\label{fig:client_serverModel}
-\end{figure}
+
+- problema dos system calls dinamicos
+
+- EPC sizes e repaging das memorias
+
+- overheads garantidos em ambos os casos, mas o SCONE ajuda a amortizar alguns
+
+- ver SCONE paper caps 2.3 2.4 
 
 % section importing_images (end)
 \section{Open Design Issues} % (fold)
+\label{sec:design_openIssues}
 
-Looking back at our model, we can think that the whole availability of the system depends highly on the single proxy instance working as entry-point for the whole system, and so all can be compromised if it fails to work, or just stops working for some reason. And this assumption is true. 
+Looking back at our model, we can think that the whole availability of the system depends highly on the single proxy instance working as entry-point for the whole system, and so all can be compromised if it fails to work. 
 Replication of the proxy instance can be seen as a measure to mitigate this problem, and although this is doable, we considered it to be out of scope for what we choose to evaluate in this thesis. 
 
 
 
 \section{Summary} % (fold)
+\label{sec:sysModel_summary}
 
+We designed our model with the objective to grant integrity and confidentiality to applications with data running inside a cloud host. With that in mind, we focus on finding a solution that enables the use of a \gls{tee}, in this particular case Intel-\gls{sgx}, while still assuring good performance to the system. 
+For that, we adopted SCONE as a mediator between the application and the trusted hardware. SCONE is a secured Linux container that can be used to deploy with ease on top of \gls{sgx} entire applications, and allows better performance levels when running applications on trusted hardware, due to the inclusion of a static small library of system calls directly inside the container, thus avoiding the need to leave the enclave of \gls{sgx} whenever a call to the system needs to be done. This is a huge factor since it is considered a major performance dropper on applications running with \gls{sgx}. 
+With SCONE we were able to deploy various configurations of Redis \gls{kvs} on top of \gls{sgx} with relative ease, allowing us to assure the initial objectives we had for the system: integrity and confidentiality to the data running and being stored in-memory. 
+As for the communication process, to better protect the system, we implemented a Proxy server. It serves as a gateway to the entire system, and it's responsible to authenticate the clients interacting with the system, as well as attesting the software of the system components, so that we assure that the components were not compromised. It does it with the help of an Authentication Server and an Attestation Server, respectively. To note that all these three components run also on top of \gls{sgx} with the help of SCONE. 
 
+Hereupon, and also by protecting each communication link, either between client and server, or between the server components themselves, we can assume that our system complies to the adversary model defined.
 
-\section{Implementation Guidelines} % (fold)
-
-For the development phase of this dissertation, and as we mentioned before in \ref{sec:objectiveAndContibutions}, we considered the following guidelines:
-
-\textbf{Key-Value Store}: we opted for REDIS (v5.0.7) due to being the most popular \gls{kvs} at the moment, as we can see in \cite{rankingKVStores}. Adding this to the fact that it fits our system needs, we thought that an exhaustive study over this technology running in a dependable system would be an interesting contribution.
-
-\textbf{Trusted Execution Environment}: as mentioned before, we choose to go with Intel-\gls{sgx} (\ref{ssec:intelsgx}), since it offers the possibility to isolate code inside multiple enclaves while executing on commodity hardware. Thus, we can run each node of our \gls{kvs} cluster inside of an individual enclave, assuring confidentiality and privacy of the data during runtime.
-
-\textbf{OS library}: to run unmodified applications on top of Intel-\gls{sgx}, we picked Graphene-SGX (\ref{ssec:grapheneSGX}) as it was proven to be able to keep decent levels of performance in a system.
-
-\textbf{Containerized OS Virtualization}: we choose Graphene-SGX Secure Container (GSC) \cite{gsc} due to being an open-source container system where an application can be protected by Intel-\gls{sgx} while running inside a Docker \cite{docker} container. We thought it to be a good way of adding an extra layer of isolation to the execution of each \gls{kvs} instance, while still running with the benefits of Graphene-SGX and Intel-\gls{sgx}.
-
-\textbf{Cloud Infrastructure}: OVH \cite{ovhCloud} was the cloud provider chosen, mainly due to the fact that it supports \gls{sgx} in its dedicated servers.
-
-\textbf{Operating System}: as for the \gls{os}, we are going to work with Ubuntu Linux, with the support of Linux-SGX \cite{linuxSGXwebsite} to run it on top of Intel-SGX technology. The use of Intel-SGX SDK \cite{linuxSgxSDK} for Linux makes it possible for us to manipulate the enclaves. Finally, we will use Linux SGX Driver \cite{linuxSGXDrivers}, which will manage the drivers of Linux-SGX already mentioned.
-
-As for other technologies, the system will be written in Java. 
-The client layer will consist of a benchmark application provided by both REDIS Benchmark and Yahoo! Cloud Serving Benchmark (YCSB) \cite{ycsb}. 
-Jedis (REDIS java client) \cite{jedis} will also be used in the processing layer, as the client to our \gls{kvs} instances, along with Lettuce \cite{lettuce} for thread-safe operations when working with a \gls{kvs} cluster.
-
-
-\section{Validation and Experimental Analysis} % (fold)
-\label{sec:floats_figures_and_captions}
-
-To validate and evaluate our solution, we created a set of tests for each metric we choose to evaluate. The analysis will be done between two scenarios, one being a regular, already existing, version of REDIS \gls{kvs}, while the other being a version of our TREDIS solution.
-
-For this purpose we will be comparing the following metrics:
-
-\begin{itemize}
-	\item \textbf{Attestation latency:} time of the attestation between the client and REDIS;
-	\item \textbf{Performance:} throughput and latency over the REDIS \gls{kvs};
-	\item \textbf{Scalability:} scalability conditions under different client-workloads;
-	\item \textbf{Resource allocation:} use of resources during runtime, including memory, CPU usage, I/O and energy.
-\end{itemize}
-
-In order to evaluate these metrics, we will analyze scenarios where:
-
-\textbf{1)} the size of the datasets used in the benchmark tools scale up (e.g: 1,000 entries and 100,000 entries);
-
-\textbf{2)} the typology of operations made over the \gls{kvs} varies: ratio of read/write operations (e.g: 20R/80W, 50R/50W, 80R/20W).
-
-
-For the TREDIS solution running in an OVH cloud, our experimental evaluation will be conducted in development and deployment nodes with the following aspect:
-
-\textbf{Processor:} Intel 2x Xeon Silver 4214 - 24 c / 48 t - 2.2 GHz / 3.2 GHz
-
-\textbf{Memory:} 192 GB
-
-\textbf{Storage:} NVMe, SATA disponível
-
-\textbf{Public Network:} more than 1Gb/s
-
-\textbf{Private Network:} more than 2Gb/s
-
-\textbf{OS:} CentOS 7.4.1708 64 bits or Ubuntu 18.4 LTS Server 64 bits
-
-
+In the next chapter, we will show how we implemented the prototype for the system model discussed here.
 
 % \subsection{Inserting Figures Wrapped with text} % (fold)
 % \label{ssec:inserting_images_wrapped_with_text}

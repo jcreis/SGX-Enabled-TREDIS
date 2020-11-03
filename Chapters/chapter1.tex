@@ -44,11 +44,11 @@ In this dissertation we studied how unmodified applications can be deployed with
 \label{sec:objectiveAndContibutions}
 Our main objective with this thesis is to implement a secure system based on Intel-SGX
 where it is possible to deploy unmodified applications without any major performance
-drop, by adopting the usage of a libraryOS to be ported on top of \gls{sgx}. Keeping that in mind, our focus laid on analyzing the behavior of an unmodified application (REDIS \gls{kvs}) executing on top of \gls{sgx}, benefiting from privacy and isolation properties of its data.
+drop, by adopting the usage of a SGX-enabled framework to be ported on top of \gls{sgx}. Keeping that in mind, our focus laid on analyzing the behavior of an unmodified application (REDIS \gls{kvs}) executing on top of \gls{sgx}, benefiting from privacy and isolation properties of its data.
 
 With that said, our solution must be able to deliver the following contributions:
 \begin{itemize}
-	\item The design of TREDIS, a full-fledged REDIS solution leveraging Intel-SGX and supported by a trusted virtual OS runtime library, running with isolation guarantees provided by hardware-shielded capabilities, to be supported as a service in the cloud;
+	\item The design of TREDIS, a full-fledged REDIS solution leveraging Intel-SGX and supported by a trusted SGX-enabled framework, running with isolation guarantees provided by hardware-shielded capabilities, to be supported as a service in the cloud;
 	\item Implementation of the TREDIS prototype as a cloud-enabled platform as a service, using real Intel-SGX-enabled hardware on commodity servers of a Cloud-Provider (as a solution designed as a candidate for an OVH product offer);
 	\item Implementation of client-side test and benchmark applications, to validate the full-fledged conditions in supporting the original REDIS, as currently offered;
 	\item Experimental evaluation of the prototype, to study the overheads of TREDIS against a no trusted REDIS solution. For this purpose we will analyze: (1) Performance conditions observed by latency and throughput measurements; (2) Adequacy to manage operations on privacy-enhanced big-datasets; (3) Scalability conditions under different client-workloads; (4) Analysis of required resources, including memory, CPU, I/O and energy.
@@ -60,9 +60,12 @@ With that said, our solution must be able to deliver the following contributions
 
 \section{Report Organization}
 
+TODO
+
 The remaining of this thesis is organized as follows:
 \begin{itemize}
 	\item \textbf{Chapter \ref{cha:related_work}} gives an initial background fundamental to understand the objectives and expected contributions of this dissertation, while also covering related work references; 
-	\item \textbf{Chapter \ref{cha:approach_of_elaboration_phase}} introduces our system approach, covering the model and architecture, as well as some environment setups and implementation guidelines we considered relevant.
-	\item \textbf{Chapter \ref{cha:workplan}} presents the defined workplan for the elaboration phase, along with the planned tasks and respective expected duration.
+	\item \textbf{Chapter \ref{cha:systemModel_and_designOptions}} introduces our system approach, covering the model and architecture, as well as the adversary model.
+	
+	\item \textbf{Chapter \ref{cha:workplan}} presents the defined workplan for the elaboration phase, along with the planned tasks and respective expected duration. ???????
 \end{itemize}
