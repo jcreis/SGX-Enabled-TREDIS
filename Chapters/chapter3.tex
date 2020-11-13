@@ -5,8 +5,8 @@
 %%
 %% Chapter with a short laext tutorial and examples
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{System model and design options}
-\label{cha:systemModel_and_designOptions}
+\chapter{System Model And Design}
+\label{cha:systemModel_and_design}
 
 In this chapter we present an overview of the system model for our solution. We introduce an architecture model that is able to assure confidentiallity and integrity to the execution of unmodified applications that run sensitive data on cloud computing servers, by leveraging trusted computing tecniques provided by both software and hardware, all according to our adversary model which focus fundamentally on dealing with attackers that can access and read the data during runtime, thus taking value from it. All this without crippling too much the performance levels of the overall system.
 
@@ -19,7 +19,7 @@ In Section \ref{sec:design_openIssues} we take a look into potential problems th
 
 
 
-\section{System model overview} % (fold)
+\section{System Model Overview} % (fold)
 \label{sec:systemModel_overview}
 
 Our solution can be seen in figure \ref{fig:systemModel}, which is a macro overview of the system. 
@@ -45,14 +45,14 @@ All the server components itemized above run on top of trusted hardware (\gls{te
 \end{figure}
 
 
-\section{Threat model and security properties} % (fold)
+\section{Threat Model And Security Properties} % (fold)
 \label{sec:threatModel_and_securityProperties}
 
 Our solution is designed to offer privacy-enhanced guarantees in protecting data confidentiality, while also ensuring integrity and completeness of results returned to the clients, which we do it by ensuring that sensitive data never runs in plaintext. 
 Thus, our system model protects from attackers with intentions of accessing sensitive data and taking advantage and value from it, regardless if the attack is coming from the inside or the outside the host system.
 
 
-\subsection{Adversarial model definition}
+\subsection{Adversarial Model Definition}
 
 Since the main objective of the solution is to protect data privacy during its execution, we specifically focused on two types of potencial threats: 
 
@@ -63,7 +63,7 @@ Since the main objective of the solution is to protect data privacy during its e
 We consider to be out of scope denial-of-service attacks, side-channel attacks that exploit timing and page faults.
 It is important to refer that with this solution, since we are focusing on using in-memory \gls{kvs}s, our target will not include ensuring confidentiality and integrity to data stored in disk, since we do not resort on persisting the data.
 
-\subsection{Countermeasures for privacy-preservation}
+\subsection{Countermeasures For Privacy-Preservation}
 
 Since our objectives are pointed towards an isolated system capable of offering security
 and privacy properties, we depend a lot on isolation techniques to make this possible,
@@ -87,7 +87,7 @@ Our solution, which is based on the system model introduced in Section \ref{sec:
 For the Client-side, we only considered them to be benchmark applications and not entire web applications, with only the intent to evaluate the system for our experimental analysis shown later on this dissertation. Thus, we assume that the client is trusted, as long as he can authenticate himself in the system.
 
 As for the server, our goal is to provide privacy to sensitive data running on top of trusted technology - \gls{tee}s - without crippling too much the performance levels of the application running. 
-Hereupon, our server-side, which we run inside a Cloud server, can itself be divided into multiple components: a Proxy, an Authentication Server, an Attestation component and a \gls{kvs} component. All these are running inside containers on top of a \gls{tee}, more specifically Intel-\gls{sgx}.
+Hereupon, our server-side, which we run inside a Cloud server, can itself be divided into multiple components: a Proxy, an Authentication Server, an Attestation component and a \gls{kvs} component. All these, apart of the Authentication Server, are running inside containers on top of a \gls{tee}, more specifically Intel-\gls{sgx}.
 
 According to what we have already studied, to run applications on top a \gls{tee} usually causes the system to take a performance penalty. To mitigate those penalties, we included additional layers of technology, frameworks specifically designed to work with these trusted technologies and to soften the performance impact \gls{tee}s have on applications that leverage their properties. 
 
@@ -112,7 +112,8 @@ All this communication process is secured through TLS over HTTP.
 
 
 
-\subsection{SGX-Enabled REDIS solution} % (fold)
+\subsection{SGX-Enabled REDIS Solution} % (fold)
+\label{ssec:sgx_redisSolution}
 
 The server runs on top of a \gls{tee}, that being Intel-\gls{sgx}. As we studied, applications can't simply be placed on top of a \gls{tee}, in this case \gls{sgx}, and expect them to perform as efficiently as they do without this extra layer of security. 
 Since \gls{sgx} completely isolates what is running inside its enclaves from the rest, even from the \gls{os}, it cripples the performance of the system for multiple reasons. Everytime a system call needs to be performed by running code, the thread of execution needs to leave the enclave to execute it. Only after it has completed executing the system call, the thread can come back inside the enclave. This process takes a lot of effort for the system, since it envolves a lot of encryption functions to take place. 
@@ -133,7 +134,12 @@ The proxy is also the responsible for only allowing authenticated clients to acc
 
 \vspace{5mm} 
 
-\textbf{2) Authentication Server -}
+\textbf{2) Authentication Server -} TODO TODO TODO
+
+-does not run on top of scone container
+
+-it is out of scope the privacy of data inside its functionality.
+
 We added an authentication component responsible for authenticating every client that wants to interact with the system, by assigning access tokens to those allowed, which the clients will then use to communicate with the system after the Proxy validates them.
  
 Although some \gls{kvs}s (i.e., Redis) have the possibility to configure authentication for each replica, we believe that option would add an extreme layer of complexity that we do not want, due to the fact that each replica needs to be configured individually. Therefore, if we use a cluster of \gls{kvs} instances and begin to scale their number, the complexity of that task everytime a new user is being granted permission to access the system will be huge. Thus, by including a server designed only to deal with the authentication process, the configuration only needs to happen once for the system to know which users are allowed.
@@ -211,25 +217,25 @@ All the communications between the components that make up the server-side are s
 \section{System Model Design Tradeoffs}
 \label{sec:design_tradeoffs}
 
-Although our system model focus on assuring confidentiality and integrity to application data running inside a third party system, by leveraging trusted computation techniques, this comes at a cost. Tradeoffs have to take place, particularly between security and performance, where more security usually means less performance. 
+Although our system model focus on assuring confidentiality and integrity to application data running inside a third party system, by leveraging trusted computation techniques, this extra security layer comes at a cost. Tradeoffs have to take place, particularly between security and performance, where more security usually means less performance. 
 Thus, the usage of this trusted techniques are not always considered worthy, alongside the fact that the levels of isolation they assure can also mean less fluidity for the system in general.  
 
 \gls{tee}s give the system extra levels of security during the execution of data by isolating the code from the rest of the system, even from the high privileged components. This isolation is either given by encrypting a \gls{vm} in which the code is executing, or encrypting only the region of memory dedicated to run the code. 
 
-In our system model, \gls{sgx} works alongside the second option, encrypting the enclave memory region dedicated to the application, while also trying to keep the \gls{tcb} as small as possible, by limiting the functions supported inside the enclave as a way to increase the level of security. 
+In our system model, \gls{sgx} works alongside the second option, encrypting the enclave memory region dedicated to the application, while also trying to keep the \gls{tcb} as small as possible, limiting the functions supported inside the enclave as a way to increase the level of security. 
 This leads to a tradeoff, since less supported functions inside the enclave means that the thread of execution will more likely need to leave the enclave in order to execute system calls, or other kind of essential operations, resulting in major overheads due to all the encryption involved. This has a big performance impact when dealing, i.e., with network-heavy services, which usually have a high system call frequency.
 
 Also, by only relying on the encryption of the enclave memory region, \gls{sgx} encounters problems when confronted with applications that are bigger than the enclave itself (keep in mind that an enclave size is usually really small, only around 64MB and 128MB \cite{sconePaper}). 
-When the memory space needed for the application is bigger than the enclave size, page swaps between the enclaves \gls{epc} and the untrusted memory take place, through a mechanism provided by \gls{sgx}. Since this scenario envolves a lot of encryption and decryption to happen, it induces the system into huge performance overheads.
+When the memory space needed for the application is bigger than the enclave size, page swaps between the enclaves \gls{epc} and the untrusted memory take place, through a mechanism provided by \gls{sgx} itself. Since this scenario envolves a lot of encryption and decryption to happen, it induces the system into huge performance overheads.
 
 SCONE, along with some other recent technologies, has been referred as a possibility to help mitigate some of those performance losses. 
 It does it by: 
 1) trying to level the scale between the two factors, security and performance, and
 2) maximizing the time threads spend inside the enclave.
 The first factor due to keeping the \gls{tcb} as small as possible, but with enough functionalities to allow the system to perform with efficiency. As mentioned before, SCONE containers include a small (and trusted) library with system functionalities that can be used inside the enclave. It increases the \gls{tcb} in a controlled way, while improving the performance levels and fluidity of the system.
-And the second factor by allowing asynchronous system calls. This enables the possibility to swap the execution from inside the enclave to a thread outside whenever a system call left out of the \gls{tcb} is needed, thus avoiding threads to exit the enclave.
+And the second factor by allowing asynchronous system calls. This enables the possibility to swap the execution from inside the enclave to a thread outside, whenever a system call left out of the \gls{tcb} is needed, thus avoiding threads to exit the enclave more often.
 
-However, even helping soften some of the tradeoffs related to using trusted technology to run our system model, using SCONE doesn't make our solution perfect. Thus, we still expect to observe security and performance tradeoffs, however we are confident those to be way less expressive with the help of SCONE.
+However, despite helping to soften some of the tradeoffs related with the usage of trusted technology to run our system model, using SCONE doesn't make our solution perfect. Thus, we still expect to observe security and performance tradeoffs, however we are confident those to be way less expressive with the help of SCONE.
 
 % section importing_images (end)
 \section{Open Design Issues} % (fold)
@@ -244,11 +250,11 @@ Replication of the proxy instance can be seen as a measure to mitigate this prob
 \label{sec:sysModel_summary}
 
 We designed our model with the objective to grant integrity and confidentiality to applications with data running inside a cloud host. With that in mind, we focus on finding a solution that enables the use of a \gls{tee}, in this particular case Intel-\gls{sgx}, while still assuring good performance to the system. 
-For that, we adopted SCONE as a mediator between the application and the trusted hardware. SCONE is a secured Linux container that can be used to deploy entire applications with ease on top of \gls{sgx}, and allows better performance levels when running applications on trusted hardware, due to the inclusion of a static small library of system calls directly inside the container, thus minimizing the number of times enclave exits need to happen because of a system call that is not allowed inside the \gls{epc}. This is a huge factor since it is considered a major performance dropper on applications running with \gls{sgx}. 
+For that, we adopted SCONE as a mediator between the application and the trusted hardware. SCONE provides secured Linux containers that can be used to deploy entire applications with ease on top of \gls{sgx}, and allows better performance levels when running applications inside \gls{sgx} enclaves, due to the inclusion of a static small library of system calls directly inside the \gls{epc}, thus minimizing the number of times enclave exits need to happen. This is a huge factor since it is considered a major performance dropper on applications running with \gls{sgx}. 
 With SCONE we are able to deploy various configurations of Redis \gls{kvs} on top of \gls{sgx} with relative ease, allowing us to assure our initial objectives:  grant integrity and confidentiality to the data running and being stored in-memory. 
-As for the communication process, to better protect the system, we implemented a Proxy server. It serves as a gateway to the entire system, and it's responsible to validate the authentication of the clients, which is granted by an Authentication Server. Lastly, we use an Attestation Server responsible for attesting all the components running in the system. To note that all this  components run on top of \gls{sgx} with the help of SCONE. 
+As for the communication process, to better protect the system, we implemented a Proxy server. It serves as a gateway to the entire system, and it's responsible to validate the authentication of the clients, which is granted by an Authentication Server. Lastly, we use a attestation mechanism, also provided by SCONE, which is responsible for attesting all the components running in the system, through a remote attestation mechanism. To note that all the referred components run on top of \gls{sgx} with the help of SCONE. 
 
-Also, by protecting each communication link, either between client and server or between the server components themselves, with TLS, we can assume that our system complies to the adversary model defined.
+Also, by protecting each communication link with \gls{tls}, either between client and server or between the server components themselves, we can assume that our system complies to the adversary model defined.
 
 In the next chapter, we will show how we implemented the prototype for the system model discussed here.
 
