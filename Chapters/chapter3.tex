@@ -138,7 +138,7 @@ The proxy is also the responsible for only allowing authenticated clients to acc
 
 -does not run on top of scone container
 
--it is out of scope the privacy of data inside its functionality.
+-it is out of scope the privacy of data inside its functionality. and to protect the authentication server
 
 We added an authentication component responsible for authenticating every client that wants to interact with the system, by assigning access tokens to those allowed, which the clients will then use to communicate with the system after the Proxy validates them.
  
@@ -160,7 +160,7 @@ In figure \ref{fig:authProcess} we see that in the first interaction with the sy
 \textbf{3) Attestation -}
 For the component accountable to deal with attestation for the system, we follow a remote attestation policy where a remote system is the one who holds the defined secrets and provides them to the system components when they successfully attest themselves to this remote server.
 
-As we mentioned earlier, we resort on SCONE as a way to run our components inside \gls{sgx}. SCONE also offers a mechanism to attest the enclaves where SCONE containers are running the applications, which we use to add the attestation property to our system. 
+As we mentioned earlier, we resort on SCONE as a way to run our components inside \gls{sgx}. SCONE also offers a mechanism to attest the enclaves where SCONE containers are running the applications, which we use to add the attestation property to our system and to assure that the server components run inside \gls{sgx} enclaves. 
 
 SCONE's attestation mechanism, called SCONE Configuration and Attestation Service (or CAS) \cite{sconeCAS}, consists on exposing a remote component provided by SCONE itself that manages the secrets (i.e., keys) of an application, to whom enclaves will then try to prove their identity in order to access those secrets, so they can execute their designated application. 
 
