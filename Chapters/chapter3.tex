@@ -34,7 +34,7 @@ Although the \textbf{Client} and its purpose is easy to understand - make reques
 \end{itemize} 
 
 
-All the server components itemized above run on top of trusted hardware (\gls{tee}), inside a third-party cloud server.
+All the server components itemized above run inside a third-party cloud server on top of trusted hardware (\gls{tee}), with the exception of the Authentication Server.
 
 \vspace{5mm}
 \begin{figure}[htbp]
@@ -82,7 +82,7 @@ In addition, to grant an extra layer of isolation and to ensure privacy to the d
 \label{sec:systemArchitecture}
 In this section, we dive into more detail about the components that make part of the system and what purpose do they have in the solution.  
 
-Our solution, which is based on the system model introduced in Section \ref{sec:systemModel_overview}, and as it has been there referred, can be divided into two parts, one part being the Client-side, responsible for making requests to the system, and other being the server, that deals with the execution and storage of the data.
+Our system, which is based on the system model introduced in Section \ref{sec:systemModel_overview} can be split into two parts, one part being the Client-side, responsible for making requests to the system, and other being the server, that deals with the execution and storage of the data.
 
 For the Client-side, we only considered them to be benchmark applications and not entire web applications, with only the intent to evaluate the system for our experimental analysis shown later on this dissertation. Thus, we assume that the client is trusted, as long as he can authenticate himself in the system.
 
@@ -105,7 +105,7 @@ All this communication process is secured through TLS over HTTP.
 
 \begin{figure}[htbp]
 	\centering
-	{\includegraphics[width=0.5\linewidth]{comm_client_server}}
+	{\includegraphics[width=0.7\linewidth]{CliServComm}}
 	\caption{Communication between client and server}
 	\label{fig:client_serverModel}
 \end{figure}
@@ -115,7 +115,7 @@ All this communication process is secured through TLS over HTTP.
 \subsection{SGX-Enabled REDIS Solution} % (fold)
 \label{ssec:sgx_redisSolution}
 
-The server runs on top of a \gls{tee}, that being Intel-\gls{sgx}. As we studied, applications can't simply be placed on top of a \gls{tee}, in this case \gls{sgx}, and expect them to perform as efficiently as they do without this extra layer of security. 
+All the components that make up the server, with the exception of the authentication server, run on top of a \gls{tee}, that being Intel-\gls{sgx}. As we studied, applications can't simply be placed on top of a \gls{tee} and be expected to perform as efficiently as they do without this extra layer of security. 
 Since \gls{sgx} completely isolates what is running inside its enclaves from the rest, even from the \gls{os}, it cripples the performance of the system for multiple reasons. Everytime a system call needs to be performed by running code, the thread of execution needs to leave the enclave to execute it. Only after it has completed executing the system call, the thread can come back inside the enclave. This process takes a lot of effort for the system, since it envolves a lot of encryption functions to take place. 
 Also, since enclaves are small in-memory regions (size depends on the hardware used), when running a normal or large sized application on top of \gls{sgx} it usually means that the code does not fit all at once inside the \gls{epc}. 
 Thus, parts of the application need to leave the enclave in order to fit the other parts that are needed at that time, resulting in a lot of encryption and decryption taking place due to page swapping between the \gls{epc} and the rest of the memory, in order to keep the integrity of the data.  
@@ -134,15 +134,15 @@ The proxy is also the responsible for only allowing authenticated clients to acc
 
 \vspace{5mm} 
 
-\textbf{2) Authentication Server -} TODO TODO TODO
+\textbf{2) Authentication Server -} 
 
--does not run on top of scone container
 
--it is out of scope the privacy of data inside its functionality. and to protect the authentication server
 
 We added an authentication component responsible for authenticating every client that wants to interact with the system, by assigning access tokens to those allowed, which the clients will then use to communicate with the system after the Proxy validates them.
  
 Although some \gls{kvs}s (i.e., Redis) have the possibility to configure authentication for each replica, we believe that option would add an extreme layer of complexity that we do not want, due to the fact that each replica needs to be configured individually. Therefore, if we use a cluster of \gls{kvs} instances and begin to scale their number, the complexity of that task everytime a new user is being granted permission to access the system will be huge. Thus, by including a server designed only to deal with the authentication process, the configuration only needs to happen once for the system to know which users are allowed.
+
+
 
 \vspace{3mm}
 
@@ -153,7 +153,9 @@ Although some \gls{kvs}s (i.e., Redis) have the possibility to configure authent
 	\label{fig:authProcess}
 \end{figure}
 
-In figure \ref{fig:authProcess} we see that in the first interaction with the system, the Client reaches the Authentication Server in order to get an access token to use as proof of authentication in its future requests. This token is valid for only a certain period of time. After it has expired, the Client needs to reach the Authentication Server again, in order to get a new valid token. While the token is valid, the Client can make requests to the server-side by interacting with the Proxy. The Proxy then validates the token and only if it is indeed valid will the Proxy process the Client request.
+In figure \ref{fig:authProcess} we see that in the first interaction with the system, the Client reaches the Authentication Server in order to get an access token to use as proof of authentication in its future requests. This token is valid for only a certain period of time. After it has expired, the Client needs to reach the Authentication Server again, in order to get a new valid token. While the token is valid, the Client can make requests to the server-side by interacting with the Proxy. The Proxy then validates the token with the Authentication Server and only upon passing this validation will the Proxy process the Client request.
+
+We do not run our Authentication Server inside \gls{sgx}, thus making it the only server component to not leverage \gls{sgx} security properties. Ensuring security to the external authentication of clients is not the main goal of this thesis, therefore we considered it to be out of the scope.
 
 \vspace{5mm} 
 
@@ -162,11 +164,15 @@ For the component accountable to deal with attestation for the system, we follow
 
 As we mentioned earlier, we resort on SCONE as a way to run our components inside \gls{sgx}. SCONE also offers a mechanism to attest the enclaves where SCONE containers are running the applications, which we use to add the attestation property to our system and to assure that the server components run inside \gls{sgx} enclaves. 
 
-SCONE's attestation mechanism, called SCONE Configuration and Attestation Service (or CAS) \cite{sconeCAS}, consists on exposing a remote component provided by SCONE itself that manages the secrets (i.e., keys) of an application, to whom enclaves will then try to prove their identity in order to access those secrets, so they can execute their designated application. 
+SCONE's attestation mechanism, called SCONE Configuration and Attestation Service (or CAS) \cite{sconeCAS}, consists on exposing a remote component provided by SCONE itself that manages the secrets (i.e., keys) of an application, to whom enclaves will try to prove their identity in order to access those secrets, so they can execute their designated application. 
 
 In CAS we define each application access policy, reflecting which enclave have permission to execute them. The confidentiality and integrity of this policies and their secrets are ensured by CAS itself. To modify and read a policy, the client (in this case, us) needs to have knowledge of the private key that pairs with a public key, which is stated in the policy itself upon creation. Thus, no admin managing CAS can read or modify the policies defined remotely.
 
-For an application to prove their identity to CAS, and thus get access to the secrets, it needs to be attested locally so it gets the attestation key involved - a key pair that CAS shares with a local component so they can validate each other's involvement. The key is then recognized by CAS and the attestation is considered valid (although no access to the secrets is given yet). With that in mind, SCONE's attestation mechanism adds a second component, which runs locally inside the system environment. Local Attestation Service (or LAS) receives attestation requests by the enclaves that intend to attest themselves to CAS, and signs them with the attestation key, creating a quote that can be verified by CAS. After getting this quote, any enclave can reach the CAS to try and access the secrets to run the application, but only if they are allowed by its defined policy. This completes the attestation process of an application running in an \gls{sgx} enclave. 
+
+
+
+For an application to prove their identity to CAS, and thus get access to the secrets, it needs to be attested locally so it gets the attestation key involved - a key pair that CAS shares with a local component so they can validate each other's involvement. The key is then recognized by CAS and the attestation is considered valid (although no access to the secrets is given yet). With that in mind, SCONE's attestation mechanism adds a second component, which runs locally inside the system environment, the Local Attestation Service (or LAS). LAS receives attestation requests by the enclaves that intend to attest themselves to CAS, and signs those requests with the attestation key, creating a quote that can be verified by CAS. After getting this quote, any enclave can reach the CAS to try and access the secrets to run the application, only reaching them if they are allowed by its defined policy. This completes the attestation process of an application running in a \gls{sgx} enclave. 
+\vspace{3mm}
 
 \begin{figure}[htbp]
 	\centering
@@ -177,7 +183,7 @@ For an application to prove their identity to CAS, and thus get access to the se
 
 In Figure \ref{fig:attestationModel} we present a visual display of the attestation process described above, taking place inside our system model.
 
-The attestation starts with the enclave of an application (i.g., the Proxy component of our system) establishing a HTTPS connection with the remote component CAS endpoint. Afterwards, the enclave requests the attestation from LAS, which will then sign a message with the attestation secret key, resulting in a Quote. The Quote is then used by the enclave to validate its own attestation with the help of CAS. After validation, the enclave requests access to the secrets defined in the policies that CAS helds. If the enclaves is indeed specified to run the referred application it intends to run, CAS shares the secrets, thus completing the attestation process with success. In Figure \ref{fig:attestationProcess} we present a diagram with the steps just described.
+The attestation starts with the enclave of an application (i.g., the Proxy component of our system) establishing a HTTPS connection with the remote component CAS endpoint. Afterwards, the enclave requests the attestation from LAS, which will then sign a message with the attestation secret key, resulting in a Quote. The Quote is then used by the enclave to validate its own attestation with the help of CAS. After validation, the enclave requests access to the secrets defined in the policies that CAS helds. If the enclaves is indeed specified to run the referred application, CAS shares the secrets, thus completing the attestation process with success. In Figure \ref{fig:attestationProcess} we present a diagram with the steps just described.
 
 \begin{figure}[htbp]
 	\centering
