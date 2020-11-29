@@ -1,0 +1,63 @@
+%!TEX root = ../template.tex
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% chapter1.tex
+%% NOVA thesis document file
+%%
+%% Chapter with introduciton
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Conclusion}
+\label{cha:conclusion}
+
+\section{Main Conclusions and Remarks}
+
+As addressed in the cahpter 1 (introduction), our dissertations objectives foram …. 
+To adderss the objectives we proposed …   System model and architecture … 
+We implemented a prototype que foi feito desta maneia 
+We used our prototype to conduct an experimental evaluation for validation purposes. In the evaluation we tested …
+
+
+
+In conclusion we addressed all the objectives and goals proposed for our dissertation
+From our observations we conclude that the system performs with a good balance between privacy concerns, trustability assumptions and operation performance, showing that it is possible to have a solution using in-memory KVS that can …. TIRAR PARTIDO das tecnologias … 
+
+(plus example, only if this is the case)
+We shown that the impact on the possible loss of performance is only (approximately) 10% overhead in the performance comparing with a similar solution running without privacy and trustability considerations
+
+Se nao resultou como esperavamos, explicar o pq
+
+
+\section{Open Issues and Future Work}
+
+Some open issues arise from our proposed solution and implementation status. Some of these issues can be divided into two different categories:
+-	Extensions and additional observations using the current prototype (A)
+-	Optimizations and imporvements on the current solution (B) 
+
+
+4 ou 5 boas direções vetres de trabaho na categoria A
+
+4 ou 5 max vectores de trabalho proposto como future work
+
+-  Optimizing the TEEE-Enabled solution with REDIS with a more fonegrain granularity of internal REDIS components specifically ruuuning in enclaves, aviding the containerization of the entire REDIS solution. This work direction could minimize the impact on SGX-performance issuers … (SCONE) …  
+This approach forces to a accurate reenginerring process of REDIS implementation, in rder to be more aprpoproate for this purpose.
+- It woulbe interesting to evaluate te impact of the laveraged container-bases solution, to evaluate different impacts ondifferent existen soltions. 
+a) Scratched base:  Grahene 
+b) GRAPHENE.GCS and others … (/3)
+c) REDIS foi esclhido por ser uma solução de refR~encia muito pouplar….    It woul be interesting to conduct similar evaluations with ther
+existent KVS technologies, namely … , … , … 
+d) It woulbe interesting to conduct a comparative analysis on the performance of SGX-Enabeld REDIS comparing with more recent
+proposals in which the native KVS technology was designed and imooemented from scratch to be protected by SGX
+For example:    1 [pedir ao prof KVS feitas para serem incorporadas com o SGX]    2 [pedir ao prof outra, ele sabe as 2] 
+
+
+
+-distribuir o servidor em mais clouds
+-testar outras merdas
+- TLDR : 4 ou 5 cenas obvias tipo (em vez de medir isto assim, medir de outra maneira)
+
+----------------
+
+Persisted data encrypted, we only have in-memory
+
+Each replica of the cluster KVS in different containers on different machines (theoretically will give the overhead of a single instance KVS)
+
+SGX v1 e v2

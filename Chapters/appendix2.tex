@@ -5,7 +5,57 @@
 %%
 %% Chapter with example of appendix with a short dummy text
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Appendix 2 Lorem Ipsum}
-\label{app:lorem_ipsum2}
+\chapter{Attestation Secret Example}
+\label{app:appendix2}
 
-\lipsum[1-5]
+Listing \ref{lst:secretCAS} shows an example of the YAML file stored in CAS that holds the secrets needed for an application to run properly, only upon attestation.
+
+\begin{lstlisting}
+version: 0.3
+name: exampleThesis_joaoreis
+services:
+   - name: redis
+     mrenclaves: [3f33b7dd2f6997a9547b9cc2983502a3853802d5b52838d8b47226ed7173a15d] # MRENCLAVE = Enclave hash: from execution with SCONE_VERSION=1
+	   command: "redis-server /usr/local/etc/redis/redis.conf"
+     image_name: redisKey_image redisCrt_image
+     pwd: /usr/local/etc/redis/
+     environment:
+        LD_LIBRARY_PATH: "/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64/server:/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64:/usr/lib/jvm/java-1.8-openjdk/jre/../lib/amd64"
+        JAVA_TOOL_OPTIONS: "-Xmx256m"
+        TMP_SECRET_VAR: "This is a protected secret distributed by Scone CAS!"
+	
+secrets:   
+  - name: redisKey_secret
+	  kind: private-key
+	  value: |
+	     -----BEGIN PRIVATE KEY-----
+	                <KEY>
+	     -----END PRIVATE KEY-----
+	
+  - name: redisCrt_secret
+	  kind: x509-ca
+	  private_key: redisKey_secret
+	  value: |
+	     -----BEGIN CERTIFICATE-----
+	                <CERT>
+	     -----END CERTIFICATE-----
+	
+images:
+  - name: redisKey_image
+	  injection_files:
+	    - path: /usr/local/etc/redis/redis.key
+	      content: |
+	        $$SCONE::redisKey_secret$$
+	
+  - name: redisCrt_image
+	  injection_files:
+	    - path: /usr/local/etc/redis/redis.crt
+	      content: |
+	        $$SCONE::redisCrt_secret$$
+	
+security:
+   attestation:
+	   tolerate: [debug-mode, outdated-tcb]
+	   ignore_advisories: ["INTEL-SA-00220", "INTEL-SA-00270", "INTEL-SA-00293", "INTEL-SA-00320", "INTEL-SA-00329"]
+\end{lstlisting}
+\label{lst:secretCAS}
