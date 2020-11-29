@@ -12,44 +12,44 @@
 \chapter{Introduction}
 \label{cha:introduction}
 
-In this chapter we introduce the context and motivation of this dissertation, as well as its problem statement, followed by the goals and expected contributions. In the end we present the structure of the document.
+In this chapter, we introduce the context and motivation of this dissertation, as well as its problem statement, followed by the goals and expected contributions. In the end, we present the structure of the document.
 
 
 
 
 \section{Context and Motivation}
 Data has more value than ever before. 
-The adoption of mobile devices as an almost indispensable thing in people's lives led to an imense amount of information produced each second, by everyone, at a global scale \cite{dataAnalysis1}\cite{dataAnalysis2}.
-To deal with this, numerous fields of computer science were born, and new technologies more adapted to deal with huge amounts of data were designed. 
+The adoption of mobile devices as an almost indispensable thing in people's lives led to an immense amount of information produced each second, by everyone, at a global scale \cite{dataAnalysis1}\cite{dataAnalysis2}.
+To deal with this, numerous fields of computer science were born, and new technologies more adapted to deal with vast amounts of data were designed. 
 A major one was Cloud Computing, which appeared as a way to remotely provide computing and storage capabilities to systems like we never saw before, as well as fault tolerance and scalability (as well as many other properties) for a reduced cost to their users \cite{cloudOrigins}. 
-Because high storage capacity and powerful processors are expensive, the tendency to move data to these cloud providers emerged as a convinient way to provide just that, thus making the users free of worries regarding physical resources in their own machines. Both users and companies could now choose to rely on a cloud provider, who are usually hosted by huge corporations, to run their services.
+Because high storage capacity and powerful processors are expensive, the tendency to move data to these cloud providers emerged as a convenient way to provide just that, thus making the users free of worries regarding physical resources in their own machines. Both users and companies could now choose to rely on a cloud provider, which are usually hosted by huge corporations, to run their services.
 However, the fact that these cloud systems are highly accessible over the Internet made them major attack targets \cite{cloudAttacksReport} and security problems, more specifically the ones regarding privacy and security of personal information, were found to be very concerning \cite{playstationAttack}. 
-Since data is stored in the provider's system, the information depends on the provider's security, as well as the behaviour of its staff, which have physical access to the system and can act maliciously. All this brings insecurity to the data and raises privacy concerns.
-Also, after the data reached the cloud provider, privacy is not assured during execution phase, even if it stored safely (encrypted) in disk, since to be executed it has to be fully decrypted in volatile memory. The data is then vulnerable during memory attacks, which lead to many efforts to be put into solving this particular problem.  
+Since data is stored in the provider's system, the information depends on the provider's security, as well as the behavior of its staff, which have physical access to the system and can act maliciously. All this brings insecurity to the data and raises privacy concerns.
+Also, after the data reached the cloud provider, privacy is not assured during the execution phase, even if it stored safely (encrypted) on disk since to be executed it has to be fully decrypted in volatile memory. The data is then vulnerable during memory attacks, which lead to many efforts to be put into solving this particular problem.  
 
 A few solutions were thought to be effective, either by using some kind of virtualization or containerization, or even by relying on the hardware itself in a special way. 
-Some \cite{virtGhostPaper}\cite{flickerPaper}\cite{mushiPaper}\cite{SeCagePaper}\cite{inkTagPaper}\cite{segoPaper} offer the possibility to isolate the execution of data from the host \gls{os}, making system calls ineffective and blocking typical permissions these might have over the whole system, while others, particularly the more recent ones regarding Trusted Execution Environments \cite{armTZPaper}\cite{amdPaper}\cite{sanctumPaper}\cite{intelSGX}, focused on creating a trusted memory region where data could execute fully encrypted from the outside. 
+Some \cite{virtGhostPaper}\cite{flickerPaper}\cite{mushiPaper}\cite{SeCagePaper}\cite{inkTagPaper}\cite{segoPaper} offer the possibility to isolate the execution of data from the host \gls{os}, making system calls ineffective and blocking typical permissions this might have over the whole system, while others, particularly the more recent ones regarding Trusted Execution Environments \cite{armTZPaper}\cite{amdPaper}\cite{sanctumPaper}\cite{intelSGX}, focused on creating a trusted memory region where data could execute fully encrypted from the outside. 
 However, while offering trust and integrity to the data, \gls{tee}s have been proven to have some performance issues, since they depend a lot on encryption and decryption (usually big performance droppers). Unfortunately, the performance loss really impacted their adoption in modern systems, which lead to figuring out a way to make this kind of technology more viable. 
 More recently, a few different approaches to place on top of \gls{tee}s have proven to soften the performance issues, creating the impression that we are on the right path to take the most advantage of \gls{tee}s. 
 
 
 \section{Problem Statement}
 
-In this dissertation we intend to study how unmodified applications can be deployed with ease on top of trusted hardware (\gls{tee}), and still offer comparable performance overheads relatively to other applications running without this extra layer of security. To achieve this, we took a deep look into existing approaches capable of enabling applications to run with isolation in trusted execution environments and conducted an evaluation by adopting one of them to be ported on top of trusted hardware (\gls{sgx}). 
+In this dissertation, we intend to study how unmodified applications can be deployed with ease on top of trusted hardware (\gls{tee}), and still offer comparable performance overheads relatively to other applications running without this extra layer of security. To achieve this, we took a deep look into existing approaches capable of enabling applications to run with isolation in trusted execution environments and conducted an evaluation by adopting one of them to be ported on top of trusted hardware (\gls{sgx}). 
 
 
 \section{Objective and Expected Contributions} % (fold)
 \label{sec:objectiveAndContibutions}
 Our main objective with this thesis is to implement a secure system based on Intel-SGX
 where it is possible to deploy unmodified applications without any major performance
-drop, by adopting the usage of a SGX-enabled framework to be ported on top of \gls{sgx}. Keeping that in mind, our focus lays on analyzing the behavior of an unmodified application (REDIS \gls{kvs}) executing on top of \gls{sgx}, benefiting from privacy and isolation properties of its data.
+drop, by adopting the usage of an SGX-enabled framework to be ported on top of \gls{sgx}. Keeping that in mind, our focus lays on analyzing the behavior of an unmodified application (REDIS \gls{kvs}) executing on top of \gls{sgx}, benefiting from privacy and isolation properties of its data.
 
 With that said, our solution must be able to deliver the following contributions:
 \begin{itemize}
 	\item The design of TREDIS, a full-fledged REDIS solution leveraging Intel-SGX and supported by a trusted SGX-enabled framework, running with isolation guarantees provided by hardware-shielded capabilities, to be supported as a service in the cloud;
 	\item Implementation of the TREDIS prototype as a cloud-enabled platform as a service, using real Intel-SGX-enabled hardware on commodity servers of a Cloud-Provider (as a solution designed as a candidate for an OVH product offer);
 	\item Implementation of client-side test and benchmark applications, to validate the full-fledged conditions in supporting the original REDIS, as currently offered;
-	\item Experimental evaluation of the prototype, to study the overheads of TREDIS against a no trusted REDIS solution. For this purpose we analyze: (1) Performance conditions observed by latency and throughput measurements; (2) Adequacy to manage operations on privacy-enhanced big-datasets; (3) Scalability conditions under different client-workloads; (4) Analysis of required resources, including memory, CPU, I/O and energy.
+	\item Experimental evaluation of the prototype, to study the overheads of TREDIS against a no trusted REDIS solution. For this purpose, we analyze (1) Performance conditions observed by latency and throughput measurements; (2) Adequacy to manage operations on privacy-enhanced big-datasets; (3) Scalability conditions under different client-workloads; (4) Analysis of required resources, including memory and CPU.
 	
 \end{itemize}
 
@@ -66,7 +66,7 @@ The remaining of this thesis is organized as follows:
 
 	\item \textbf{Chapter \ref{cha:implementation}} presents a detailed description of the implementation of the prototype, describing the environments and technologies we used;
 	
-	\item \textbf{Chapter \ref{cha:experimentalEvaluation}} shows the evaluation and analysis we performed to the system, along with the discussion of the results;
+	\item \textbf{Chapter \ref{cha:experimentalEvaluation}} shows the evaluation and analysis we performed on the system, along with the discussion of the results;
 	
 	\item \textbf{Chapter \ref{cha:conclusion}} is where we present our conclusions and also address some open issues and future work directions.
 	

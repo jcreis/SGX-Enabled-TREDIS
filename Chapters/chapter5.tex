@@ -8,7 +8,7 @@
 \chapter{Experimental Observations and Validations}
 \label{cha:experimentalEvaluation}
 
-In this chapter we describe the work we conducted for the validation and evaluation of our proposed in-memory TREDIS solution, detailed in \ref{cha:implementation}. We will mostly evaluate the impact of the biggest and most important components, such as the \gls{kvs} layer and the Proxy, while also analysing the impact of the attestation component. However, as for the component responsable for the authentication of the clients, we consider it to be out of the scope of our study.
+In this chapter, we describe the work we conducted for the validation and evaluation of our proposed in-memory TREDIS solution, detailed in \ref{cha:implementation}. We will mostly evaluate the impact of the biggest and most important components, such as the \gls{kvs} layer and the Proxy, while also analyzing the impact of the attestation component. However, as for the component responsible for the authentication of the clients, we consider it to be out of the scope of our study.
 
 Here, we start by presenting the metrics we intend to evaluate, along with the test benches we defined to test our prototype.
 We then go deeper about each test bench, describing the results obtained during the experimental evaluation of each one of those scenarios, leading to a discussion later in this chapter aiming to compare those results and, finally, ending with a summary of the chapter.
@@ -19,10 +19,10 @@ We then go deeper about each test bench, describing the results obtained during 
 
 Our evaluation process is simple: track our TREDIS solution's behavior through all the different configurations, incrementally adding more layers to the system. Thus, we intend to evaluate our TREDIS solution on each possible configuration, starting with a basic model and slowly add more components to the system, while also making experimental observations about the impact they have. 
 
-During the evaluation process we focus on measuring: 1) the performance impact each component has in the system while running with or without \gls{sgx}, through a latency and throughput analysis, and 2) resource allocation during runtime, including memory and CPU usage. 
+During the evaluation process, we focus on measuring: 1) the performance impact each component has in the system while running with or without \gls{sgx}, through a latency and throughput analysis and 2) resource allocation during runtime, including memory and CPU usage. 
 
-There are other particular measurements that we found useful to introduce, that we detail later, while describing the test benches individually.
-Adding to that, we also analyse the system's behavior under different client-workloads, by scaling up the number of requests and varying the typology of requests made to the system.
+There are other particular measurements that we found useful to introduce, that we detail later while describing the test benches individually.
+Adding to that, we also analyze the system's behavior under different client-workloads, by scaling up the number of requests and varying the typology of requests made to the system.
 
 
 \section{Deployment of Testbench Environments}
@@ -30,33 +30,33 @@ Adding to that, we also analyse the system's behavior under different client-wor
 
 As said before, we intend to evaluate our in-memory TREDIS system behavior by incrementally adding components to it, which will add security to the whole system, and see what impact they have on it. In order to do that, we define a list of Testbench (TB) scenarios to help us evaluate the system gradually.
 
-First, our idea is to benchmark the \gls{kvs} Redis layer running normally inside our cloud server, to use it as a reference point to what is the expected behavior of a in-memory Redis \gls{kvs} is in our server. For that, we define the Testbench 1 (TB1) as a default version of Redis, with TLS support, running in our OVH cloud server.
+First, our idea is to benchmark the \gls{kvs} Redis layer running normally inside our cloud server, to use it as a reference point to what is the expected behavior of a in-memory Redis \gls{kvs} is in our server. For that, we define Testbench 1 (TB1) as a default version of Redis, with TLS support, running in our OVH cloud server.
 
-As the next step, we analyze the impact that \gls{sgx} has in a \gls{sgx}-enabled Redis. For that we define TB2 as our cloud server running the Redis \gls{kvs} component inside a SGX-enabled SCONE container.
+As the next step, we analyze the impact that \gls{sgx} has in a \gls{sgx}-enabled Redis. For that we define TB2 as our cloud server running the Redis \gls{kvs} component inside an SGX-enabled SCONE container.
 
-TB3 assumes the addition of the Proxy component to the solution, in order to benchmark its impact on the system. Thus, we define TB3 as a Redis component running inside a SGX-enabled SCONE container, along with a Single Proxy instance.
+TB3 assumes the addition of the Proxy component to the solution, in order to benchmark its impact on the system. Thus, we define TB3 as a Redis component running inside an SGX-enabled SCONE container, along with a Single Proxy instance.
 
-In TB4, we deploy the Proxy component on top of \gls{sgx}, resulting on benchmarking a system composed by a Redis \gls{kvs} running inside a SGX-enabled SCONE container, along with a Single Proxy instance also running inside \gls{sgx}.
+In TB4, we deploy the Proxy component on top of \gls{sgx}, resulting in benchmarking a system composed by a Redis \gls{kvs} running inside an SGX-enabled SCONE container, along with a Single Proxy instance also running inside \gls{sgx}.
 
-For TB5, we added the attestation property to the components, used to assure that they run in private memory regions on top of \gls{sgx} and that they are only executed by the right enclave. Here we measure the impact it has to attestate each component upon start.
+For TB5, we added the attestation property to the components, used to assure that they run in private memory regions on top of \gls{sgx} and that they are only executed by the right enclave. Here we measure the impact it has to attest each component upon start.
 
 With all the system model defined in \ref{cha:systemModel_and_design} in place, we define two more test benches TB6 and TB7 to evaluate the whole system's behavior against different client request overloads (increased number of requests plus different size payloads) and against different typologies of requests (i.e., 10\% Writes : 90\% Reads), respectively.
 
-This are the testbench scenarios we follow in order to evaluate our solution while running the Redis layer in all the three configurations we detailed in previous chapters: Standalone Redis, Master-Slave Redis and Clustered Redis.
+This are the testbench scenarios we follow in order to evaluate our solution while running the Redis layer in all the three configurations we detailed in previous chapters: Standalone Redis, Master-Slave Redis, and Clustered Redis.
 
 
 \section{Observations with Cloud-based Standalone REDIS}
 \label{sec:cloudS_Redis}
 
-In this section, we analize our solution running the in-memory Redis component configured as a single instance \gls{kvs}. The experimental evaluation will be done following the test benches defined above, to access the impact of \gls{sgx} in our system, analysing both the performance and resource allocation impact that each secured component has in the system.
+In this section, we analyze our solution running the in-memory Redis component configured as a single instance \gls{kvs}. The experimental evaluation will be done following the test benches defined above, to access the impact of \gls{sgx} in our system, analyzing both the performance and resource allocation impact that each secured component has in the system.
 
-As we detailed in \ref{sec:implementationArchitecture}, we run our solution on a cloud system with \gls{sgx}-enabled hardware, while our client benchmark applications run on a local machine with commodity hardware, in order to simulate a real-world use-case where the network has a major impact in the performance of a system.
+As we detailed in \ref{sec:implementationArchitecture}, we run our solution on a cloud system with \gls{sgx}-enabled hardware, while our client benchmark applications run on a local machine with commodity hardware, in order to simulate a real-world use-case where the network has a major impact on the performance of a system.
 
 \subsection{Latency Impact of SGX-Enabled REDIS}
 
-To study and compare the latency levels of TREDIS with and without \gls{sgx}, we evaluate our solution by complying to the testbench TB1, TB2, TB3 and TB4 (see \ref{sec:testBenchEnvironments} for details) definitions, with network conditions of $\approx$116Mb/s Download and $\approx$114Mb/s Upload speed. It is important to mention that, for the first two testbenches in which our client application point directly to the Redis \gls{kvs} layer, we used redis-benchmark to make the requests and benchmark the solution. However, with the addition of the Proxy layer in TB3, we had to switch to a HTTP-enabled client, Jmeter.
+To study and compare the latency levels of TREDIS with and without \gls{sgx}, we evaluate our solution by complying with the testbenches TB1, TB2, TB3, and TB4 (see \ref{sec:testBenchEnvironments} for details) definitions, with network conditions of $\approx$116Mb/s Download and $\approx$114Mb/s Upload speed. It is important to mention that, for the first two testbenches in which our client application points directly to the Redis \gls{kvs} layer, we used redis-benchmark to make the requests and benchmark the solution. However, with the addition of the Proxy layer in TB3, we had to switch to an HTTP-enabled client, Jmeter.
 
-Thus, we start to benchmark our solution according to TB1, which results on an average 33,97 millisecond response time that we can use as a base value.
+Thus, we start to benchmark our solution according to TB1, which results in an average 33,97 millisecond response time that we can use as a base value.
 By comparing it to the value of TB2, we note that the addition of \gls{sgx} security properties to the \gls{kvs} component induced a latency penalty of 4,89\%, as we can see in Table \ref{table:latencySingleRedis}. This value is expected since, as we studied in previous chapters, \gls{sgx} induces in performance overheads caused by the time spent dealing with heavy functions and mechanisms in order to keep the integrity and confidentiality of the data.
 
 \begin{table}[ht]
@@ -79,11 +79,11 @@ By comparing it to the value of TB2, we note that the addition of \gls{sgx} secu
 	\label{table:latencySingleRedis} % is used to refer this table in the text
 \end{table}
 
-As we detailed before in previous chapters, our TREDIS solution includes a Proxy component that also adds overhead to the system, and it is expected to add even more when running inside \gls{sgx}. For that analysis, we run TB3 and TB4, in order to evaluate Proxy's impact in the overall system. With the addition of this component, we observe an additional 4,69\% overhead compared to TB2. This value is something we can deal with due to the utility we give to this component in particular. However, the 17,96\% latency increase that \gls{sgx} imposes to the Proxy component can lead to a subjective conclusion. This overhead is covered by the \gls{sgx} impact, but also by it being a more I/O-intensive component, thus resulting on a higher probability of making system calls.
+As we detailed before in previous chapters, our TREDIS solution includes a Proxy component that also adds overhead to the system, and it is expected to add even more when running inside \gls{sgx}. For that analysis, we run TB3 and TB4, in order to evaluate Proxy's impact on the overall system. With the addition of this component, we observe an additional 4,69\% overhead compared to TB2. This value is something we can deal with due to the utility we give to this component in particular. However, the 17,96\% latency increase that \gls{sgx} imposes on the Proxy component can lead to a subjective conclusion. This overhead is covered by the \gls{sgx} impact, but also by it being a more I/O-intensive component, thus resulting in a higher probability of making system calls.
 
 \subsection{Generic Throughput Observation}
 
-In order to measure the impact that enabling \gls{sgx} has on the throughput of our solution, we follow the same test benches as the ones used in the latency test - TB1, TB2, TB3 and TB4. Our following evaluation is based on the average measurements of a set of identical tests, each one consisting on one client making 10 000 requests with 10 Bytes worth of data over the network.
+In order to measure the impact that enabling \gls{sgx} has on the throughput of our solution, we follow the same test benches as the ones used in the latency test - TB1, TB2, TB3 and TB4. Our following evaluation is based on the average measurements of a set of identical tests, each one consisting of one client making 10 000 requests with 10 Bytes worth of data over the network.
 
 \begin{figure}[htbp]
 	\centering
@@ -92,9 +92,9 @@ In order to measure the impact that enabling \gls{sgx} has on the throughput of 
 	\label{fig:graphThroughputStandalone}
 \end{figure}
 
-Here, the addition of \gls{sgx} to the Redis component induces in a 12,53\% overhead, that we observe in Figure \ref{fig:graphThroughputStandalone} in the tests made via redis-benchmark, in which the client application connects directly with the \gls{kvs} layer itself, via TCP. 
+Here, the addition of \gls{sgx} to the Redis component induces a 12,53\% overhead, that we observe in Figure \ref{fig:graphThroughputStandalone} in the tests made via redis-benchmark, in which the client application connects directly with the \gls{kvs} layer itself, via TCP. 
 
-However, in TB3 and TB4 results, we can see that adding the Proxy component to the system drops significantly the solution's throughput levels. This is expected since the requests start to be done via HTTP, which induces in losses of $\approx$80\% compared to TCP. With the requests being now done to the Proxy, we observe only a 5,93\% throughput penalty on running the \gls{kvs} on top of \gls{sgx}, that we can note in Table \ref{table:throughputSingleRedis}, along with a 16,02\% drop when enabling the Proxy layer to also execute on top of \gls{sgx}. The reasons are related to the performance overheads know to be induced by \gls{sgx} itself. Note that the Proxy component is an application written in Java, making the inclusion of JVM and other java libraries fundamental, thus the image running in the SCONE container on top of \gls{sgx} is heavier, resulting on to having to leave some Java code outside the enclave.
+However, in TB3 and TB4 results, we can see that adding the Proxy component to the system drops significantly the solution's throughput levels. This is expected since the requests start to be done via HTTP, which induces losses of $\approx$80\% compared to TCP. With the requests being now done to the Proxy, we observe only a 5,93\% throughput penalty on running the \gls{kvs} on top of \gls{sgx}, that we can note in Table \ref{table:throughputSingleRedis}, along with a 16,02\% drop when enabling the Proxy layer to also execute on top of \gls{sgx}. The reasons are related to the performance overheads know to be induced by \gls{sgx} itself. Note that the Proxy component is an application written in Java, making the inclusion of JVM and other java libraries fundamental, thus the image running in the SCONE container on top of \gls{sgx} is heavier, resulting in having to leave some Java code outside the enclave.
 
 
 \begin{table}[ht]
@@ -122,7 +122,7 @@ However, in TB3 and TB4 results, we can see that adding the Proxy component to t
 
 As a way to evaluate our solution's behavior facing more specific benchmarks, we test it by following the TB6 and TB7. 
 
-Here we present how different operation ratios influence the system throughput. By looking at Figure \ref{fig:thptDiffCombinationsSingleRedis}, we can see that the results on how TREDIS handles these different combinations of requests with small payloads do not vary much. This absence of difference might be related to Redis high performance levels, specially with small payloads, where it takes almost no time to compute. Therefore the numbers should look alike as they do.  
+Here we present how different operation ratios influence the system throughput. By looking at Figure \ref{fig:thptDiffCombinationsSingleRedis}, we can see that the results on how TREDIS handles these different combinations of requests with small payloads do not vary much. This absence of difference might be related to Redis high-performance levels, especially with small payloads, where it takes almost no time to compute. Therefore the numbers should look alike as they do.  
 
 \begin{figure}[htbp]
 	\centering
@@ -131,7 +131,7 @@ Here we present how different operation ratios influence the system throughput. 
 	\label{fig:thptDiffCombinationsSingleRedis}
 \end{figure}
 
-However, with the increase of payload size, we start to see significant drops in the number of operations done, along with higher response times, as we can see in the Table \ref{table:throughputPayloads}. This is due to the Redis-server not handling big payloads very well, since it is mostly single-threaded, thus needing more time to handle requests.
+However, with the increase of payload size, we start to see significant drops in the number of operations done, along with higher response times, as we can see in the Table \ref{table:throughputPayloads}. This is due to the Redis-server not handling big payloads very well since it is mostly single-threaded, thus needing more time to handle requests.
 
 \begin{table}[ht]
 	\caption{Throughput values with different size payloads} % title of Table
@@ -160,7 +160,7 @@ Also, to comply with TB6, we scale the number of requests made to the server, in
 Here we evaluate our solution's memory consumption and CPU usage during runtime. 
 For the purpose of this test, our client application made requests to the Proxy during 180 seconds with 1 KBytes worth of data.  
 
-In the graphs we present in Figure \ref{fig:MemoryConsumption_standalone}, we observe some changes in the system when running it on top of \gls{sgx} and outside of it. First of all, we notice that the dataset size increases faster if running without \gls{sgx} support, since the system is faster and its throughput levels are higher, resulting in more operations made over the dataset in the same time period. We can also see that the Resident Set Size (RSS) in one case is dynamic, while in the other is static. This calls back to what we stated in the section before, where we mentioned that SGX v1 does not support dynamic allocation of memory, thus only relying on the memory size specified upon creation which remains static throughout execution. In Figure \ref{fig:SgxStandaloneMemory} we see just that, a static RSS value during the entire evaluation. Note that this RSS value defines the memory available for a Redis instance to scale during its execution. Thus, running Redis inside SGX might induce into memory problems if using SGX v1, since either the system reaches the point where it is left with no memory available to run and stops, or it is created with huge amounts of memory, which might not be necessary, inducing it to big startup times since it needs to allocate more memory upfront.
+In the graphs we present in Figure \ref{fig:MemoryConsumption_standalone}, we observe some changes in the system when running it on top of \gls{sgx} and outside of it. First of all, we notice that the dataset size increases faster if running without \gls{sgx} support since the system is faster and its throughput levels are higher, resulting in more operations made over the dataset in the same time period. We can also see that the Resident Set Size (RSS) in one case is dynamic, while in the other is static. This calls back to what we stated in the section before, where we mentioned that SGX v1 does not support dynamic allocation of memory, thus only relying on the memory size specified upon creation which remains static throughout execution. In Figure \ref{fig:SgxStandaloneMemory} we see just that, a static RSS value during the entire evaluation. Note that this RSS value defines the memory available for a Redis instance to scale during its execution. Thus, running Redis inside SGX might induce into memory problems if using SGX v1, since either the system reaches the point where it is left with no memory available to run and stops, or it is created with huge amounts of memory, which might not be necessary, inducing it to big startup times since it needs to allocate more memory up front.
 
 \begin{figure}[htbp]
 	\centering
@@ -174,7 +174,7 @@ In the graphs we present in Figure \ref{fig:MemoryConsumption_standalone}, we ob
 	\label{fig:MemoryConsumption_standalone}
 \end{figure}
 
-As for the CPU usage, we show in Figure \ref{fig:cpuUsageStandalone} the impact that \gls{sgx} has. On the left, we see the CPU resources that go into the execution of the solution without this extra layer of security, remaining near 0\% for Redis while the Proxy shows values of around 5-8\%, due to all I/O operations it handles. On the right, we see more expressive results, where the addition of \gls{sgx} results on higher CPU usage, specially by the Proxy component, due to its size causing it not to fit entirely inside the \gls{epc}. However, since this test also induces in a high density of requests, we do not consider this behavior to be unexpected.
+As for the CPU usage, we show in Figure \ref{fig:cpuUsageStandalone} the impact that \gls{sgx} has. On the left, we see the CPU resources that go into the execution of the solution without this extra layer of security, remaining near 0\% for Redis while the Proxy shows values of around 5-8\%, due to all I/O operations it handles. On the right, we see more expressive results, where the addition of \gls{sgx} results in higher CPU usage, especially by the Proxy component, due to its size causing it not to fit entirely inside the \gls{epc}. However, since this test also induces a high density of requests, we do not consider this behavior to be unexpected.
 
 \begin{figure}[htbp]
 	\centering
@@ -199,9 +199,9 @@ We run the test scenarios in the same environment previously used, in a cloud sy
 
 \subsection{Latency Impact of SGX-Enabled Master-Slave REDIS}
 
-In order to evaluate the latency impact of \gls{sgx} in our solution, as we just mentioned, we intend to execute the TB1, TB2, TB3 and TB4 scenarios, incrementally adding components to the system, while enabling \gls{sgx} support to each one of them along the way. 
+In order to evaluate the latency impact of \gls{sgx} in our solution, as we just mentioned, we intend to execute the TB1, TB2, TB3, and TB4 scenarios, incrementally adding components to the system, while enabling \gls{sgx} support to each one of them along the way. 
 
-We start the test by making requests to the server with redis-benchmark as the client application when communicating directly to the Redis-server, and then switching to Jmeter to communicate through HTTP with the Proxy component.
+We start the test by making requests to the server with redis-benchmark as the client application when communicating directly to the Redis-server and then switching to Jmeter to communicate through HTTP with the Proxy component.
 
 \begin{table}[ht]
 	\caption{Latency impact of SGX in M-S Redis} % title of Table
@@ -223,10 +223,10 @@ We start the test by making requests to the server with redis-benchmark as the c
 	\label{table:latencyMasterSlaveRedis} % is used to refer this table in the text
 \end{table}
 
-In Table \ref{table:latencyMasterSlaveRedis} we can observe a similar behavior compared to the values we saw for our solution running a single instance Redis, as the latency time increases with the components and extra security we add to the system. Here we can see a 1,5\% drop with the inclusion of \gls{sgx} support to the \gls{kvs} layer. Connecting the Proxy, however, costs the system around 4,3\%, and protecting it with \gls{sgx} induces in a 16,6\% latency drop, again originated from the fact that it is a I/O-intensive component, which lead to more system calls being done by it while inside the enclave, which by \gls{sgx}' definition is a major influencer in performance dropping. Adding to that, it is a Java application, resulting in a bigger image which can lead to some of the code having to be placed outside the enclave.
+In Table \ref{table:latencyMasterSlaveRedis} we can observe a similar behavior compared to the values we saw for our solution running a single instance Redis, as the latency time increases with the components and extra security we add to the system. Here we can see a 1,5\% drop with the inclusion of \gls{sgx} support to the \gls{kvs} layer. Connecting the Proxy, however, costs the system around 4,3\%, and protecting it with \gls{sgx} induces a 16,6\% latency drop, again originated from the fact that it is an I/O-intensive component, which leads to more system calls being done by it while inside the enclave, which by \gls{sgx}' definition is a major influencer in performance dropping. Adding to that, it is a Java application, resulting in a bigger image which can lead to some of the code having to be placed outside the enclave.
 
 \subsection{Generic Throughput Comparative Observations}
-For our throughput evaluation we use the same configuration as we did for Standalone Redis, consisting in one client thread doing all the 10 000 requests with a payload of 10 Bytes, while registering the average results of multiple tests.
+For our throughput evaluation, we use the same configuration as we did for Standalone Redis, consisting of one client thread doing all the 10 000 requests with a payload of 10 Bytes while registering the average results of multiple tests.
 
 \begin{figure}[htbp]
 	\centering
@@ -235,7 +235,7 @@ For our throughput evaluation we use the same configuration as we did for Standa
 	\label{fig:graphTroughputMasterSlave}
 \end{figure}
 
-In Figure \ref{fig:graphTroughputMasterSlave} we can observe a 7,15\% drop by securing the \gls{kvs} layer with \gls{sgx}, which is a slightly smaller loss than the one we observed in the Standalone tests. However, we observe once again a considerable penalty with the addition of the Proxy layer, which along with the switch from TCP requests to HTTP requests causes a huge throughtput drop of around 80\%, even without any \gls{sgx} inclusion. With the inclusion of this extra layer of security, our solution exhibits a loss of 15,45\%.
+In Figure \ref{fig:graphTroughputMasterSlave} we can observe a 7,15\% drop by securing the \gls{kvs} layer with \gls{sgx}, which is a slightly smaller loss than the one we observed in the Standalone tests. However, we observe once again a considerable penalty with the addition of the Proxy layer, which along with the switch from TCP requests to HTTP requests causes a huge throughput drop of around 80\%, even without any \gls{sgx} inclusion. With the inclusion of this extra layer of security, our solution exhibits a loss of 15,45\%.
 
 
 
@@ -251,7 +251,7 @@ In Figure \ref{fig:thptDiffCombinationsMasterSlaveRedis} we can see pretty much 
 	\label{fig:thptDiffCombinationsMasterSlaveRedis}
 \end{figure}
 
-In the evaluation regarding the increment of the payload of the requests, shown in Table \ref{table:throughputPayloadsMS}, we observe a similar behavior as we did with Redis Standalone, where bigger payloads lead to less performance. However, with a Master-Slave configuration we got slightly higher results while working with smaller size payloads.
+In the evaluation regarding the increment of the payload of the requests, shown in Table \ref{table:throughputPayloadsMS}, we observe a similar behavior as we did with Redis Standalone, where bigger payloads lead to less performance. However, with a Master-Slave configuration, we got slightly higher results while working with smaller size payloads.
 
 \begin{table}[ht]
 	\caption{Throughput differences with different size payloads} % title of Table
@@ -271,7 +271,7 @@ In the evaluation regarding the increment of the payload of the requests, shown 
 	\label{table:throughputPayloadsMS} % is used to refer this table in the text
 \end{table} 
 
-This slight increase compared to Standalone mode is induced by the replication given by the Master-Slave model, in which all replicas are available to handle read operations, thus making the impact that those kind of operations have on the system way lower.   
+This slight increase compared to Standalone mode is induced by the replication given by the Master-Slave model, in which all replicas are available to handle read operations, thus making the impact that those kinds of operations have on the system way lower.   
 
 
 \subsection{Master-Slave REDIS System Resources}
@@ -280,8 +280,8 @@ This slight increase compared to Standalone mode is induced by the replication g
 To perform a system resources evaluation during our solution's runtime, we set our client to make requests with 1 KBytes to the system for a total of 180 seconds.  
 
 The graphs we present in Figure \ref{fig:noSgxMemoryConsumption} and \ref{fig:sgxMemoryConsumption} show exactly how the server manages the memory of our Redis layer, either with or without the \gls{sgx} security properties. 
-In the first one, we can observe the behavior of both the master node and the slave nodes, in which we see a slightly faster memory increase on the master, since it is the only replica responsible to perform writes in the \gls{kvs} in this configuration. Thus the master receives the data first, whereas the slaves have to wait for the replication to happen, in order to update their own dataset. 
-They behave similarly throughout the execution of the test, achieving eventual consistency by the end, thus ending the test with same exact dataset. 
+In the first one, we can observe the behavior of both the master node and the slave nodes, in which we see a slightly faster memory increase on the master since it is the only replica responsible to perform writes in the \gls{kvs} in this configuration. Thus the master receives the data first, whereas the slaves have to wait for the replication to happen, in order to update their own dataset. 
+They behave similarly throughout the execution of the test, achieving eventual consistency by the end, thus ending the test with the same exact dataset. 
 
 \begin{figure}[htbp]
 	\centering
@@ -307,11 +307,11 @@ They behave similarly throughout the execution of the test, achieving eventual c
 
 Note that without \gls{sgx} support, the memory allocated to run the Redis layer (shown as grey in the graphs - RSS) follows dynamically both the rise of the Dataset size and the Redis instance size. This means that, without \gls{sgx}, this layer can allocate memory on-demand, optimizing its memory consumption during runtime. However, as we have mentioned before, the same does not happen for \gls{sgx}-enabled components, since SGX version v1 does not include this dynamic allocation of memory, thus failing to scale the application's memory size, while running inside the enclave. This is why we see a static RSS value in both graphs presented in Figure \ref{fig:sgxMemoryConsumption}. Besides that, the values shown are similar to the ones shown in the Standalone evaluation, as the Dataset memory size increases gradually alongside the Redis memory size. 
 
-The memory consumption values we show in the figure covering the \gls{sgx}-enabled solution are lower at the end of the 180 second test, which is expectable since the throughput numbers are inferior, therefore less writes are made in that same period of time. And also, just to mention that in Figures \ref{fig:noSgxMemoryConsumption} and \ref{fig:sgxMemoryConsumption} we only show graphs for one slave node because they both have a similar behavior throughout the tests, since they both replicate the same master instance.
+The memory consumption values we show in the figure covering the \gls{sgx}-enabled solution are lower at the end of the 180 second test, which is expectable since the throughput numbers are inferior, therefore less writes are made in that same period of time. And also, just to mention that in Figures \ref{fig:noSgxMemoryConsumption} and \ref{fig:sgxMemoryConsumption} we only show graphs for one slave node because they both have a similar behavior throughout the tests since they both replicate the same master instance.
 
 For the CPU, we can see what resources go into the execution of the tests in Figure \ref{fig:cpuUsageMS}, where we notice once again almost 0\% CPU usage when dealing with a Redis \gls{kvs} without \gls{sgx}, whereas if we enable \gls{sgx} support, this value rises to $\approx$8\%, in which the master node shows to be the one node needing more resources, due to being in charge of replicating the data to all the slave nodes in the system.
 
-As for the Proxy impact in the CPU, we can see a similar behavior to what we observed with Standalone Redis, since not much have changed for this component. We see the same $\approx$8 to 10\% when running without \gls{sgx} security properties, while more expressive results when executed on top of \gls{sgx}.
+As for the Proxy impact in the CPU, we can see a similar behavior to what we observed with Standalone Redis, since not much has changed for this component. We see the same $\approx$8 to 10\% when running without \gls{sgx} security properties, while more expressive results when executed on top of \gls{sgx}.
 
 \begin{figure}[htbp]
 	\centering
@@ -325,11 +325,11 @@ As for the Proxy impact in the CPU, we can see a similar behavior to what we obs
 \end{figure}
 
 \section{Observations with Cloud-based Clustered REDIS}
-In this section we share our evaluation made for the system while running the \gls{kvs} layer in Cluster mode. We use the default configuration that Redis has for the cluster, consisting of three master nodes with one slave each, resulting in six nodes total. The writes are made to the master nodes and later replicated to their slave replica, which eventually end up having the same dataset as their master instance. 
+In this section, we share our evaluation made for the system while running the \gls{kvs} layer in Cluster mode. We use the default configuration that Redis has for the cluster, consisting of three master nodes with one slave each, resulting in six nodes total. The writes are made to the master nodes and later replicated to their slave replica, which eventually ends up having the same dataset as their master instance. 
 
 Here we follow the same scenarios we used in the previous tests, in order to conduct an evaluation about the \gls{sgx} impact over the solution however this time running in cluster.
 
-Our test conditions are the same, where we run the client application locally while communicating with a cloud server with the possibility to enable \gls{sgx} support. However, our network conditions show to be slightly worse than before, consisting on $\approx$108Mb/s Download and $\approx$113Mb/s Upload speed.
+Our test conditions are the same, where we run the client application locally while communicating with a cloud server with the possibility to enable \gls{sgx} support. However, our network conditions show to be slightly worse than before, consisting of $\approx$108Mb/s Download and $\approx$113Mb/s Upload speed.
 
 \subsection{Latency and impact of SGX-enabled REDIS Cluster}
 
@@ -362,8 +362,8 @@ Here we see a $\approx$6\% delay caused by enabling the Redis to \gls{sgx} suppo
 
 \subsection{Generic Throughput Comparative Observations}
 
-We continue our analysis with the same exact testbenches, although this time in order to evaluate our solutions throughput. In Figure \ref{fig:graphTroughputCluster} we observe the results we registered doing 10 000 requests with a size of 10 Bytes each. 
-Here we see throughput values dropping $\approx$6\% with the addition of \gls{sgx} to the \gls{kvs} cluster, followed by a $\approx$86\% induced by the Proxy layer, due to the switch to HTTP, and a $\approx$15\% by deploying it on top of \gls{sgx}.
+We continue our analysis with the same exact testbenches, although this time in order to evaluate our solutions throughput. In Figure \ref{fig:graphTroughputCluster} we observe the results we registered doing 10 000 requests with a size of 10 bytes each. 
+Here we see throughput values dropping $\approx$6\% with the addition of \gls{sgx} to the \gls{kvs} cluster, followed by $\approx$86\% induced by the Proxy layer, due to the switch to HTTP, and $\approx$15\% by deploying it on top of \gls{sgx}.
 
 \begin{figure}[htbp]
 	\centering
@@ -398,7 +398,7 @@ As for different sets of operations performed over the cluster, the solution sho
 	\label{table:thptDiffRatiosClusterRedis} % is used to refer this table in the text
 \end{table}
 
-By comparing this values to the ones presented for the previous two configurations, Standalone and Master-Slave, we can conclude that using our solution in cluster mode does not induce in major overheads. Further more, in cluster the solution offers better results while dealing with bigger size requests, as shown in Figure \ref{table:throughputPayloadsCluster}. All this while also offering better availability, scalability and replication of data, along with other properties, than the previously tested configurations.
+By comparing these values to the ones presented for the previous two configurations, Standalone and Master-Slave, we can conclude that using our solution in cluster mode does not induce in major overheads. Furthermore, in cluster, the solution offers better results while dealing with bigger size requests, as shown in Figure \ref{table:throughputPayloadsCluster}. All this while also offering better availability, scalability, and replication of data, along with other properties, then the previously tested configurations.
 
 \begin{table}[ht]
 	\caption{Throughput differences with different size payloads} % title of Table
@@ -428,7 +428,7 @@ In order to evaluate our Clustered solution's use of resources, we will register
 \begin{figure}[htbp]
 	\centering
 	{\includegraphics[width=0.5\linewidth]{clusterEvaluation}}
-	\caption{Cluster configuration during evaluation}
+	\caption{Cluster configuration}
 	\label{fig:clusterLayout}
 \end{figure} 
 
@@ -454,11 +454,11 @@ With the cluster assembled according to the model discussed just now, we proceed
 	\label{fig:noSgxMemoryConsumption_Cluster}
 \end{figure}
 
-Starting with the analysis of the solution without \gls{sgx} support, we observe throughput values in the order of $\approx$27 operations per second, which results in a total of around 1500 KBytes writen into the system. By following the cluster design, we see in Figure \ref{fig:noSgxMemoryConsumption_Cluster} that the data is splitted between the master nodes, whereas in the right side graphs, we can see that the slaves end up being replicated by their masters, thus achieving consistency. 
+Starting with the analysis of the solution without \gls{sgx} support, we observe throughput values in the order of $\approx$27 operations per second, which results in a total of around 1500 KBytes written into the system. By following the cluster design, we see in Figure \ref{fig:noSgxMemoryConsumption_Cluster} that the data is split between the master nodes, whereas in the right-side graphs, we can see that the slaves end up being replicated by their masters, thus achieving consistency. 
 
-When running our solution in a \gls{sgx}-enabled environment, we achieve results of around 22 operations per second, thus resulting in a slightly smaller Dataset size of $\approx$1300 KBytes. In Figure \ref{fig:sgxMemoryConsumption_Cluster} we see that exact same behavior, with the partitioning of the data taking place between the master nodes, while propagating those partitions to their slave. 
+When running our solution in an \gls{sgx}-enabled environment, we achieve results of around 22 operations per second, thus resulting in a slightly smaller Dataset size of $\approx$1300 KBytes. In Figure \ref{fig:sgxMemoryConsumption_Cluster} we see that exact same behavior, with the partitioning of the data taking place between the master nodes, while propagating those partitions to their slave. 
 However, and as we have seen in \ref{ssec:SingleRedis_MemCPU} and \ref{ssec:MSRedis_MemCPU}, the RSS value remains static throughout the evaluation. 
-Comparing both scenarios where we run the cluster outside \gls{sgx} and inside it, we see a difference of $\approx$75\% more memory allocated by the system for two identical Dataset sizes. Although this memory limit can be manually changed upon starting the instances, this limitation usually results in allocating more memory than what is necessary, in order to prevent the \gls{kvs} instances to run out of memory, and thus stop working.
+Comparing both scenarios where we run the cluster outside \gls{sgx} and inside it, we see a difference of $\approx$75\% more memory allocated by the system for two identical Dataset sizes. Although this memory limit can be manually changed upon starting the instances, this limitation usually results in allocating more memory then what is necessary, in order to prevent the \gls{kvs} instances to run out of memory, and thus stop working.
 
 \vspace{5mm}
 
@@ -499,12 +499,12 @@ As for the Proxy, its behavior is identical to the previous tests, where we see 
 
 \section{Attestation Impact}
 
-In order to measure the attestation impact in our components, we comply to the scenario described for TB5 defined earlier in \ref{sec:testBenchEnvironments}, where we add the functionality for the \gls{sgx}-enabled components to attest themselves and prove that they are indeed running on private memory regions on top of Intel-\gls{sgx}. 
+In order to measure the attestation impact in our components, we comply with the scenario described for TB5 defined earlier in \ref{sec:testBenchEnvironments}, where we add the functionality for the \gls{sgx}-enabled components to attest themselves and prove that they are indeed running on private memory regions on top of Intel-\gls{sgx}. 
 
 To assure attestation to our components, we use the mechanism provided by SCONE, consisting in defining secrets to applications on a remote component CAS, where a validation is performed upon starting with the help of a local attestation component LAS. Note that we detailed this process in \ref{ssec:TREDIS_impl_components}. 
 We define secrets to be pairs of TLS keys and certificates that applications need upon start to establish TLS connections with other components. Therefore, if an enclave fails to attest itself, it will not have these secrets, thus failing to establish TLS connections, and not starting. These secrets are defined in a YAML file like the one we show in Appendix \ref{app:appendix2}, and sent to a public instance of CAS. 
 
-Our solution's attestation mechanism only allows the SCONE components to be attested upon start and not on-demand. Thus we compare the time it takes a component running in a SCONE container to boot with attestation, comparing it to the time it takes to boot without it. In Table \ref{table:attestationImpactBoot} we observe just that, where we conclude that adding this attestation mechanism to a Redis instance container induce in a $\approx$ 1,23 extra seconds, while for the Proxy $\approx$ 1,05 seconds.
+Our solution's attestation mechanism only allows the SCONE components to be attested upon start and not on-demand. Thus we compare the time it takes a component running in a SCONE container to boot with attestation, comparing it to the time it takes to boot without it. In Table \ref{table:attestationImpactBoot} we observe just that, where we conclude that adding this attestation mechanism to a Redis instance container induces in $\approx$ 1,23 extra seconds, while for the Proxy $\approx$ 1,05 seconds.
 
 \begin{table}[ht]
 	\caption{Attestation impact in boot time} % title of Table
@@ -524,19 +524,19 @@ Our solution's attestation mechanism only allows the SCONE components to be atte
 
 \section{Main Findings From the Experimental Observations}
 
-During the evaluation in this chapter, we were able to analize our solution in three different configurations, Standalone, Master-Slave and Cluster, by following multiple testbenches that were previously described, in order to benchmark the impact that securing our solution's components with \gls{sgx} has overall. 
+During the evaluation in this chapter, we were able to analyze our solution in three different configurations, Standalone, Master-Slave, and Cluster, by following multiple testbenches that were previously described, in order to benchmark the impact that securing our solution's components with \gls{sgx} has overall. 
 
-After going through all the results for each configuration, we see that although the system has lost some performance with the addition of \gls{sgx}, its impact can be looked at as quite modest, varying from low to medium on all components involved in the evaluation, regardless the mode the \gls{kvs} is set to execute. 
+After going through all the results for each configuration, we see that although the system has lost some performance with the addition of \gls{sgx}, its impact can be looked at as quite modest, varying from low to medium on all components involved in the evaluation, regardless of the mode the \gls{kvs} is set to execute. 
 
-However, after comparing the different evaluations made over the three Redis configurations, we see slightly better performance results in the last one, performed over a Clustered Redis. Adding to that, by being a cluster, it offers extra properties to the system itself, like partitioning and replication of data, availability, scalability, and so on, which helps us think that the Cluster mode is the more suitable Redis configuration to be used in a \gls{sgx}-enabled environment.
+However, after comparing the different evaluations made over the three Redis configurations, we see slightly better performance results in the last one, performed over a Clustered Redis. Adding to that, by being a cluster, it offers extra properties to the system itself, like partitioning and replication of data, availability, scalability, and so on, which helps us think that the Cluster mode is the more suitable Redis configuration to be used in an \gls{sgx}-enabled environment.
 
-As for the Proxy, since our intention is to recreate a real-world scenario where the TREDIS can be used as a normal application in cloud, it is essencial that our solution is enabled to receive requests via HTTP. Thus, the $\approx$80\% impact it has on the performance caused by adding the Proxy alone as to be taken as a necessity and not as the drop itself. However, there is room here for improvement, since our Proxy was designed in Java, which led to more code being needed. 
+As for the Proxy, since our intention is to recreate a real-world scenario where the TREDIS can be used as a normal application in the cloud, it is essential that our solution is enabled to receive requests via HTTP. Thus, the $\approx$80\% impact it has on the performance caused by adding the Proxy alone has to be taken as a necessity. However, there is room here for improvement, since our Proxy was designed in Java, which led to more code being needed. 
 
 \section{Summary}
 
-In this chapter, we evaluated the solution we proposed for this dissertation, an in-memory TREDIS solution, introduced in Chapter \ref{cha:systemModel_and_design} and detailed in Chapter \ref{cha:implementation}. Here we conducted a study about the impact that \gls{sgx} has in the components that make up our solution, in order to analyse if the tradeoff between performance and security is worth it or not. 
+In this chapter, we evaluated the solution we proposed for this dissertation, an in-memory TREDIS solution, introduced in Chapter \ref{cha:systemModel_and_design} and detailed in Chapter \ref{cha:implementation}. Here we conducted a study about the impact that \gls{sgx} has on the components that make up our solution, in order to analyze if the tradeoff between performance and security is worth it or not. 
 
-To access its impact, we benchmarked the solution according to defined testbenches, each one representing a different scenario, that we used to perform a structured incremental analisis where we added system components one by one, while also adding security to them one by one, starting with the Redis layer unprotected and gradually building up to the point we had the whole solution running on top of \gls{sgx}. We also defined some extra testbenches in order to evaluate other more specific measurements. All the testbenches were repeated for the three Redis configurations we mentioned, Standalone, Master-Slave and Cluster, in order to see their behavior running in a \gls{sgx}-enabled environment.
+To access its impact, we benchmarked the solution according to defined testbenches, each one representing a different scenario, that we used to perform a structured incremental analysis where we added system components one by one, while also adding security to them one by one, starting with the Redis layer unprotected and gradually building up to the point we had the whole solution running on top of \gls{sgx}. We also defined some extra testbenches in order to evaluate other more specific measurements. All the testbenches were repeated for the three Redis configurations we mentioned, Standalone, Master-Slave and Cluster, in order to see their behavior running in an \gls{sgx}-enabled environment.
 
 During the evaluation, we concluded that while the overall tendency of using Intel-\gls{sgx} results in overheads, the values go from having low to medium impact overall, never going past 18\%. 
 

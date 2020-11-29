@@ -8,7 +8,7 @@
 \chapter{Implementation}
 \label{cha:implementation}
 
-In this chapter we describe the implementation of our prototype TREDIS, or Trusted REDIS, implemented on top of a \gls{tee} instanciated through Intel-\gls{sgx}. 
+In this chapter, we describe the implementation of our prototype TREDIS, or Trusted REDIS, implemented on top of a \gls{tee} instantiated through Intel-\gls{sgx}. 
 We present how we implemented the system components that make up our system model defined in \ref{cha:systemModel_and_design}.
 Our implementation is deployed in an online repository in Github \footnote{https://github.com/jcreis/thesis\_implementation}.
 
@@ -18,8 +18,8 @@ We start by presenting the environments in which we implemented our solution in 
 \section{Implementation Architecture}
 \label{sec:implementationArchitecture}
 
-Our prototype complies to the system model described in the previous chapter in \ref{sec:systemModel_overview} and, as we mentioned there, can be divided into two distinct parts, the client side and the server side.
-The first one consists on benchmark applications, that measure simple requests to the server side of the system. We run the client on a local machine running Ubuntu 18.04.3 LTS \gls{os} on top of commodity hardware:
+Our prototype complies with the system model described in the previous chapter in \ref{sec:systemModel_overview} and, as we mentioned there, can be divided into two distinct parts, the client-side and the server-side.
+The first one consists of benchmark applications, that measure simple requests to the server-side of the system. We run the client on a local machine running Ubuntu 18.04.3 LTS \gls{os} on top of commodity hardware:
 \vspace{5mm}
 \begin{lstlisting}
 CPU:Intel(R) Core(TM) i7-8550U CPU @ 1.80GHz - 4-core
@@ -54,7 +54,7 @@ Communications between server components are secured via TLS 1.2. Since we do no
 \section{Implementation Components And Options}
 \label{sec:implementationComponents}
 
-In this Section, we go deeper into implementation details of our solution, specifying the technologies we used to implement each piece of it.
+In this Section, we go deeper into the implementation details of our solution, specifying the technologies we used to implement each piece of it.
 
 
 \subsection{TREDIS solution}
@@ -71,16 +71,16 @@ Our proxy also holds the Authentication server certificate. It establishes a TLS
 \vspace{3mm}
 \textbf{Authentication Server}. For our Authentication Server, we used an open-source identity and access management server called Keycloak\footnote{https://www.keycloak.org} v11.0.2. Keycloak grants access tokens to clients that are configurated inside its own in-memory database. It works well with Spring boot framework which we used to implement the Proxy, since it can be easily configured in order to check the validity of tokens received by the Spring API.
 
-To note that this is the only component that is part of the system and doesn't run on \gls{sgx} enclaves. Instead, it runs in a Docker container with a non-SCONE image, developed by RedHat that can be found in jboss dockerhub page\footnote{https://hub.docker.com/r/jboss/keycloak/}.
+To note that this is the only component that is part of the system and doesn't run on \gls{sgx} enclaves. Instead, it runs in a Docker container with a non-SCONE image, developed by RedHat that can be found on jboss's dockerhub page\footnote{https://hub.docker.com/r/jboss/keycloak/}.
 
 \vspace{3mm}
-\textbf{Attestation Mechanism}. In order to attest our system components that run on top of \gls{sgx}, and also to reassure that they indeed run inside enclaves, we followed the SCONE's attestation mechanism consisting on a remote attestation policy that we described in the previous chapter. 
+\textbf{Attestation Mechanism}. In order to attest our system components that run on top of \gls{sgx}, and also to reassure that they indeed run inside enclaves, we followed the SCONE's attestation mechanism consisting of a remote attestation policy that we described in the previous chapter. 
 
 In SCONE's approach, the remote entity CAS manages all the defined secrets for the applications in the system. This entity is provided by SCONE itself, and since the service that provides images of CAS requires a subscription, we implemented the attestation mechanism using their public CAS instance, \textit{scone-cas.cf}\footnote{https://sconedocs.github.io/public-CAS/}.
-We posted to the remote CAS instance the sessions where enclave's hash values are specified, along with the secrets for each application. We followed SCONE's advice on how to approach the use of secrets, by using implicit attestation with the help of TLS - \textit{"The idea is that a service can only provide the correct TLS certificate if it runs inside an enclave. To do so, one would give the enclave an encrypted TLS private key in the file system (can be generate by Scone CAS if this is requested) and the enclave gets only access to the encryption key after a successful attestation. The decryption of the TLS private key is done transparently by SCONE."}.
+We posted to the remote CAS instance the sessions where enclave's hash values are specified, along with the secrets for each application. We followed SCONE's advice on how to approach the use of secrets, by using implicit attestation with the help of TLS - \textit{"The idea is that a service can only provide the correct TLS certificate if it runs inside an enclave. To do so, one would give the enclave an encrypted TLS private key in the file system (can be generated by Scone CAS if this is requested) and the enclave gets only access to the encryption key after a successful attestation. The decryption of the TLS private key is done transparently by SCONE."}.
 Thus, the secrets (TLS encryption keys) can only be obtained if the hash value of the enclave that is trying to get them matches with the one specified in the secret. This allows us to enforce the applications running with SCONE to run indeed inside an enclave. 
 
-Although, before CAS can verify the enclave's hash value, the enclave first needs a quote from a quoting enclave - LAS. LAS is running in our application inside a SCONE container, and is the component that helds the attestation key used to create a Quote, which is a message signed by LAS with that specific key that CAS will be able to verify. Thus, CAS will know that a LAS instance has locally attested the enclave, and can then proceed to check if the enclave is entitled to the secrets or not.
+Although, before CAS can verify the enclave's hash value, the enclave first needs a quote from a quoting enclave - LAS. LAS is running in our application inside a SCONE container, and is the component that holds the attestation key used to create a Quote, which is a message signed by LAS with that specific key that CAS will be able to verify. Thus, CAS will know that a LAS instance has locally attested the enclave, and can then proceed to check if the enclave is entitled to the secrets or not.
 
 After having LAS running locally in a container and by using the public CAS instance provided by SCONE, we were able to add this attestation mechanism to the rest of our system components quite easily. After having the secrets defined and posted in CAS, we only needed to include a list of environment variables upon creation of the applications that we intend to attest in our system, where we specified both the CAS and LAS addresses as a way to perform this attestation upon each component start. A better demonstration on how to do this configuration is present in \cite{sconeAttestationConfig}. 
 
@@ -91,9 +91,9 @@ All the communications are secured through TLS, either between CAS and the conta
 \textbf{Key-Value Store}. As we already mentioned before, we implemented our Key-Value Store component by using Redis \gls{kvs}. To run Redis with \gls{sgx} security properties, we had to run a Redis image incorporated with SCONE, to run in a secured container. 
 
 However, Redis images are mounted according to a configuration file, which is set upon their build. 
-And since one of our objectives is to enable the \gls{kvs} component to run in various configurations in order to evaluate its behavior on top of \gls{sgx}, we build Redis images with customized configuration files for the Redis instances to run in Standalone, Master-Slave and Cluster modes. All the Redis images we build use Redis version 6.0-rc1 and have SCONE's\footnote{sconecuratedimages/apps:redis-6-alpine} as base image. To emulate the Master-Slave configuration, we went with only three Redis replicas, one Master node and two Slave nodes. As for the Cluster configuration, we included six replicas, three Master nodes and three Slave nodes. Note that writes can only be executed by Master nodes, since the Slave nodes are read-only.
+And since one of our objectives is to enable the \gls{kvs} component to run in various configurations in order to evaluate its behavior on top of \gls{sgx}, we build Redis images with customized configuration files for the Redis instances to run in Standalone, Master-Slave and Cluster modes. All the Redis images we build use Redis version 6.0-rc1 and have SCONE's\footnote{sconecuratedimages/apps:redis-6-alpine} as the base image. To emulate the Master-Slave configuration, we went with only three Redis replicas, one Master node, and two Slave nodes. As for the Cluster configuration, we included six replicas, three Master nodes and three Slave nodes. Note that writes can only be executed by Master nodes since the Slave nodes are read-only.
 
-Adding to that, building our own Redis image allowed us to specify the keys and certificates we intend to use in every instance, needed for establishing secured TLS connections with other components over the network. To note that in Redis configurations set to run with multiple Redis instances, like Master-Slave or Cluster, we use the same keys and certificates in every instance in order to facilitate the implementation of such configurations. We consider this to be unpratical and unsafe in a real world application, however we opted to do so in order to prevent an extra layer of complexity for the implementation phase of our solution.
+Adding to that, building our own Redis image allowed us to specify the keys and certificates we intend to use in every instance, needed for establishing secured TLS connections with other components over the network. To note that in Redis configurations set to run with multiple Redis instances, like Master-Slave or Cluster, we use the same keys and certificates in every instance in order to facilitate the implementation of such configurations. We consider this to be unpractical and unsafe in a real-world application, however, we opted to do so in order to prevent an extra layer of complexity for the implementation phase of our solution.
 
 
 \vspace{3mm}
@@ -105,7 +105,7 @@ Each component that runs inside a container with a SCONE-based image in our TRED
 	\label{fig:instanceStack}
 \end{figure}
 
-A container runs a Scone-based application image on top of an enclave. Inside the enclave, besides the application code, it is present a small static library provided by SCONE which allows the application to make some system calls (the ones that are included in this small library) to the \gls{os} running in the host machine. OpenSSL, which provides TLS and SSL protocols, is one of the static libraries included by SCONE, but represented in the figure above as independent from the static library component due to importance. By having OpenSSL statically inside the enclave, components can communicate with each other securely over the network without inducing in any tangible overhead. 
+A container runs a Scone-based application image on top of an enclave. Inside the enclave, besides the application code, it is present a small static library provided by SCONE which allows the application to make some system calls (the ones that are included in this small library) to the \gls{os} running in the host machine. OpenSSL, which provides TLS and SSL protocols, is one of the static libraries included by SCONE, but represented in the figure above as independent from the static library component due to its importance. By having OpenSSL statically inside the enclave, components can communicate with each other securely over the network without inducing any tangible overhead. 
 
 
 
@@ -114,10 +114,10 @@ A container runs a Scone-based application image on top of an enclave. Inside th
 To implement the Client, first we tested our solution directly against the \gls{kvs} instances themselves, in order to get base values for the metrics we intend to study. For that we used redis-benchmark, which comes directly with the installation of Redis itself, therefore its version is induced by the Redis version present on the machine.
 
 However, since our solution was designed with a customized entry point API (our Proxy component) which redirects client requests to the Redis \gls{kvs} instances, we were unable to find a way of setting redis-benchmark to make requests to the Proxy. 
-Thus, in order to perform a experimental evaluation over the entire TREDIS solution, we opted to used Jmeter\footnote{https://jmeter.apache.org/} version 5.3 as a way to reach our Proxy endpoint, thus benchmarking the behavior of our solution without needing to exclude any component. Also, by being designed by a different organization than the provider of the \gls{kvs} we are studying, it gives an extra level of guarantee in our results, just in case.
+Thus, in order to perform an experimental evaluation over the entire TREDIS solution, we opted to used Jmeter\footnote{https://jmeter.apache.org/} version 5.3 as a way to reach our Proxy endpoint, thus benchmarking the behavior of our solution without needing to exclude any component. Also, by being designed by a different organization than the provider of the \gls{kvs} we are studying, it gives an extra level of guarantee in our results, just in case.
 
 With the clients defined as above, we were able to evaluate our system as we intended. 
-We made simple \gls{crud} operations to the in-memory Redis \gls{kvs} instances running inside the TREDIS solution, either through the Proxy or directly to Redis instances, along with some other specific tests that we will detail later in this thesis, in order to analyze performance levels, scalability capabilities, resource usage, and other metrics we found a necessity to evaluate.
+We made simple \gls{crud} operations to the in-memory Redis \gls{kvs} instances running inside the TREDIS solution, either through the Proxy or directly to Redis instances, along with some other specific tests that we will detail later in this thesis, in order to analyze performance levels, scalability capabilities, resource usage, and other metrics we found we needed to evaluate.
 
 
 
@@ -128,18 +128,18 @@ We implemented our system model defined previously in two environments.
 One to emulate a client running in realistic conditions, running in a local machine with commodity software, that only makes requests to our TREDIS solution. Another inside a Cloud host, to emulate the use case we intend to approach, which is the main focus of this thesis: to assure integrity and confidentiality to applications (in this case a Redis \gls{kvs}) running on a third party system host, by leveraging trusted technology properties without inducing in major performance overheads.
 
 For the client component running in our local machine, we used redis-benchmark and Jmeter v5.3 as benchmark applications. 
-The first one only when making requests directly to the Redis \gls{kvs}, but since we implemented a Proxy component that redirects client requests to the Redis by exposing an API, redis-benchmark shows limitations when working with a mediator to its requests to the \gls{kvs}. Thus, we adopted Jmeter to evaluate the solution with the API working as entry-point to the system. By working with this two different client applications, and although one can not be used for every scenario, we can evaluate the system in a better, less biased way, since redis-benchmark and the \gls{kvs} whose behavior we are studying share the same developer entity.
+The first one only when making requests directly to the Redis \gls{kvs}, but since we implemented a Proxy component that redirects client requests to the Redis by exposing an API, redis-benchmark shows limitations when working with a mediator to its requests to the \gls{kvs}. Thus, we adopted Jmeter to evaluate the solution with the API working as an entry-point to the system. By working with this two different client applications, and although one can not be used for every scenario, we can evaluate the system in a better, less biased way, since redis-benchmark and the \gls{kvs} whose behavior we are studying share the same developer entity.
 
 For the server component running in the Cloud environment, which is where our TREDIS solution really is, allowed us to run our components as we intended to: inside containers and leveraging \gls{sgx} security properties with the help of SCONE, with the exception of the Authentication Server, which runs in a regular docker container. 
 Our Proxy was implemented in Java 1.8 with the help of Spring Boot v2.3.1. We used Jedis v3.3.0 to reach the \gls{kvs} in order to translate client HTTP requests into operations over the in-memory Redis database. We established a two-way authentication TLS connection between these two components, Proxy and Redis \gls{kvs}.
 
-We used Keycloak v11.0.2 to implement the Authentication Server. For this, we run a container with keycloaks docker image, where we specify access control policies to our system in a in-memory database. This server authenticates Clients upon arrival, and grants access tokens if they have permissions to reach the system, which the Clients will have to use to interact with the Proxy. In order for the Proxy to validate the tokens, we established a secured TLS connection between these two components.
+We used Keycloak v11.0.2 to implement the Authentication Server. For this, we run a container with Keycloak's docker image, where we specify access control policies to our system in an in-memory database. This server authenticates Clients upon arrival, and grants access tokens if they have permission to reach the system, which the Clients will have to use to interact with the Proxy. In order for the Proxy to validate the tokens, we established a secured TLS connection between these two components.
 
 The attestation mechanism works as a way to make sure our system components that run on private memory regions of \gls{sgx}, run indeed inside them. We use SCONE's remote attestation mechanism, which consists of a remote entity CAS, provided by SCONE itself, that manages the secrets of the applications supposed to run in enclaves. For an enclave to reach those secrets and thus prove their identity in order to run the desired application, it needs a signature from the quoting enclave LAS, running locally in our system in a secured container. With that signature, the enclave proves to CAS its identity as an attested enclave, and CAS matches the enclave's hash value with the one specified to run the application. If the hashes match, CAS hands over the application secrets to the enclave, allowing it to run the application.
 
 Finally, the \gls{kvs} was implemented with Redis v6.0-rc1 images incorporated with SCONE's image, in order to configure \gls{kvs} instances as we intend to, but also to establish secured TLS connections with other components over the network, by using our own set of TLS keys and certificates. We implemented various Redis configurations to run in our TREDIS solution, in order to evaluate their behavior: Standalone, Master-Slave and Cluster. The Master-Slave was configurated to run with three replicas, one Master and two Slaves, while the Cluster was set to run with six replicas, three Masters and three Slaves. Slaves are read-only nodes.
 
-In the next chapter we start our experimental evaluation of the system, going on detail about what tests we performed while making a pratical analysis over the values obtained.
+In the next chapter, we start our experimental evaluation of the system, going into detail about what tests we performed while making a practical analysis of the values obtained.
 
 
 
