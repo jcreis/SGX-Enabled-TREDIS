@@ -135,9 +135,6 @@ The proxy is also the responsible for only allowing authenticated clients to acc
 \vspace{5mm} 
 
 \textbf{2) Authentication Server -} 
-
-
-
 We added an authentication component responsible for authenticating every client that wants to interact with the system, by assigning access tokens to those allowed, which the clients will then use to communicate with the system after the Proxy validates them.
  
 Although some \gls{kvs}s (i.e., Redis) have the possibility to configure authentication for each replica, we believe that option would add an extreme layer of complexity that we do not want, due to the fact that each replica needs to be configured individually. Therefore, if we use a cluster of \gls{kvs} instances and begin to scale their number, the complexity of that task everytime a new user is being granted permission to access the system will be huge. Thus, by including a server designed only to deal with the authentication process, the configuration only needs to happen once for the system to know which users are allowed.

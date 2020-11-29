@@ -10,54 +10,34 @@
 
 \section{Main Conclusions and Remarks}
 
-As addressed in the cahpter 1 (introduction), our dissertations objectives foram …. 
-To adderss the objectives we proposed …   System model and architecture … 
-We implemented a prototype que foi feito desta maneia 
-We used our prototype to conduct an experimental evaluation for validation purposes. In the evaluation we tested …
+As addressed in Chapter \ref{cha:introduction}, our dissertations objective was to study how unmodified applications can be deployed to a Cloud server, to be executed on top of trusted hardware, while still offering decent levels of performance compared to applications running without this extra layer of security.
 
+To address this objective, we proposed our solution: TREDIS, a system running on top of Intel-\gls{sgx} trusted hardware, assembled around an in-memory Redis \gls{kvs} layer, with the idea of assuring integrity and confidentiality to the data executing and being stored in the system.
 
+However, running code on top of \gls{sgx}, or any other \gls{tee}, generally leads the system to huge performance overheads. This is due to the private regions where the code runs being particularly small, resulting in a lot of encryption functions and security checks to take place, in order to keep the integrity and security of the data. To mitigate this problem we adopted in our solution a secured container mechanism - SCONE - capable of running Docker containers on top of Intel-\gls{sgx}. With it, we were able to run and secure individual containers for each of our components, with less performance losses.
 
-In conclusion we addressed all the objectives and goals proposed for our dissertation
-From our observations we conclude that the system performs with a good balance between privacy concerns, trustability assumptions and operation performance, showing that it is possible to have a solution using in-memory KVS that can …. TIRAR PARTIDO das tecnologias … 
+Thus, we deployed Redis instances inside SCONE containers, to be used as the central layer of our solution. To it, we added a Proxy layer, working as an entry-point to the whole system, followed by an Attestation component, responsible to attestate each component that run on \gls{sgx} enclaves upon startup, only enabling them to boot if they prove their identity to be valid, and finally an Authentication Server, which works together with the Proxy in order to grant access to clients that try to reach the system.
 
-(plus example, only if this is the case)
-We shown that the impact on the possible loss of performance is only (approximately) 10% overhead in the performance comparing with a similar solution running without privacy and trustability considerations
+We implemented a prototype designed to run the Redis \gls{kvs} in three distinct configurations, Standalone, Master-Slave and Cluster, in order to understand their own individual behavior when running on top of \gls{sgx} trusted hardware. 
+The Proxy was designed in Java, working as a Spring API deployed to a SCONE container that enabled the clients to make requests to the system via HTTP, while imposing access control policies with the help of the Authentication server, consisting of a Keycloak authentication server instance. 
+Lastly, for the attestation process we used a mechanism provided by SCONE itself, that can be set individually over each container.
 
-Se nao resultou como esperavamos, explicar o pq
+We used our prototype to conduct an experimental evaluation for validation purposes. In the evaluation we tested how \gls{sgx} support impacts our solution, through performance testing and system resource analysis. We tested the solution in all the three \gls{kvs} configurations mentioned before, in order to benchmark their behavior on top of \gls{sgx}.
 
+In conclusion, we addressed all the objectives and goals proposed for our dissertation. From our observations, we conclude that, although we registered some overhead induced by Intel-\gls{sgx}, the system performs with a good balance between privacy concerns, trustability assumptions and operation performance, showing that is possible to have a solution using an in-memory \gls{kvs} that can take advantage of this trusted execution environments without becoming inefficient to deal with realistic scenarios.
+
+We shown that the impact on the possible loss of performance for the \gls{kvs} layer is mainly in the range between 5 to 10\% of overhead comparing with a similar solution without these privacy and trustability considerations. However, for the Proxy layer the values increase to around 16\%, which still results in a decent tradeoff, although there can be room for improvement in the way we implemented this component, in order to take advantage of \gls{sgx} security properties with more effectiveness.
 
 \section{Open Issues and Future Work}
 
-Some open issues arise from our proposed solution and implementation status. Some of these issues can be divided into two different categories:
--	Extensions and additional observations using the current prototype (A)
--	Optimizations and imporvements on the current solution (B) 
+Although the solution we developed showed interesting results, there is still a few points where the solution can improve, either by optimizing some of the components we have used or by extending it in some way.
 
+Starting with our \gls{kvs} layer, we think that optimizing our \gls{tee}-enabled solution with a version of REDIS designed specially to work in this kind of environment, thus avoiding the containerization of the entire REDIS solution, would lead to better results than an unmodified version of REDIS. This work direction could minimize the impact of \gls{sgx} performance issuers, such as SCONE and other \gls{tee} frameworks. However, it forces to an accurate reengineering process of the REDIS implementation, in order to be more suitable for this purpose.
+Another point of work is to partition the solution into multiple machines to achieve better performance levels by separating the workloads physically. This also includes running the cluster instances in different physical machines, in order to achieve optimal cluster performance.
+Persistency of data can also be added as an extra feature in the future, where the data would transit from being encrypted in-memory to also being stored encrypted in disk, thus keeping the privacy of the data intact throughout all the application.
 
-4 ou 5 boas direções vetres de trabaho na categoria A
+As for the Proxy, evaluate if using different technologies to implement its behavior improves the overall performance of this component when executed on top of \gls{sgx}.
+There is also room for optimization when the SGX version used starts to support dynamic allocation of memory during runtime, which can help avoiding big startup times, unecessary memory use and failures.
 
-4 ou 5 max vectores de trabalho proposto como future work
-
--  Optimizing the TEEE-Enabled solution with REDIS with a more fonegrain granularity of internal REDIS components specifically ruuuning in enclaves, aviding the containerization of the entire REDIS solution. This work direction could minimize the impact on SGX-performance issuers … (SCONE) …  
-This approach forces to a accurate reenginerring process of REDIS implementation, in rder to be more aprpoproate for this purpose.
-- It woulbe interesting to evaluate te impact of the laveraged container-bases solution, to evaluate different impacts ondifferent existen soltions. 
-a) Scratched base:  Grahene 
-b) GRAPHENE.GCS and others … (/3)
-c) REDIS foi esclhido por ser uma solução de refR~encia muito pouplar….    It woul be interesting to conduct similar evaluations with ther
-existent KVS technologies, namely … , … , … 
-d) It woulbe interesting to conduct a comparative analysis on the performance of SGX-Enabeld REDIS comparing with more recent
-proposals in which the native KVS technology was designed and imooemented from scratch to be protected by SGX
-For example:    1 [pedir ao prof KVS feitas para serem incorporadas com o SGX]    2 [pedir ao prof outra, ele sabe as 2] 
-
-
-
--distribuir o servidor em mais clouds
--testar outras merdas
-- TLDR : 4 ou 5 cenas obvias tipo (em vez de medir isto assim, medir de outra maneira)
-
-----------------
-
-Persisted data encrypted, we only have in-memory
-
-Each replica of the cluster KVS in different containers on different machines (theoretically will give the overhead of a single instance KVS)
-
-SGX v1 e v2
+Another future work direction we thought to be interesting to evaluate is the impact of different existing container-based solutions that leverage \gls{sgx} security properties (i.e., Graphene, Graphene GSC, etc.) in a system, comparing it to the impact of SCONE in ours. 
+Adding to that, evaluating how different database technologies, either already implemented to work without trusted hardware or a native \gls{kvs} technology designed from scratch to be deployed and used on top of \gls{sgx}, would behave in a similar environment.

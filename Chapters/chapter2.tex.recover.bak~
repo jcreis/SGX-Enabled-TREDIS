@@ -96,8 +96,8 @@ Similar to InkTag, Sego \cite{segoPaper} is also a hypervisor-based system that 
 
 \begin{figure}[htbp]
 	\centering
-	{\includegraphics[width=70mm, scale=0.6]{sego}}
-	\caption{Sego Architecture Overview}
+	{\includegraphics[width=50mm, scale=0.5]{sego_architecture}}
+	\caption{Sego Architecture Overview. Image from \cite{segoPaper}}
 	\label{fig:segoArchitecture}
 \end{figure}
 
@@ -257,13 +257,12 @@ It does it by:
 This increases the performance since major performance losses are caused by enclave threads entering/exiting, due to the costs of encrypting/decrypting the data.
 
 
-\begin{figure}[htbp]
-	\centering
-	{\includegraphics[width=80mm, scale=0.8]{sconeEnclave}}
-	\caption{Scone Protection for SGX Enclaves}
-	\label{fig:sconeEnclave}
+\centering
+{\includegraphics[width=50mm, scale=0.5]{sego_architecture}}
+\caption{Sego Architecture Overview. Image from \cite{segoPaper}}
+\label{fig:segoArchitecture}
 \end{figure}
-
+sconeEnclave
 
 SCONE also has a mechanism for remote attestation, in which a remote component can attestate applications running inside SCONE containers, as a way to check their integrity and to make sure they run as they were instructed to.
 
@@ -297,8 +296,8 @@ Its practical properties result of six components working together:
 
 \begin{figure}[htbp]
 	\centering
-	{\includegraphics[width=0.7\linewidth]{opensgx_design}}
-	\caption{Overview design of OpenSGX framework and memory state. Source: \cite{opensgx_paper}}
+	{\includegraphics[width=0.6\linewidth]{opensgx_design}}
+	\caption{Overview design of OpenSGX framework and memory state of an active enclave program. Image from \cite{opensgx_paper}}
 	\label{fig:openSGXDesign}
 \end{figure}
 
@@ -330,8 +329,8 @@ Users then upload the resulting binary code to the cloud, where enclaves contain
 
 \begin{figure}[tbp]
 	\centering
-	{\includegraphics[width=60mm, scale=0.6]{vc3_design}}
-	\caption{VC3 memory design model and component dependencies. Source: \cite{vc3Paper}}
+	{\includegraphics[width=50mm, scale=0.4]{vc3_design}}
+	\caption{VC3 memory design model and component dependencies. Image from \cite{vc3Paper}}
 \end{figure}
 
 A MapReduce begins with a key exchange between the user and the \textbf{E+} code running in the enclave. After this, \textbf{E+} can proceed to decrypt \textbf{E-} and process the encrypted data. VC3 isolates this processing from the \gls{os} by keeping an interface between the E+ layer and the outside of the enclave. This interface consists of basically two functions: \textbf{readKV()} and \textbf{writeKV()}, for reading or writing a key-value pair on Hadoop, respectively. Also, the data inside the enclave is passed to the outside, more specifically from \textbf{E+} to the untrusted F, by using a virtual address space shared by both.

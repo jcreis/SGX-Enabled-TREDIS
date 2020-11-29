@@ -35,9 +35,7 @@ More recently, a few different approaches to place on top of \gls{tee}s have pro
 
 \section{Problem Statement}
 
-In this dissertation we intend to study how unmodified applications can be deployed with ease on top of trusted hardware (\gls{tee}), and still offer comparable performance overheads relatively to other applications running without this extra layer of security. To achieve this, we took a deep look into existing library \gls{os} approaches and conducted an evaluation by adopting one of them to be ported on top of trusted hardware (\gls{sgx}). 
-
-
+In this dissertation we intend to study how unmodified applications can be deployed with ease on top of trusted hardware (\gls{tee}), and still offer comparable performance overheads relatively to other applications running without this extra layer of security. To achieve this, we took a deep look into existing approaches capable of enabling applications to run with isolation in trusted execution environments and conducted an evaluation by adopting one of them to be ported on top of trusted hardware (\gls{sgx}). 
 
 
 \section{Objective and Expected Contributions} % (fold)
@@ -60,12 +58,16 @@ With that said, our solution must be able to deliver the following contributions
 
 \section{Report Organization}
 
-TODO
-
 The remaining of this thesis is organized as follows:
 \begin{itemize}
-	\item \textbf{Chapter \ref{cha:related_work}} gives an initial background fundamental to understand the objectives and expected contributions of this dissertation, while also covering related work references; 
-	\item \textbf{Chapter \ref{cha:systemModel_and_design}} introduces our system approach, covering the model and architecture, as well as the adversary model.
+	\item \textbf{Chapter \ref{cha:related_work}} gives an initial background essential to understand the objectives and expected contributions of this dissertation, while also covering related work references; 
 	
-	\item \textbf{Chapter \ref{cha:implementation}} presents the defined workplan for the elaboration phase, along with the planned tasks and respective expected duration. ???????
+	\item \textbf{Chapter \ref{cha:systemModel_and_design}} introduces our system approach, covering the model and architecture, along with the specification of the solution's adversary model;
+
+	\item \textbf{Chapter \ref{cha:implementation}} presents a detailed description of the implementation of the prototype, describing the environments and technologies we used;
+	
+	\item \textbf{Chapter \ref{cha:experimentalEvaluation}} shows the evaluation and analysis we performed to the system, along with the discussion of the results;
+	
+	\item \textbf{Chapter \ref{cha:conclusion}} is where we present our conclusions and also address some open issues and future work directions.
+	
 \end{itemize}
