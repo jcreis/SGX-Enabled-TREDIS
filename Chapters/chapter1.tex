@@ -35,21 +35,20 @@ More recently, a few different approaches to place on top of \gls{tee}s have pro
 
 \section{Problem Statement}
 
-In this dissertation, we intend to study how unmodified applications can be deployed with ease on top of trusted hardware (\gls{tee}), and still offer comparable performance overheads relatively to other applications running without this extra layer of security. To achieve this, we took a deep look into existing approaches capable of enabling applications to run with isolation in trusted execution environments and conducted an evaluation by adopting one of them to be ported on top of trusted hardware (\gls{sgx}). 
+In this dissertation, we study how unmodified applications can be deployed with ease on top of trusted hardware (\gls{tee}), and still offer comparable performance overheads relatively to other applications running without this extra layer of security. To achieve this, we took a deep look into existing approaches capable of enabling applications to run with isolation in trusted execution environments and conducted an evaluation by adopting one of them to be ported on top of trusted hardware (\gls{sgx}). 
 
 
 \section{Objective and Expected Contributions} % (fold)
 \label{sec:objectiveAndContibutions}
-Our main objective with this thesis is to implement a secure system based on Intel-SGX
+Our main objective in this thesis is to implement a secure system based on Intel-SGX
 where it is possible to deploy unmodified applications without any major performance
 drop, by adopting the usage of an SGX-enabled framework to be ported on top of \gls{sgx}. Keeping that in mind, our focus lays on analyzing the behavior of an unmodified application (REDIS \gls{kvs}) executing on top of \gls{sgx}, benefiting from privacy and isolation properties of its data.
 
-With that said, our solution must be able to deliver the following contributions:
+Our work delivers the following contributions:
 \begin{itemize}
 	\item The design of TREDIS, a full-fledged REDIS solution leveraging Intel-SGX and supported by a trusted SGX-enabled framework, running with isolation guarantees provided by hardware-shielded capabilities, to be supported as a service in the cloud;
 	\item Implementation of the TREDIS prototype as a cloud-enabled platform as a service, using real Intel-SGX-enabled hardware on commodity servers of a Cloud-Provider (as a solution designed as a candidate for an OVH product offer);
-	\item Implementation of client-side test and benchmark applications, to validate the full-fledged conditions in supporting the original REDIS, as currently offered;
-	\item Experimental evaluation of the prototype, to study the overheads of TREDIS against a no trusted REDIS solution. For this purpose, we analyze (1) Performance conditions observed by latency and throughput measurements; (2) Adequacy to manage operations on privacy-enhanced big-datasets; (3) Scalability conditions under different client-workloads; (4) Analysis of required resources, including memory and CPU.
+	\item Experimental evaluation of the prototype, to study the overheads of TREDIS against an untrusted REDIS solution. For this purpose, we analyze (1) Performance conditions observed by latency and throughput measurements; (2) Adequacy to manage operations on privacy-enhanced big-datasets; (3) Scalability conditions under different client-workloads; (4) Analysis of required resources, including memory and CPU usage.
 	
 \end{itemize}
 

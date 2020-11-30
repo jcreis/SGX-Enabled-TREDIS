@@ -18,15 +18,8 @@ theft, or harassment. A solution to this problem is processing data without expo
 untrusted components, such as vulnerable OS components, which might be compromised
 by an attacker.
 
-In this thesis, we intend to study existent technologies capable of enabling applica-
-tions to run on top of trusted environments and conduct an experimental evaluation to
-adopt such approaches to our solution, in order to help to deploy existing applications
-on top of Intel-SGX, with overheads comparable to applications modified to use other
-trustable security layers. Our targeted evaluation will be conducted in designing TREDIS
-- a Trusted Full-Fledged REDIS Key-Value Store solution, redesigning and implementing it as a full-fledged solution to be offered as a Trusted Cloud-enabled Platform as
-a Service. This includes the possibility to support a secure REDIS-cluster architecture
-supported by docker-virtualized services running in independent SGX-enabled instances,
-with operations running on always-encrypted in-memory datasets.
+In this thesis, we do a research on existent technologies capable of enabling applications to trusted environments, in order to adopt such approaches to our solution as a way to help deploy unmodified applications on top of Intel-\gls{sgx}, with overheads comparable to applications designed to use this kind of technology, and also conducting an experimental evaluation to better understand how they impact our system. 
+Thus, we present TREDIS - a Trusted Full-Fledged REDIS Key-Value Store solution, implemented as a full-fledged solution to be offered as a Trusted Cloud-enabled Platform as a Service, which includes the possibility to support a secure REDIS-cluster architecture supported by docker-virtualized services running in SGX-enabled instances, with operations running on always-encrypted in-memory datasets.
 
 % Palavras-chave do resumo em Inglês
 \begin{keywords}
