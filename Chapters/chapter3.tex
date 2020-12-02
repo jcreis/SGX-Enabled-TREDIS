@@ -29,7 +29,7 @@ Although the \textbf{Client} and its purpose are easy to understand - make reque
 \begin{itemize}
 	\item \textbf{Proxy:} Works as an entry point to the whole server-side. It's the component responsible of handling the communication with the Client;
 	\item \textbf{Authentication Server:} Authenticates the clients so they can only access the system if they are authorized;
-	\item \textbf{Attestation:} Allows the components of the system to prove their identity, thus allowing the rest of the components to treat them as trustworthy;
+	\item \textbf{Attestation:} Allows the components of the system to prove their identity, thus allowing the rest of the components to consider them trustworthy;
 	\item \textbf{Key-Value Store:} Stores data in-memory. This is the main component we intend to protect, since it is where the information running is held.
 \end{itemize} 
 
@@ -60,7 +60,7 @@ Since the main objective of the solution is to protect data privacy during its e
 
 \textbf{2-}  Honest-but-curious users, which are users that already have higher privileges, and may or may not have direct access to the hardware. They can snoop easily on private data, since they are considered trusted, so they can read it, learn it, and take advantage of it.
 
-We consider being out of scope denial-of-service attacks, side-channel attacks that exploit timing and page faults.
+We consider being out of scope denial-of-service attacks, side-channel attacks that exploit timing and page faults. 
 It is important to refer that with this solution, since we are focusing on using in-memory \gls{kvs}s, our target will not include ensuring confidentiality and integrity to data stored in disk since we do not resort on persisting the data.
 
 \subsection{Countermeasures For Privacy-Preservation}
@@ -74,15 +74,14 @@ We looked at \gls{tee} technologies capable of assuring computation and storage 
 In addition, to grant an extra layer of isolation and to ensure privacy to the data in each element of our model, we opted to use containerization as a way to keep them independent and the system modular and scalable, enabling ease in the deployment of software running inside the containers, whether it is an \gls{os}, a library
 \gls{os}, or even entire applications. Running our system inside containers allows it to be deployed in a very similar way, whether running locally or in the cloud, which can be very helpful in the implementation process. 
 
-
-
+Since our intention is to expose our solution as a service, we added access control policies, verified at the entry point every time a client performs a request, while also assuring that all the communications were done via TLS, whether internally in the system or to external entities.
 
 
 \section{System Architecture}
 \label{sec:systemArchitecture}
 In this section, we dive into more detail about the components that make part of the system and what purpose do they have in the solution.  
 
-Our system, which is based on the system model introduced in Section \ref{sec:systemModel_overview} can be split into two parts, one part being the Client-side, responsible for making requests to the system, and other being the server, that deals with the execution and storage of the data.
+Our system, which is based on the system model introduced in Section \ref{sec:systemModel_overview} can be split into two parts, one part being the Client-side, responsible for making requests to the system, and the other being the server, which deals with the execution and storage of the data.
 
 For the Client-side, we only considered them to be benchmark applications and not entire web applications, with only the intent to evaluate the system for our experimental analysis shown later in this dissertation. Thus, we assume that the client is trusted, as long as he can authenticate himself in the system.
 
@@ -135,7 +134,7 @@ The proxy is also responsible for only allowing authenticated clients to access 
 \vspace{5mm} 
 
 \textbf{2) Authentication Server -} 
-We added an authentication component responsible for authenticating every client that wants to interact with the system, by assigning access tokens to those allowed, which the clients will then use to communicate with the system after the Proxy validates them.
+We added an authentication component responsible for authenticating every client that wants to interact with the system. Upon validating a client authentication request, the server assigns an access token (JSON Web Token) which the client will then use to make every request to the Proxy. The Proxy then validates the token, and if it proves to be valid, the request is forwarded to the system. However, the communication between Proxy and Authentication Server to make this validation does not have to happen every time, since the Proxy can store the token's public keys in cache, thus being able to verify signatures and expiration times without contacting the Authentication Server.
  
 Although some \gls{kvs}s (i.e., Redis) have the possibility to configure authentication for each replica, we believe that option would add an extreme layer of complexity that we do not want, due to the fact that each replica needs to be configured individually. Therefore, if we use a cluster of \gls{kvs} instances and begin to scale their number, the complexity of that task every time a new user is being granted permission to access the system will be huge. Thus, by including a server designed only to deal with the authentication process, the configuration only needs to happen once for the system to know which users are allowed.
 
@@ -157,7 +156,7 @@ We do not run our Authentication Server inside \gls{sgx}, thus making it the onl
 \vspace{5mm} 
 
 \textbf{3) Attestation -}
-For the component accountable to deal with attestation for the system, we follow a remote attestation policy where a remote system is the one who holds the defined secrets and provides them to the system components when they successfully attest themselves to this remote server.
+For the component accountable to deal with attestation for the system, we follow a remote attestation policy where a remote system is the one who holds the defined secrets and provides them to the system components when they successfully attest themselves to this remote server. Those secrets are essential for the boot process of the application, thus without attesting themselves, applications can not start.
 
 As we mentioned earlier, we resort on SCONE as a way to run our components inside \gls{sgx}. SCONE also offers a mechanism to attest the enclaves where SCONE containers are running the applications, which we use to add the attestation property to our system and to assure that the server components run inside \gls{sgx} enclaves. 
 
@@ -168,7 +167,7 @@ In CAS we define each application access policy, reflecting which enclave have p
 
 
 
-For an application to prove their identity to CAS, and thus get access to the secrets, it needs to be attested locally so it gets the attestation key involved - a key pair that CAS shares with a local component so they can validate each other's involvement. The key is then recognized by CAS and the attestation is considered valid (although no access to the secrets is given yet). With that in mind, SCONE's attestation mechanism adds a second component, which runs locally inside the system environment, the Local Attestation Service (or LAS). LAS receives attestation requests by the enclaves that intend to attest themselves to CAS, and signs those requests with the attestation key, creating a quote that can be verified by CAS. After getting this quote, any enclave can reach the CAS to try and access the secrets to run the application, only reaching them if they are allowed by its defined policy. This completes the attestation process of an application running in a \gls{sgx} enclave. 
+For an application to prove their identity to CAS, and thus get access to the secrets, it needs to be attested locally so it gets the attestation key involved - a key pair that CAS shares with a local component so they can validate each other's involvement. CAS then recognizes the key and the attestation is considered valid (although no access to the secrets is given yet). With that in mind, SCONE's attestation mechanism adds a second component, which runs locally inside the system environment, the Local Attestation Service (or LAS). LAS receives attestation requests by the enclaves that intend to attest themselves to CAS, and signs those requests with the attestation key, creating a quote that can be verified by CAS. After getting this quote, any enclave can reach the CAS to try and access the secrets to run the application, only reaching them if they are allowed by its defined policy. This completes the attestation process of an application running in a \gls{sgx} enclave. 
 \vspace{3mm}
 
 \begin{figure}[htbp]
@@ -180,7 +179,7 @@ For an application to prove their identity to CAS, and thus get access to the se
 
 In Figure \ref{fig:attestationModel} we present a visual display of the attestation process described above, taking place inside our system model.
 
-The attestation starts with the enclave of an application (i.g., the Proxy component of our system) establishing an HTTPS connection with the remote component CAS endpoint. Afterward, the enclave requests the attestation from LAS, which will then sign a message with the attestation secret key, resulting in a Quote. The Quote is then used by the enclave to validate its own attestation with the help of CAS. After validation, the enclave requests access to the secrets defined in the policies that CAS holds. If the enclave is indeed specified to run the referred application, CAS shares the secrets, thus completing the attestation process with success. In Figure \ref{fig:attestationProcess} we present a diagram with the steps just described.
+The attestation starts with the enclave of an application (i.g., the Proxy component of our system) establishing an HTTPS connection with the remote component CAS endpoint. Afterward, the enclave requests the attestation from LAS, which will then sign a message with the attestation secret key, resulting in a Quote. The Quote is then used by the enclave to validate its own attestation with the help of CAS. After validation, the enclave requests access to the secrets defined in the policies that CAS holds. If the enclave is indeed specified to run the referred application, CAS shares the secrets, thus completing the attestation process with success. Note that the secrets injected from CAS into containers are always stored in protected memory and are not accessible by anyone but the code running on the same enclave. In Figure \ref{fig:attestationProcess} we present a diagram with the steps just described.
 
 \begin{figure}[htbp]
 	\centering
@@ -202,7 +201,7 @@ If each replica of the cluster is set to run in independent machines, the majori
 
 \textbf{Cluster.} Although it is the most complex configuration, beyond replication and consistency, it also adds huge scalability possibilities to the system. It also considers Slave nodes to be read-only.
 
-In our solution we deploy Redis instances capable of running in all the configurations mentioned - Standalone mode, Master-Slave, and Cluster - as a way to test the behavior of the system in each of those configurations. It is also important to note that each Redis replica runs inside its own container, regardless of the configuration it was set to run in. 
+In our solution, we deploy Redis instances capable of running in all the configurations mentioned - Standalone mode, Master-Slave, and Cluster - as a way to test the behavior of the system in each of those configurations. It is also important to note that each Redis replica runs inside its own container, regardless of the configuration it was set to run in. 
 
 \vspace{5mm}
 
@@ -214,7 +213,7 @@ In our solution we deploy Redis instances capable of running in all the configur
 \end{figure}
 
 \vspace{5mm}
-All the communications between the components that make up the server-side are secured by TLS over HTTP, as a way to keep confidentiality of the data during communications all over the system. The access to these TLS libraries inside \gls{sgx} is possible due to the inclusion of openSSL on the static library that SCONE containers offer. By having openSSL statically inside the enclave, no tangible overhead is added to the system, since the execution doesn't need to switch to a thread outside the enclave, in order to respond to the system call, thus establishing an HTTPS connection directly from inside the enclave. 
+All the communications between the components that make up the server-side are secured by TLS over HTTP, as a way to keep confidentiality of the data during communications all over the system. Access to these TLS libraries inside \gls{sgx} is possible due to the inclusion of openSSL on the static library that SCONE containers offer. By having openSSL statically inside the enclave, the overhead from switching to a thread outside to handle the system call is mitigated, thus the code can establish an HTTPS connection directly from inside the enclave. However, the addition of extra libraries to the TCB induces a tradeoff, since it increases the memory needed for the application to execute, thus consuming more memory space inside the \gls{epc}, which can eventually lead to more page swappings.
 
   
 \section{System Model Design Tradeoffs}
@@ -229,7 +228,7 @@ In our system model, \gls{sgx} works alongside the second option, encrypting the
 This leads to a tradeoff since less supported functions inside the enclave mean that the thread of execution will more likely need to leave the enclave in order to execute system calls, or another kind of essential operations, resulting in major overheads due to all the encryption involved. This has a big performance impact when dealing, i.e., with network-heavy services, which usually have a high system call frequency.
 
 Also, by only relying on the encryption of the enclave memory region, \gls{sgx} encounters problems when confronted with applications that are bigger than the enclave itself (keep in mind that an enclave size is usually really small, only around 64MB and 128MB \cite{sconePaper}). 
-When the memory space needed for the application is bigger than the enclave size, page swaps between the enclaves \gls{epc} and the untrusted memory take place, through a mechanism provided by \gls{sgx} itself. Since this scenario involves a lot of encryption and decryption to happen, it induces the system into huge performance overheads.
+When the memory space needed for the application is bigger than the enclave size, page swaps between the enclaves \gls{epc} and the untrusted memory take place, through a mechanism provided by \gls{sgx} itself (although not yet supported on machines running Windows \gls{os}). Since this scenario involves a lot of encryption and decryption to happen, it induces the system into huge performance overheads.
 
 SCONE, along with some other recent technologies, has been referred to as a possibility to help mitigate some of those performance losses. 
 It does it by: 
